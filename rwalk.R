@@ -1,5 +1,3 @@
-setwd("/media/sf_DataScience/Columbia/Maha")
-
 bins <- 7 # Number of distance bins (.5 microns).
 iters <- 5 # Number of iterations (time).
 mols <- 7000 # Number of molecules released.
