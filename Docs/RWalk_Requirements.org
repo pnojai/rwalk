@@ -1,0 +1,29 @@
+#+STARTUP: overview
+#+STARTUP: indent
+
+* Questions.
+** Open.
+*** Smoothing. How do you handle boundary interations. Assumption: reduce count of observations.
+*** Smoothing. Is there a significance to the one-off discrepancy at the top of RW_AMP.xls at BG9. It only smooths 3 values instead of 4 as everywhere else.
+*** Smoothing. Rolling. RW_AMP.xls smooths from the prior row. Ch. 1 begins from current row. Which should it be.
+*** Smoothing. Should the number of values to smooth be configurable, or should it be fixed at 4. It can be a parameter with a default of 4, if you want to support changing it.
+*** Smoothing. RW_AMP.xls really only smooths two values, not four, since the electrode column throws away the Michaelis-Menten correction.
+*** Michaelis-Menten. Every iteration include two rows, an average and a Michaelis-Menten correction. Only the correction is carried forward.
+**** Is the Michaelis-Menten correction optional or required?
+**** If optional, is there any reason to see the intermediate value in the matrix?
+*** Michaelis-Menten. Are the parameters, Vmax and Km, constants defined by the calculation or should they be configurable by the user. The spreadsheet has entries for them, but is that only to serve as labeling for the formula.
+*** Why does RW_AMP.xls extend to the right of the electrode.
+*** Is it always the same number of bins to the right and left of the electrode, or is it useful to configure differing bin counts to the right and left.
+*** Ch. 1 bases the electrode value on its left neighbor only. RW_AMP.xls includes the right neighbor, too. Why. Is that a configurable option.
+*** Release site. Ch. 1 enters the release value once here. Why does the release value of 2.75 repeat in interation 0 of RW_AMP.xls.
+*** First bin from release site. Why is the contribution from the release site weighted .711 instead of averaging its neighbors.
+** Answered.
+* Tasks.
+** Write a function for Michaelis-Menten correction.
+** Arguments.
+*** Diffusion coefficient. Default: value for DA.
+*** Bin size. Default: 2.00 µm.
+*** Release. Default: 2.75 µM.
+* Notes.
+** Diffusion coeffecient determines duration of iteration.
+** Michaelis-Menten correction uses duration of iteration.
