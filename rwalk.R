@@ -1,8 +1,4 @@
-bins <- 7 # Number of distance bins (.5 microns).
-iters <- 5 # Number of iterations (time).
-mols <- 7000 # Number of molecules released.
-
-build_rwalk <- function(bins = 7, iters = 5, mols = 7000, smooth = 4) {
+rwalk_tut <- function(bins = 7, iters = 5, mols = 7000, smooth = 4) {
         # Initialize a matrix. Give it an extra row for time = 0,
         # and an extra column for smoothing the reflecting surface.
         rw <- matrix(rep(0, (bins + 1) * (iters + 1)), iters + 1, bins + 1)
@@ -35,3 +31,18 @@ build_rwalk <- function(bins = 7, iters = 5, mols = 7000, smooth = 4) {
         #Return the random walk matrix.
         rw
 }
+
+micmen <- function(x, vmax = 4.57, km = .78, duration) {
+        # Correct for uptake according to the Michaelis-Menten equation.
+        x - ((( vmax * x ) / ( km + x )) * duration )
+        
+}
+
+# Test micmen()
+# Inputs
+# x: 1.375
+# vmax: 4.57 (default)
+# km: .78 (default)
+# duration: .007407
+# Expected result: 1.353
+micmen(x = 1.375, duration = .007407)
