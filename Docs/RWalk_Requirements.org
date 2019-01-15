@@ -17,13 +17,22 @@
 *** Ch. 1 bases the electrode value on its left neighbor only. RW_AMP.xls includes the right neighbor, too. Why. Is that a configurable option.
 *** Release site. Ch. 1 enters the release value once here. Why does the release value of 2.75 repeat in interation 0 of RW_AMP.xls.
 *** First bin from release site. Why is the contribution from the release site weighted .711 instead of averaging its neighbors.
+*** Distance from electrode. Simulation reports absolute value. Wouldn't this be better signed.
 ** Answered.
 * Tasks.
-** Write a function for Michaelis-Menten correction.
+** DONE Write a function for Michaelis-Menten correction.
+CLOSED: [2019-01-15 Tue 11:36]
 ** Arguments.
 *** Diffusion coefficient. Default: value for DA.
 *** Bin size. Default: 2.00 µm.
 *** Release. Default: 2.75 µM.
+** Write a function to calculate distance from the electrode.
+** Build a random walk matrix. (No smoothing.)
+** Build a vector of times, given a random walk matrix and a duration of iterations.
+*** Is this necessary? Probably not. You could calculate the time buckets when plotting.
+*** Maybe you could name the rows with the time dimension, if someone wanted to see that in the matrix. I don't really like that, because I want to build assumptions into the data. How about a reporting routine; better.
+** Build a report function that presents the spreadsheet the way Dave is accustomed to seeing it. Then you could calculate the times. The times should not reside in the random walk matrix.
+** Duration of iteration. Function based on diffusion coefficient and bin size.
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.
