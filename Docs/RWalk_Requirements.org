@@ -33,6 +33,7 @@ CLOSED: [2019-01-15 Tue 11:36]
 *** Maybe you could name the rows with the time dimension, if someone wanted to see that in the matrix. I don't really like that, because I want to build assumptions into the data. How about a reporting routine; better.
 ** Build a report function that presents the spreadsheet the way Dave is accustomed to seeing it. Then you could calculate the times. The times should not reside in the random walk matrix.
 ** Duration of iteration. Function based on diffusion coefficient and bin size.
+** LAFF. See if you can process matrices with a LAFF approach so you don't get confused about indexes.
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.

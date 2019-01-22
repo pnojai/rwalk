@@ -76,7 +76,7 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
         
         # Initialize a matrix. Give it an extra row for time = 0.
-        # Columns = specified columns to the left of the electrode, to the right, and electrode in the middle.
+        # Bins = specified columns to the left of the electrode, to the right, and electrode in the middle.
         # No extra column for smoothing the reflecting surface. That will be a separate data structure.
         bins <- 2 * bin_number_displace  + 1
         rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
@@ -89,7 +89,7 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         dead_space_bin <- rep(FALSE, bins)
         dead_space_bin[dead_space_range] <- TRUE
         
-        # Release at time 0 (row 1)
+        # Release at time 0 (row 1). Don't release to dead space.
         rw[1, !dead_space_bin] <- release
 
         # Iterate in time
