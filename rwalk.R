@@ -184,3 +184,17 @@ electrode_distance <- function() {
         # For reporting, not calculation.
                
 }
+
+diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
+        # Compute a rolling average.
+        electrode_meas <- rwalk_matrix[ , electrode_pos]
+        
+        #Vector of lower indexes for means.
+        seq_low <- 1:length(electrode_meas)
+        # Set up high sequence. The top boundary doesn't overflow.
+        seq_high <- smoothing_count:(length(electrode_meas) + smoothing_count -1)
+        seq_high <- pmin.int(seq_high, length(electrode_meas))
+        
+        #Compute rolling average
+       rowMeans(cbind(electrode_meas[seq_low], electrode_meas[seq_high]))
+}
