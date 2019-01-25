@@ -56,8 +56,8 @@ iteration_duration <- function(diffusion_coefficient, bin_size) {
 }
 
 rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
-                      bin_number_displace = 25, dead_space_displace = 2,
-                      diffusion_coefficient = .0000027, iterations = 128) {
+                      electrode_distance = 50.0 , dead_space_distance = 4.0,
+                      diffusion_coefficient = .0000027, duration = 1) {
         # Amperometry simulation
         # Author: Jai Jeffryes
         # Email: jai@jeffryes.net
@@ -70,21 +70,28 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         # bin_number_left: Number of bins left of the electrode.
         # bin_number_right: Number of bins right of the electrode.
         # diffusion_coefficient: square centimeters / second.
-        # iterations:
+        # duration: span of diffusion in seconds.
         
         # Calculate the duration of an iteration.
         it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
         
+        iterations <- as.integer(duration / it_dur)
+        
+        # Calculate bin number
+        bin_number_displace <- as.integer(electrode_distance / bin_size)
+        
         # Initialize a matrix. Give it an extra row for time = 0.
         # Bins = specified columns to the left of the electrode, to the right, and electrode in the middle.
-        # No extra column for smoothing the reflecting surface. That will be a separate data structure.
         bins <- 2 * bin_number_displace  + 1
         rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
+        
+        times <- seq(from = 0, by = it_dur, length.out = nrow(rw))
         
         # Position the electrode and the dead space
         electrode_pos <- bin_number_displace + 1
 
-        # Identify dead spaces in a logical vector        
+        # Identify dead spaces in a logical vector
+        dead_space_displace <- as.integer(dead_space_distance / bin_size)
         dead_space_range <- (bin_number_displace - dead_space_displace + 1):(bin_number_displace + dead_space_displace + 1)
         dead_space_bin <- rep(FALSE, bins)
         dead_space_bin[dead_space_range] <- TRUE
@@ -167,14 +174,15 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
                 rw[i, electrode_pos] <- val
 
         }
-        # 
-        # # Smooth the counts at the electrode.
-        # for (i in 1:(iters + 1 - smooth + 1)) {
-        #         rw[i, bins + 1] <- mean(rw[i:(i + smooth - 1), bins])
-        # }
         
         #Return the random walk matrix.
-        rw
+        print(it_dur)
+        print(iterations)
+        print(it_dur * iterations)
+        print(bin_number_displace)
+        print(dead_space_displace)
+        
+        list(rw, times)
         
         
 }
@@ -185,16 +193,25 @@ electrode_distance <- function() {
                
 }
 
+electrode_pos <- function(rw) {
+        # Assume electrode is in the middle of the matrix
+        ((ncol(rw) - 1) / 2) + 1
+}
+
 diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
         # Compute a rolling average.
-        electrode_meas <- rwalk_matrix[ , electrode_pos]
+        electrode_meas <- rwalk_matrix[-1, electrode_pos]
         
         #Vector of lower indexes for means.
         seq_low <- 1:length(electrode_meas)
         # Set up high sequence. The top boundary doesn't overflow.
         seq_high <- smoothing_count:(length(electrode_meas) + smoothing_count -1)
         seq_high <- pmin.int(seq_high, length(electrode_meas))
-        
+
         #Compute rolling average
        rowMeans(cbind(electrode_meas[seq_low], electrode_meas[seq_high]))
+}
+
+rwalk_plot <- function(rw) {
+        
 }
