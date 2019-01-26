@@ -175,15 +175,16 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
 
         }
         
-        #Return the random walk matrix.
-        print(it_dur)
-        print(iterations)
-        print(it_dur * iterations)
-        print(bin_number_displace)
-        print(dead_space_displace)
+        #Return the random walk as a data frame.
+        # print(it_dur)
+        # print(iterations)
+        # print(it_dur * iterations)
+        # print(bin_number_displace)
+        # print(dead_space_displace)
         
-        list(rw, times)
+        rw_df <- data.frame(rw, row.names = times)
         
+        rw_df
         
 }
 
@@ -212,6 +213,41 @@ diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
        rowMeans(cbind(electrode_meas[seq_low], electrode_meas[seq_high]))
 }
 
+electrode_results <- function(rwalk_df, electrode_pos) {
+        results <- data.frame(rwalk_df[-1, electrode_pos], row.names = row.names(rwalk_df[-1, ]))
+        colnames(results)[1] <- "electrode"
+        
+        results
+}
+
 rwalk_plot <- function(rw) {
         
 }
+
+read_experiment_csv <- function(fil, sr = 20, header = FALSE) {
+        # sr: Sampling rate in microseconds.
+        
+        # Convert sampling rate to seconds.
+        sr_s <- sr * 10^-6
+        
+        dat <- read.csv(fil, header = header)
+        
+        times <- seq(from = 0, by = sr_s, length.out = nrow(dat))
+        
+        results <- data.frame(dat, row.names = times)
+        
+        results
+        
+}
+
+trim_results <- function(df) {
+        # Find peak. We'll start there.
+        start_idx <- which.max(df[ ,1 ])
+        end_idx <- nrow(df)
+        print(start_idx)
+        print(end_idx)
+        
+        df[start_idx:end_idx, 1]
+        
+}
+
