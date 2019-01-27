@@ -30,3 +30,14 @@ head(res_bin05)
 # res_df_bin20[res_df_bin20[,1] == .2]
 # res_df_bin10[res_df_bin10[,1] == .2]
 # res_df_bin05[res_df_bin05[,1] == .2]
+
+# Look at some experimental data. Read it.
+dat <- read_experiment_csv("Data/AMPH_test.csv")
+# Plot it
+plot(row.names(dat), dat[ ,1], type = "l")
+
+dat_trim <- trim_results(dat)
+#Plot
+plot(row.names(dat_trim), dat_trim[ ,1], type = "l")
+
+

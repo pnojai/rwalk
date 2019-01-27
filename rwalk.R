@@ -247,7 +247,9 @@ trim_results <- function(df) {
         print(start_idx)
         print(end_idx)
         
-        df[start_idx:end_idx, 1]
+        df_trim <- as.data.frame(df[start_idx:end_idx, 1])
+        row.names(df_trim) <- row.names(df)[start_idx:end_idx]
         
+        df_trim
 }
 
