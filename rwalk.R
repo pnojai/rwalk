@@ -267,7 +267,7 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
                 
                 # Diffuse the molecules unti you get to the electrode.
                 # Think about it like you're working inwards along the displacements from the electrode.
-                for (j in 3:(electrode_pos - 1)) { # This is the only difference from the amperometry.
+                for (j in 3:(electrode_pos - 1)) { # Only difference from the amperometry simulation.
                         outside_neighbor <- j - 1
                         inside_neighbor <- j + 1
                         
@@ -286,22 +286,7 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
                         
                 }
                 
-                # Diffuse the molecules next to the electrode. Receives .5 from outside.
-                curr_bin <- electrode_pos - 1
-                outside_neighbor <- curr_bin - 1
-                
-                val <- .5 * rw[i - 1, outside_neighbor]
-                val <- micmen(val, vmax, km, it_dur)
-                rw[i, curr_bin] <- val
-                
-                mirror_bin <- electrode_pos + 1
-                outside_neighbor <- curr_bin - 1
-                
-                val <- .5 * rw[i - 1, outside_neighbor]
-                val <- micmen(val, vmax, km, it_dur)
-                rw[i, mirror_bin] <- val
-                
-                # And at the electrode.
+                # Diffuse the molecules at the electrode.
                 val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
                 # Note: there is no Michaelis-Menten correction for uptake at the electrode.
                 rw[i, electrode_pos] <- val
@@ -346,11 +331,22 @@ diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
        rowMeans(cbind(electrode_meas[seq_low], electrode_meas[seq_high]))
 }
 
-electrode_results <- function(rwalk_df, electrode_pos) {
+electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
+        
         results <- data.frame(rwalk_df[-1, electrode_pos], row.names = row.names(rwalk_df[-1, ]))
         colnames(results)[1] <- "electrode"
         
-        results
+        #Vector of lower indexes for means.
+        seq_low <- 1:nrow(results)
+        # Set up high sequence. The top boundary doesn't overflow.
+        seq_high <- smoothing_count:(nrow(results) + smoothing_count - 1)
+        seq_high <- pmin.int(seq_high, nrow(results))
+        
+        #Compute rolling average
+        rowMeans(cbind(results[seq_low, 1], results[seq_high, 1]))
+        
+        
+        #results
 }
 
 rwalk_plot <- function(rw) {
