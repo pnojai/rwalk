@@ -188,6 +188,139 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         
 }
 
+rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
+                      electrode_distance = 50.0 , dead_space_distance = 4.0,
+                      diffusion_coefficient = .0000027, duration = 1) {
+        # Amperometry simulation
+        # Author: Jai Jeffryes
+        # Email: jai@jeffryes.net
+        
+        # Parameters
+        # vmax: Micro M / sec.
+        # km: Micro M.
+        # release: Micro M.
+        # bin_size: Micrometres.
+        # bin_number_left: Number of bins left of the electrode.
+        # bin_number_right: Number of bins right of the electrode.
+        # diffusion_coefficient: square centimeters / second.
+        # duration: span of diffusion in seconds.
+        
+        # Calculate the duration of an iteration.
+        it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
+        
+        iterations <- as.integer(duration / it_dur)
+        
+        # Calculate bin number
+        bin_number_displace <- as.integer(electrode_distance / bin_size)
+        
+        # Initialize a matrix. Give it an extra row for time = 0.
+        # Bins = specified columns to the left of the electrode, to the right, and electrode in the middle.
+        bins <- 2 * bin_number_displace  + 1
+        rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
+        
+        times <- seq(from = 0, by = it_dur, length.out = nrow(rw))
+        
+        # Position the electrode and the dead space
+        electrode_pos <- bin_number_displace + 1
+        
+        # Identify dead spaces in a logical vector
+        dead_space_displace <- as.integer(dead_space_distance / bin_size)
+        dead_space_range <- (bin_number_displace - dead_space_displace + 1):(bin_number_displace + dead_space_displace + 1)
+        dead_space_bin <- rep(FALSE, bins)
+        dead_space_bin[dead_space_range] <- TRUE
+        
+        # Release at time 0 (row 1). Don't release to dead space.
+        rw[1, !dead_space_bin] <- release
+        
+        # Iterate in time
+        for (i in 2:(iterations + 1)) {
+                # Fill extreme bins.
+                # Outside bins take from inside neighbor only
+                curr_bin <- 1
+                inside_neighbor <- curr_bin + 1
+                val <- mean(c(rw[(i - 1), inside_neighbor], 0))
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, 1] <- val
+                
+                #Really, could assume this is the same, but hey, I'm cautious
+                mirror_bin <- bins
+                inside_neighbor <- mirror_bin - 1
+                val <- mean(c(rw[(i - 1), inside_neighbor], 0))
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, mirror_bin] <-  val
+                
+                # 2nd bins in take .711 from outside neighbor, .5 from inside
+                curr_bin <- 2
+                inside_neighbor <- curr_bin + 1
+                outside_neighbor <- curr_bin - 1
+                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, curr_bin] <- val
+                
+                # Same, but cautious
+                mirror_bin <- bins - 1
+                inside_neighbor <- mirror_bin - 1
+                outside_neighbor <- mirror_bin + 1
+                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, mirror_bin] <- val
+                
+                # Diffuse the molecules unti you get to the electrode.
+                # Think about it like you're working inwards along the displacements from the electrode.
+                for (j in 3:(electrode_pos - 1)) { # This is the only difference from the amperometry.
+                        outside_neighbor <- j - 1
+                        inside_neighbor <- j + 1
+                        
+                        val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
+                        val <- micmen(val, vmax, km, it_dur)
+                        rw[i, j] <- val
+                        
+                        # Do it at the mirror bin. Don't fry your brain on the indexes.
+                        mirror_bin <- bins - j + 1
+                        outside_neighbor <- mirror_bin + 1
+                        inside_neighbor <- mirror_bin - 1
+                        
+                        val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
+                        val <- micmen(val, vmax, km, it_dur)
+                        rw[i, mirror_bin] <- val
+                        
+                }
+                
+                # Diffuse the molecules next to the electrode. Receives .5 from outside.
+                curr_bin <- electrode_pos - 1
+                outside_neighbor <- curr_bin - 1
+                
+                val <- .5 * rw[i - 1, outside_neighbor]
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, curr_bin] <- val
+                
+                mirror_bin <- electrode_pos + 1
+                outside_neighbor <- curr_bin - 1
+                
+                val <- .5 * rw[i - 1, outside_neighbor]
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, mirror_bin] <- val
+                
+                # And at the electrode.
+                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
+                # Note: there is no Michaelis-Menten correction for uptake at the electrode.
+                rw[i, electrode_pos] <- val
+                
+        }
+        
+        #Return the random walk as a data frame.
+        # print(it_dur)
+        # print(iterations)
+        # print(it_dur * iterations)
+        # print(bin_number_displace)
+        # print(dead_space_displace)
+        
+        rw_df <- data.frame(rw, row.names = times)
+        
+        rw_df
+        
+}
+
 electrode_distance <- function() {
         # Calculate a bin's distance from the electrode.
         # For reporting, not calculation.

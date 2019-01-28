@@ -23,6 +23,7 @@ CLOSED: [2019-01-22 Tue 19:38]
 *** First bin from release site. Why is the contribution from the release site weighted .711 instead of averaging its neighbors. Check out later chapters of the tutorial.
 *** Distance from electrode. Simulation reports absolute value. Wouldn't this be better signed.
 *** Dead space. I figured it by bin count. The user must specify based on their argument for bin size.
+*** In the cyclic voltammetry simulation, why is there dead space in bins 31-38 in addition to the 4µ around the electrode. There is no corresponding gap on the left side of the electrode.
 * Tasks.
 ** DONE Write a function for Michaelis-Menten correction.
 CLOSED: [2019-01-15 Tue 11:36]
