@@ -343,10 +343,11 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         seq_high <- pmin.int(seq_high, nrow(results))
         
         #Compute rolling average
-        rowMeans(cbind(results[seq_low, 1], results[seq_high, 1]))
+        results_smoothed <- rowMeans(cbind(results[seq_low, 1], results[seq_high, 1]))
         
+        results[ , 1] <- results_smoothed
         
-        #results
+        results
 }
 
 rwalk_plot <- function(rw) {
