@@ -26,13 +26,8 @@ head(res_bin20)
 head(res_bin10)
 head(res_bin05)
 
-# Examine time .2
-# res_df_bin20[res_df_bin20[,1] == .2]
-# res_df_bin10[res_df_bin10[,1] == .2]
-# res_df_bin05[res_df_bin05[,1] == .2]
-
 # Look at some experimental data. Read it.
-dat <- read_experiment_csv("Data/AMPH_test.csv")
+dat <- read_experiment_csv("Data/AMPH_test.csv", sr = 100)
 # Plot it
 plot(row.names(dat), dat[ ,1], type = "l")
 

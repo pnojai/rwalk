@@ -42,6 +42,7 @@ CLOSED: [2019-01-15 Tue 11:36]
 ** LAFF. See if you can process matrices with a LAFF approach so you don't get confused about indexes.
 ** Write a test bed comparing matrix output to sample simulations.
 ** Change the time iteration input to a time length input. Changing bin length changes the duration necessary for each time iteration.
+** Put the time series of simulations in a column of the data frame instead of in the row names.
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.

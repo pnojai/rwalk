@@ -354,11 +354,11 @@ rwalk_plot <- function(rw) {
         
 }
 
-read_experiment_csv <- function(fil, sr = 20, header = FALSE) {
-        # sr: Sampling rate in microseconds.
+read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
+        # sr: Sampling rate in milliseconds.
         
         # Convert sampling rate to seconds.
-        sr_s <- sr * 10^-6
+        sr_s <- sr * 10^-3
         
         dat <- read.csv(fil, header = header)
         
