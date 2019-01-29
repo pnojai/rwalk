@@ -1,7 +1,12 @@
 # Build matrices for bins of length: 2.0, 1.0, .5
-rw_bin20 <- rwalk_cv(dead_space_distance = 0)
-rw_bin10 <- rwalk_amp(dead_space_distance = 0, bin_size = 1.0)
-rw_bin05 <- rwalk_amp(dead_space_distance = 0, bin_size = .5)
+rw_bin20 <- rwalk_amp(dead_space_distance = 4)
+rw_bin10 <- rwalk_amp(dead_space_distance = 4, bin_size = 1.0)
+rw_bin05 <- rwalk_amp(dead_space_distance = 4, bin_size = .5)
+
+# Where is the electrode?
+electrode_pos(rw_bin20)
+electrode_pos(rw_bin10)
+electrode_pos(rw_bin05)
 
 # How about just releasing at the end?
 # rw_bin20 <- rwalk_amp(electrode_distance = 50, dead_space_distance = 48)

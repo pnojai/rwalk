@@ -85,10 +85,10 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         bins <- 2 * bin_number_displace  + 1
         rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
         
-        times <- seq(from = 0, by = it_dur, length.out = nrow(rw))
+        time_sec <- seq(from = 0, by = it_dur, length.out = nrow(rw))
         
         # Position the electrode and the dead space
-        electrode_pos <- bin_number_displace + 1
+        electrode_pos <- electrode_pos(rw, time_column = FALSE) # No time series on the front yet.
 
         # Identify dead spaces in a logical vector
         dead_space_displace <- as.integer(dead_space_distance / bin_size)
@@ -182,15 +182,18 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         # print(bin_number_displace)
         # print(dead_space_displace)
         
-        rw_df <- data.frame(rw, row.names = times)
+        # Add the time series to the front of the data frame.
+        rw_df <- as.data.frame(cbind(time_sec, rw))
+        # Name the location of the electrode data.
+        colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
         
         rw_df
         
 }
 
 rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
-                      electrode_distance = 50.0 , dead_space_distance = 4.0,
-                      diffusion_coefficient = .0000027, duration = 1) {
+                     electrode_distance = 50.0 , dead_space_distance = 4.0,
+                     diffusion_coefficient = .0000027, duration = 1) {
         # Amperometry simulation
         # Author: Jai Jeffryes
         # Email: jai@jeffryes.net
@@ -218,10 +221,10 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         bins <- 2 * bin_number_displace  + 1
         rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
         
-        times <- seq(from = 0, by = it_dur, length.out = nrow(rw))
+        time_sec <- seq(from = 0, by = it_dur, length.out = nrow(rw))
         
         # Position the electrode and the dead space
-        electrode_pos <- bin_number_displace + 1
+        electrode_pos <- electrode_pos(rw, time_column = FALSE) # No time series on the front yet.
         
         # Identify dead spaces in a logical vector
         dead_space_displace <- as.integer(dead_space_distance / bin_size)
@@ -265,7 +268,7 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
                 val <- micmen(val, vmax, km, it_dur)
                 rw[i, mirror_bin] <- val
                 
-                # Diffuse the molecules unti you get to the electrode.
+                # Diffuse the molecules until you get to the electrode.
                 # Think about it like you're working inwards along the displacements from the electrode.
                 for (j in 3:(electrode_pos - 1)) { # Only difference from the amperometry simulation.
                         outside_neighbor <- j - 1
@@ -300,7 +303,10 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         # print(bin_number_displace)
         # print(dead_space_displace)
         
-        rw_df <- data.frame(rw, row.names = times)
+        # Add the time series to the front of the data frame.
+        rw_df <- as.data.frame(cbind(time_sec, rw))
+        # Name the location of the electrode data.
+        colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
         
         rw_df
         
@@ -312,9 +318,15 @@ electrode_distance <- function() {
                
 }
 
-electrode_pos <- function(rw) {
-        # Assume electrode is in the middle of the matrix
-        ((ncol(rw) - 1) / 2) + 1
+electrode_pos <- function(rw, time_column = TRUE) {
+        # Electrode is the middle bin.
+        if (time_column == TRUE) {
+                pos <- (ncol(rw) / 2) + 1
+        } else {
+                pos <- ((ncol(rw) - 1)/ 2) + 1
+        }
+        
+        pos
 }
 
 diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
@@ -333,8 +345,11 @@ diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
 
 electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         
-        results <- data.frame(rwalk_df[-1, electrode_pos], row.names = row.names(rwalk_df[-1, ]))
-        colnames(results)[1] <- "electrode"
+        #res_time <- as.data.frame(cbind(time = time_series, electrode = res$electrode))
+        
+        results <- as.data.frame(cbind(time_sec = rwalk_df[-1, "time_sec"], electrode = rwalk_df[-1, "electrode"]))
+        # results <- data.frame(rwalk_df[-1, electrode_pos], row.names = row.names(rwalk_df[-1, ]))
+        # colnames(results)[1] <- "electrode"
         
         #Vector of lower indexes for means.
         seq_low <- 1:nrow(results)
@@ -343,11 +358,12 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         seq_high <- pmin.int(seq_high, nrow(results))
         
         #Compute rolling average
-        results_smoothed <- rowMeans(cbind(results[seq_low, 1], results[seq_high, 1]))
+        results_smoothed <- rowMeans(cbind(results[seq_low, "electrode"], results[seq_high, "electrode"]))
         
-        results[ , 1] <- results_smoothed
+        results[ , 2] <- results_smoothed
         
         results
+
 }
 
 rwalk_plot <- function(rw) {
@@ -362,9 +378,12 @@ read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
         
         dat <- read.csv(fil, header = header)
         
-        times <- seq(from = 0, by = sr_s, length.out = nrow(dat))
+        time_sec <- seq(from = 0, by = sr_s, length.out = nrow(dat))
         
-        results <- data.frame(dat, row.names = times)
+        # results <- data.frame(dat, row.names = times)
+        
+        # Add the time series to the front of the data frame.
+        results <- as.data.frame(cbind(time_sec, dat))
         
         results
         

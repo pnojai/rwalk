@@ -46,3 +46,6 @@ CLOSED: [2019-01-15 Tue 11:36]
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.
+* Lessons learned
+** Put time series in a data frame column, not the row name.
+** ggplot needs a long data frame, not wide.
