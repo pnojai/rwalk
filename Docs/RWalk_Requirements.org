@@ -33,16 +33,22 @@ CLOSED: [2019-01-15 Tue 11:36]
 *** Release. Default: 2.75 µM.
 *** Bidirectional. Default: TRUE. Provide option of simulating one side of the electrode only.
 ** Write a function to calculate distance from the electrode.
-** Build a random walk matrix. (No smoothing.)
-** Build a vector of times, given a random walk matrix and a duration of iterations.
-*** Is this necessary? Probably not. You could calculate the time buckets when plotting.
+** DONE Build a random walk matrix. (No smoothing.) Included smoothing, but it is optional, you can pass a smoothing argument of 1.
+CLOSED: [2019-01-30 Wed 10:55]
+** DONE Build a vector of times, given a random walk matrix and a duration of iterations.
+CLOSED: [2019-01-30 Wed 10:55]
+*** Is this necessary? Probably not. You could calculate the time buckets when plotting. No, put the time series in the data frame.
 *** Maybe you could name the rows with the time dimension, if someone wanted to see that in the matrix. I don't really like that, because I want to build assumptions into the data. How about a reporting routine; better.
-** Build a report function that presents the spreadsheet the way Dave is accustomed to seeing it. Then you could calculate the times. The times should not reside in the random walk matrix.
-** Duration of iteration. Function based on diffusion coefficient and bin size.
+** Build a report function that presents the spreadsheet the way Dave is accustomed to seeing it. Then you could calculate the times. The times should not reside in the random walk matrix. Yes, they should, and that's what I did.
+** DONE Duration of iteration. Function based on diffusion coefficient and bin size.
+CLOSED: [2019-01-30 Wed 10:57]
 ** LAFF. See if you can process matrices with a LAFF approach so you don't get confused about indexes.
 ** Write a test bed comparing matrix output to sample simulations.
-** Change the time iteration input to a time length input. Changing bin length changes the duration necessary for each time iteration.
-** Put the time series of simulations in a column of the data frame instead of in the row names.
+** DONE Change the time iteration input to a time length input. Changing bin length changes the duration necessary for each time iteration.
+CLOSED: [2019-01-30 Wed 10:57]
+** DONE Put the time series of simulations in a column of the data frame instead of in the row names.
+CLOSED: [2019-01-30 Wed 10:57]
+** Convert observations to moles.
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.

@@ -384,6 +384,7 @@ read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
         
         # Add the time series to the front of the data frame.
         results <- as.data.frame(cbind(time_sec, dat))
+        colnames(results)[2] <- "electrode"
         
         results
         
