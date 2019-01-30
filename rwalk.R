@@ -175,13 +175,6 @@ rwalk_amp <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
 
         }
         
-        #Return the random walk as a data frame.
-        # print(it_dur)
-        # print(iterations)
-        # print(it_dur * iterations)
-        # print(bin_number_displace)
-        # print(dead_space_displace)
-        
         # Add the time series to the front of the data frame.
         rw_df <- as.data.frame(cbind(time_sec, rw))
         # Name the location of the electrode data.
@@ -296,26 +289,12 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
                 
         }
         
-        #Return the random walk as a data frame.
-        # print(it_dur)
-        # print(iterations)
-        # print(it_dur * iterations)
-        # print(bin_number_displace)
-        # print(dead_space_displace)
-        
         # Add the time series to the front of the data frame.
         rw_df <- as.data.frame(cbind(time_sec, rw))
         # Name the location of the electrode data.
         colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
         
         rw_df
-        
-}
-
-electrode_distance <- function() {
-        # Calculate a bin's distance from the electrode.
-        # For reporting, not calculation.
-               
 }
 
 electrode_pos <- function(rw, time_column = TRUE) {
@@ -329,33 +308,18 @@ electrode_pos <- function(rw, time_column = TRUE) {
         pos
 }
 
-diffuse <- function(rwalk_matrix, electrode_pos, smoothing_count = 4) {
-        # Compute a rolling average.
-        electrode_meas <- rwalk_matrix[-1, electrode_pos]
-        
-        #Vector of lower indexes for means.
-        seq_low <- 1:length(electrode_meas)
-        # Set up high sequence. The top boundary doesn't overflow.
-        seq_high <- smoothing_count:(length(electrode_meas) + smoothing_count -1)
-        seq_high <- pmin.int(seq_high, length(electrode_meas))
-
-        #Compute rolling average
-       rowMeans(cbind(electrode_meas[seq_low], electrode_meas[seq_high]))
-}
-
 electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
-        
-        #res_time <- as.data.frame(cbind(time = time_series, electrode = res$electrode))
-        
-        results <- as.data.frame(cbind(time_sec = rwalk_df[-1, "time_sec"], electrode = rwalk_df[-1, "electrode"]))
-        # results <- data.frame(rwalk_df[-1, electrode_pos], row.names = row.names(rwalk_df[-1, ]))
-        # colnames(results)[1] <- "electrode"
-        
+        results <- as.data.frame(
+                cbind(time_sec = rwalk_df[-1, "time_sec"],
+                      electrode = rwalk_df[-1, "electrode"]
+                      )
+                )
+
         #Vector of lower indexes for means.
         seq_low <- 1:nrow(results)
         # Set up high sequence. The top boundary doesn't overflow.
         seq_high <- smoothing_count:(nrow(results) + smoothing_count - 1)
-        seq_high <- pmin.int(seq_high, nrow(results))
+        seq_high <- pmin.int(seq_high, nrow(results)) # End of sequence doesn't exceed max indes.
         
         #Compute rolling average
         results_smoothed <- rowMeans(cbind(results[seq_low, "electrode"], results[seq_high, "electrode"]))
@@ -363,10 +327,78 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         results[ , 2] <- results_smoothed
         
         results
-
 }
 
-rwalk_plot <- function(rw) {
+compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.75,
+                    bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
+                    diffusion_coefficient = .0000027, smoothing_count = 4) {
+        
+        # Read data file.
+        print("Reading data...")
+        dat <- read_experiment_csv(fil, sr = sample_rate)
+        
+        # Set plotting parameters for simulation
+        # Domain
+        # Find the time of the minimum observation before the peak.
+        print("Setting up parameters of plot...")
+        max_obs <- max(dat$electrode)
+        idx_max_obs <- which(dat$electrode == max_obs) # Index of peak
+        # Get the minimum observation in the 1st partition. Find the index.
+        idx_min_obs <- which(dat$electrode == min(dat[1:idx_max_obs, 2]))
+        idx_min_obs <- idx_min_obs[idx_min_obs < idx_max_obs] # Min obs earlier than peak.
+        
+        min_time <- dat[idx_min_obs, "time_sec"]
+        max_time <- max(dat$time_sec)
+        
+        # Range
+        y_base <- dat[idx_min_obs, 2]
+        
+        # Duration of simulation.
+        dur <- max_time - min_time
+        
+        # Calculate random walk.
+        print("Building random walk...")
+        rw <- rwalk_cv(vmax = vmax, km = km, release = release, bin_size = bin_size,
+                       electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
+                       diffusion_coefficient = diffusion_coefficient, duration = dur)
+        
+        print("Formatting results...")
+        # Pick off the results at the simulated electrode.
+        res <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+        
+        # Shift the time of the results.
+        res$time_sec <- res$time_sec + min_time
+        
+        # Make a tall data set.
+        res_w_src <- cbind(res, src = "simulation")
+        res_w_src$electrode <- res$electrode + y_base
+        
+        dat_w_src <- cbind(dat, src = "experiment")
+        
+        sim_w_dat <- rbind(res_w_src, dat_w_src)
+        
+        # Superimpose them.
+        # Greek letters. Here's how to include them in labels.
+        # https://stats.idre.ucla.edu/r/codefragments/greek_letters/
+        print("Ready to plot.")
+        
+        xrng <- range(sim_w_dat$time_sec)
+        yrng <- range(sim_w_dat$electrode)
+        
+        print(xrng)
+        print(yrng)
+        
+        caption <- paste("vmax=", vmax, "\n", "km=", km, "\n", "release=", release, sep = "")
+        
+        ggplot(data = sim_w_dat) +
+                geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
+                labs(title = "cyclic voltammetry",
+                     x = "time [s]",
+                     y = expression(paste("DA concentration [", mu, "M]")),
+                     colour = "source") +
+                annotate("text", x = Inf, y = Inf, label = note, vjust = 1, hjust = 1)
+                #annotate("text", -Inf, Inf, label = note, hjust = 1, vjust = 1)
+                #annotate("text", -Inf, Inf, hjust = 1, vjust = 1, label = note)
         
 }
 
@@ -387,7 +419,6 @@ read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
         colnames(results)[2] <- "electrode"
         
         results
-        
 }
 
 trim_results <- function(df) {
