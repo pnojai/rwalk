@@ -377,16 +377,12 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         
         sim_w_dat <- rbind(res_w_src, dat_w_src)
         
+        write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        
         # Superimpose them.
         # Greek letters. Here's how to include them in labels.
         # https://stats.idre.ucla.edu/r/codefragments/greek_letters/
         print("Ready to plot.")
-        
-        xrng <- range(sim_w_dat$time_sec)
-        yrng <- range(sim_w_dat$electrode)
-        
-        print(xrng)
-        print(yrng)
         
         caption <- paste("vmax=", vmax, "\n", "km=", km, "\n", "release=", release, sep = "")
         
@@ -397,9 +393,6 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
                      y = expression(paste("DA concentration [", mu, "M]")),
                      colour = "source") +
                 annotate("text", x = Inf, y = Inf, label = note, vjust = 1, hjust = 1)
-                #annotate("text", -Inf, Inf, label = note, hjust = 1, vjust = 1)
-                #annotate("text", -Inf, Inf, hjust = 1, vjust = 1, label = note)
-        
 }
 
 read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
