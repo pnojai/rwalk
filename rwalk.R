@@ -427,3 +427,21 @@ trim_results <- function(df) {
         df_trim
 }
 
+slope_intercept_df <- function(dat) {
+        max_row <- nrow(dat)
+        
+        # Add slope column.
+        dat <- cbind(dat,
+                     c((dat[2:max_row, "electrode"] - dat[1:(max_row - 1), "electrode"]) /
+                               (dat[2:max_row, "time_sec"] - dat[1:(max_row - 1), "time_sec"]), NA))
+
+        colnames(dat)[3] = "slope"
+        
+        # Add intercept column.
+        dat <- cbind(dat,
+                     dat[ , "electrode"] - (dat[ , "slope"] * dat[ , "time_sec"]))
+        
+        colnames(dat)[4] = "intercept"
+        
+        dat
+        }

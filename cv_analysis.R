@@ -112,3 +112,7 @@ ggplot(data = sim_w_dat) +
              y = expression(paste("DA concentration [", mu, "M]")),
              colour = "source")
 
+# Work out interpolation.
+head(dat)
+dat <- slope_intercept_df(dat)
+tail(dat)
