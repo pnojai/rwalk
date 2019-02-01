@@ -384,7 +384,7 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         # https://stats.idre.ucla.edu/r/codefragments/greek_letters/
         print("Ready to plot.")
         
-        caption <- paste("vmax=", vmax, "\n", "km=", km, "\n", "release=", release, sep = "")
+        caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
         
         ggplot(data = sim_w_dat) +
                 geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
@@ -392,7 +392,7 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
                      x = "time [s]",
                      y = expression(paste("DA concentration [", mu, "M]")),
                      colour = "source") +
-                annotate("text", x = Inf, y = Inf, label = note, vjust = 1, hjust = 1)
+                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
 read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
