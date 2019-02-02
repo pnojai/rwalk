@@ -388,7 +388,8 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         
         ggplot(data = sim_w_dat) +
                 geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
-                labs(title = "cyclic voltammetry",
+                labs(title = "Cyclic Voltammetry Simulation",
+                        subtitle = paste("Input Data File: ", fil),
                      x = "time [s]",
                      y = expression(paste("DA concentration [", mu, "M]")),
                      colour = "source") +

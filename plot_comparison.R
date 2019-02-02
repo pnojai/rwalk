@@ -4,7 +4,7 @@ fil <- "Data/AMPH_test.csv"
 sample_rate <- 100
 vmax <- 4.57
 km <- 0.78
-release <- 6000 # 2.75
+release <- 6100 # 2.75
 bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
