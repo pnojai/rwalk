@@ -446,3 +446,16 @@ slope_intercept_df <- function(dat) {
         
         dat
         }
+
+get_slope_intercept <- function(df, ts) {
+        # df is a data frame containing slopes and intercepts of line segments.
+        #  1: time_sec
+        #  2. electrode. y at the electrode.
+        #  3. slope
+        #  4. intercept
+
+        # Find the largest time stamp less then the input ts.
+        # Return the releated slope and intercept.
+        tail(df[df$time_sec < ts, 3:4], 1)
+
+}

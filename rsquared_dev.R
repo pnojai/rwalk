@@ -62,3 +62,16 @@ head(dat_slp_intcpt[ dat_w_src$time_sec >= min_time, ])
 # for interpolating into the experimental data and upscaling it.
 head(res_w_src, 100)
 
+# Build a new data frame for upsampled experimental data.
+# Time series from the model.
+dat_up <- cbind(res_w_src$time_sec)
+
+tail(dat_up)
+tail(dat_slp_intcpt[ dat_w_src$time_sec >= min_time, ])
+
+# Function get_slope_intercept() returns for one time stamp.
+get_slope_intercept(dat_slp_intcpt, dat_up[2, 1])
+get_slope_intercept(dat_slp_intcpt, dat_up[4009, 1])
+
+
+
