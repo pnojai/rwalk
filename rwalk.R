@@ -331,12 +331,18 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
 
 compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.75,
                     bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
-                    diffusion_coefficient = .0000027, smoothing_count = 4) {
+                    diffusion_coefficient = .0000027, smoothing_count = 4,
+                    convert_current = TRUE, calibration_current = NULL,
+                    calibration_concentration = NULL) {
         
         # Read data file.
         print("Reading data...")
         dat <- read_experiment_csv(fil, sr = sample_rate)
         
+        if (convert_current) {
+                dat <- current_to_concentration(dat, calibration_current, calibration_concentration)
+        }
+
         # Set plotting parameters for simulation
         # Domain
         # Find the time of the minimum observation before the peak.
@@ -364,39 +370,77 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         
         print("Formatting results...")
         # Pick off the results at the simulated electrode.
-        res <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+        sim <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
         
         # Shift the time of the results.
-        res$time_sec <- res$time_sec + min_time
+        sim$time_sec <- sim$time_sec + min_time
         
         # Make a tall data set.
-        res_w_src <- cbind(res, src = "simulation")
-        res_w_src$electrode <- res$electrode + y_base
+        sim_w_src <- cbind(sim, src = "simulation")
+        sim_w_src$electrode <- sim$electrode + y_base
         
         dat_w_src <- cbind(dat, src = "experiment")
         
-        sim_w_dat <- rbind(res_w_src, dat_w_src)
+        sim_w_dat <- rbind(sim_w_src, dat_w_src)
         
-        write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        # write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
         
+        # Correlate the simulation and the experimental data.
+        # Need an equal number of points on each side. Up sample the experimental data
+        # based on the time series in the simulation.
+        
+        dat_slp_intcpt <- slope_intercept_df(dat_w_src[ , 1:2])
+        
+        # Build a new data frame for up sampled experimental data.
+        # Time series from the model.
+        #dat_up <- cbind(sim_w_src$time_sec)
+        dat_up <- get_slope_intercepts(dat_slp_intcpt, sim_w_src$time_sec)
+        
+        # Algebra for interpolation
+        m <- dat_up$slope
+        x <- dat_up$time_sec
+        b <- dat_up$intercept
+        
+        interpolate <- m * x + b
+        
+        dat_up <- cbind(dat_up, electrode = interpolate)
+        dat_up <- cbind(dat_up, src = "interpolation", stringsAsFactors = FALSE)
+        
+        sim_w_datup <- rbind(sim_w_src, dat_up[ , c(1, 4, 5)])
+        
+        # Correlate simulation and up sampld data
+        r2 <- rsq(sim_w_src[, 2], dat_up[ , 4])
+
         # Superimpose them.
         # Greek letters. Here's how to include them in labels.
         # https://stats.idre.ucla.edu/r/codefragments/greek_letters/
         print("Ready to plot.")
         
-        caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
+        plot_rwalk(sim_w_dat, fil, release, vmax, km, r2)
         
-        ggplot(data = sim_w_dat) +
-                geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
-                labs(title = "Cyclic Voltammetry Simulation",
-                        subtitle = paste("Input Data File: ", fil),
-                     x = "time [s]",
-                     y = expression(paste("DA concentration [", mu, "M]")),
-                     colour = "source") +
-                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
-}
+        # caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
+        #                  "r2=", round(r2, 6), sep = "")
+        # 
+        # ggplot(data = sim_w_dat) +
+        #         geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
+        #         labs(title = "Cyclic Voltammetry Simulation",
+        #                 subtitle = paste("Input Data File: ", fil),
+        #              x = "time [s]",
+        #              y = expression(paste("DA concentration [", mu, "M]")),
+        #              colour = "source") +
+        #         annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 
-read_experiment_csv <- function(fil, sr = 100, header = FALSE) {
+        # ggplot(data = sim_w_datup) +
+        #         geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
+        #         labs(title = "Cyclic Voltammetry Simulation",
+        #              subtitle = paste("Input Data File: ", fil),
+        #              x = "time [s]",
+        #              y = expression(paste("DA concentration [", mu, "M]")),
+        #              colour = "source") +
+        #         annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+        }
+
+read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # sr: Sampling rate in milliseconds.
         
         # Convert sampling rate to seconds.
@@ -429,6 +473,7 @@ trim_results <- function(df) {
 }
 
 slope_intercept_df <- function(dat) {
+        # dat: data frame of time stamps and electrode values.
         max_row <- nrow(dat)
         
         # Add slope column.
@@ -447,15 +492,80 @@ slope_intercept_df <- function(dat) {
         dat
         }
 
-get_slope_intercept <- function(df, ts) {
+get_slope_intercepts <- function(slp_intcpt_df, ts) {
         # df is a data frame containing slopes and intercepts of line segments.
         #  1: time_sec
         #  2. electrode. y at the electrode.
         #  3. slope
         #  4. intercept
 
-        # Find the largest time stamp less then the input ts.
-        # Return the releated slope and intercept.
-        tail(df[df$time_sec < ts, 3:4], 1)
+        get1 <- function(ts_arg) {
+                # Returns a data frame
+                tail(slp_intcpt_df[slp_intcpt_df$time_sec < ts_arg, 3:4], 1)
+        }
 
+        # Returns a list of data frames.
+        result <- lapply(ts, get1)
+        
+        # Merges list to a single data frame.
+        result <- do.call(rbind, result)
+        
+        # Add time series to data frame.
+        result <- cbind(time_sec = ts, result)
+        
+        # print(str(result))
+        result
+        
+}
+
+rsq <- function (x, y) cor(x, y) ^ 2
+
+current_to_concentration <- function(current_df, calibration_current, calibration_concentration) {
+        # current_df
+        # Readings of current in pico amperes.
+        # Data frame
+        #   $time_sec
+        #   $electrode
+        #
+        # calibration_current: in pico amperes.
+        # calibration_concentration: in micro moles.
+        
+        # Scale and convert to concentration.
+        
+        electrode_first <- current_df[1, 2]
+        electrode_last <- current_df[nrow(current_df), 2]
+        timestamp_last <- current_df[nrow(current_df), 1]
+        
+        electrode_scale <- (electrode_last - electrode_first) / timestamp_last
+        
+        calibration_constant <- calibration_current / calibration_concentration
+        
+        concentration <- current_df$electrode - (electrode_first + (electrode_scale * current_df$time_sec))
+        concentration <- concentration / calibration_constant
+        
+        current_df$electrode <- concentration
+
+        current_df        
+}
+
+plot_rwalk <- function(dat_w_src, fil, release, vmax, km, r2 = NULL) {
+        # dat_w_src
+        # Tall data frame with column indicating source (experiment, simulation,
+        #   interpolation, etc). Each source plots its own curve.
+        
+        if (is.null(r2)) {
+                caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
+        } else {
+                caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
+                                 "r2=", round(r2, 6), sep = "")
+        }
+        
+        ggplot(data = dat_w_src) +
+                geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
+                labs(title = "Cyclic Voltammetry Simulation",
+                     subtitle = paste("Input Data File: ", fil),
+                     x = "time [s]",
+                     y = expression(paste("DA concentration [", mu, "M]")),
+                     colour = "source") +
+                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
