@@ -9,20 +9,20 @@ sample_rate <- 100
 
 dat <- read_experiment_csv(fil, sr = sample_rate)
 
-vmax_min <- 0.0
-vmax_max <- 0.3
-vmax_by <- 0.1
+vmax_min <- 0.1
+vmax_max <- 4.1
+vmax_by <- 1
 km_min <- 0.5
 km_max <- 1.0
-km_by <- 0.1
-release_min <- 3.05
-release_max <- 3.05
-release_by <- 0
+km_by <- 0.2
+release_min <- 2.5
+release_max <- 3.5
+release_by <- .5
 
 pulses <- 30
 pulse_freq <- 50
 bin_size <- 2.0
-electrode_distance <- 50
+electrode_distance <- 1000
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
 smoothing_count <- 4
