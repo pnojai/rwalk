@@ -1,15 +1,7 @@
-# Random Walk.
-# Build CV model and plot it.
-# Plot data from file.
-# Report fit in terms of r-squared.
-
 library(tidyverse)
 
 fil <- "Data/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv"
 sample_rate <- 100
-
-dat <- read_experiment_csv(fil, sr = sample_rate)
-
 vmax <- 0
 km <- 0.78
 release <- 3.05
@@ -22,7 +14,13 @@ convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
 
-compare_pulse(dat, vmax = vmax, km = km,
+compare(fil = fil, sample_rate = sample_rate, vmax = vmax, km = km,
+        release = release, bin_size = bin_size,
+        electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
+        diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,
+        calibration_current = calibration_current, calibration_concentration = calibration_concentration)
+
+compare_pulse(fil = fil, sample_rate = sample_rate, vmax = vmax, km = km,
         release = release, bin_size = bin_size,
         electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
         diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,

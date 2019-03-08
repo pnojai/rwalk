@@ -49,6 +49,7 @@ CLOSED: [2019-01-30 Wed 10:57]
 ** DONE Put the time series of simulations in a column of the data frame instead of in the row names.
 CLOSED: [2019-01-30 Wed 10:57]
 ** Convert observations to moles.
+** Drop one version of rwalk(), keeping just one that supports pulsed release. You can just have one pulse in the arg.
 * Notes.
 ** Diffusion coeffecient determines duration of iteration.
 ** Michaelis-Menten correction uses duration of iteration.
