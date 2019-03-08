@@ -617,7 +617,7 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         #         annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
         }
 
-compare_pulse <- function(dat, vmax = 4.57, km = .78, release = 2.75,
+compare_pulse <- function(dat, vmax = 4.57, km = .78, pulses, pulse_frequency, release = 2.75,
                           bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
                           diffusion_coefficient = .0000027, smoothing_count = 4,
                           convert_current = TRUE, calibration_current = NULL,
@@ -627,14 +627,15 @@ compare_pulse <- function(dat, vmax = 4.57, km = .78, release = 2.75,
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
         
-        mg <- merge_sim_dat(dat, vmax, km, release,
+        mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
                                   bin_size, electrode_distance, dead_space_distance,
                                   diffusion_coefficient, smoothing_count,
                                   convert_current, calibration_current,
                                   calibration_concentration)
         r2 <- calc_fit(mg)
         
-        plot_rwalk_compare(mg, fil, release, vmax, km, r2, calibration_current = calibration_current,
+        plot_rwalk_compare(mg, fil, release, vmax, km, r2,
+                           calibration_current = calibration_current,
                            calibration_concentration = calibration_concentration)
                 
 }
@@ -811,10 +812,10 @@ mavg <- function(x, n=3) {
         stats::filter(x, rep(1/n, n), sides = 1)
 }
 
-rwalk_cv_pulse_run <- function(vmax = 4.57, km = .78, release = 2.75, pulses = 30,
-                 pulse_freq = 50,bin_size = 2.0, electrode_distance = 50.0,
-                 dead_space_distance = 4.0, diffusion_coefficient = .0000027,
-                 duration = 1, smoothing_count = 4) {
+rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
+                 pulse_freq, bin_size, electrode_distance,
+                 dead_space_distance, diffusion_coefficient,
+                 duration, smoothing_count) {
         
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
@@ -832,7 +833,7 @@ rwalk_cv_pulse_run <- function(vmax = 4.57, km = .78, release = 2.75, pulses = 3
         
 }
 
-merge_sim_dat <- function(dat, vmax = 4.57, km = .78, release = 2.75,
+merge_sim_dat <- function(dat, vmax = 4.57, km = .78, pulses, pulse_freq, release = 2.75,
                           bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
                           diffusion_coefficient = .0000027, smoothing_count = 4,
                           convert_current = TRUE, calibration_current = NULL,
@@ -895,7 +896,7 @@ merge_sim_dat <- function(dat, vmax = 4.57, km = .78, release = 2.75,
         
         # Calculate random walk.
         print("Building random walk...")
-        rw <- rwalk_cv_pulse_run(vmax = vmax, km = km, release = release, bin_size = bin_size,
+        rw <- rwalk_cv_pulse_run(vmax = vmax, km = km, pulses, pulse_freq, release = release, bin_size = bin_size,
                                  electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
                                  diffusion_coefficient = diffusion_coefficient, duration = dur)
         
@@ -968,6 +969,7 @@ calc_fit <- function(sim_w_dat) {
 create_arg_df <- function(
                    vmax_min, vmax_max, vmax_by,
                    km_min, km_max, km_by,
+                   pulses, pulse_freq,
                    release_min, release_max, release_by,
                    bin_size, electrode_distance,
                   dead_space_distance, diffusion_coefficient, smoothing_count,
@@ -980,14 +982,15 @@ create_arg_df <- function(
         df <- expand.grid(release, km, vmax)
         names(df) <- c("release", "km", "vmax")
         
-        df <- cbind(df, km = km, release = release,
+        df <- cbind(df, km = km, pulses = pulses, pulse_freq = pulse_freq,
+                    release = release,
                     bin_size = bin_size, electrode_distance = electrode_distance,
                     dead_space_distance = dead_space_distance,
                     diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,
                     convert_current = convert_current, calibration_current = calibration_current,
                     calibration_concentration = calibration_concentration, stringsAsFactors = FALSE)
         
-        df <- df[c("vmax", "km", "release", "bin_size", "electrode_distance",
+        df <- df[c("vmax", "km", "pulses", "pulse_freq", "release", "bin_size", "electrode_distance",
                  "dead_space_distance", "diffusion_coefficient", "smoothing_count",
                  "convert_current", "calibration_current", "calibration_concentration")]
 
