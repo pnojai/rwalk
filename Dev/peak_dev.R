@@ -47,7 +47,7 @@ abline(h = 0)
 head(dat)
 head(smoothed.dx[1500:3000])
 
-window()
+# window()
 
 str(smoothed.dx)
 
@@ -91,4 +91,67 @@ elec_minima <- sort(elec_minima)
 head(elec_maxima - elec_minima, n = 30)
 tail(elec_maxima - elec_minima)
 
+dat_sub <- dat[dat$time_sec < 130, ]
+plot(dat_sub$time_sec, dat_sub$electrode, type = "l")
+plot(elec_maxima, type = "l")
+plot(elec_minima, type = "l")
+
 plot(elec_maxima - elec_minima, type = "l")
+
+win_len <- 1200
+wins <- seq(from = 1, to = nrow(dat), by = win_len)
+elec_maxima <- vector(mode = "numeric", length = 0)
+elec_minima <- vector(mode = "numeric", length = 0)
+plot(dat$electrode, type = "l")
+for (i in wins) {
+        first <- i
+        last <- min((i + win_len -1), nrow(dat))
+        
+        electrode <- dat[first:last, "electrode"]
+        elec_maxima <- c(elec_maxima, max(electrode))
+        elec_minima <- c(elec_minima, min(electrode))
+        
+        if (i >= 7201 & i < 10800) {
+                print(paste0("electrode count: ", length(electrode)))
+                print(paste0(first, ":", last, " max = ", max(electrode), " idx = ", max(which(dat$electrode == max(electrode)))))
+                print(electrode)
+                # print(max(electrode))
+                # print(min(electrode))
+                abline(h = max(electrode))
+                abline(v = max(which(dat$electrode == max(electrode))))
+        }
+        
+        # plot(electrode, type = "l", main = i)
+        # abline(v = max(which(dat$electrode == max(electrode))))
+        
+}
+
+elec_maxima_idx <- which(dat$electrode == elec_maxima)
+
+sapply(elec_maxima, function(x) {max(which(dat$electrode == x))})
+which(dat$electrode == 100781.0)
+
+plot(dat$time_sec, dat$electrode, type = "l")
+abline(v = 480)
+
+win_len <- 1200
+wins <- seq(from = 1, to = nrow(dat), by = win_len)
+dat_list <- list()
+for (i in wins) {
+        first <- i
+        last <- min((i + win_len -1), nrow(dat))
+        
+        stim <- dat[first:last, ]
+        #print(str(stim))
+
+        if (nrow(stim) == win_len) {
+                dat_list <- c(dat_list, list(stim))
+        }
+        # str(dat_list)
+        # plot(electrode, type = "l", main = i)
+        # abline(v = max(which(dat$electrode == max(electrode))))
+}
+
+lapply(dat_list, function(x) {plot(x$time_sec, x$electrode, type = "l")})
+
+plot(dat[dat$time_sec < 120, ])
