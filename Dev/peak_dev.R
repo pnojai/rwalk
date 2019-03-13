@@ -1,3 +1,5 @@
+library(usethis)
+
 library(tidyverse)
 library(quantmod)
 
@@ -36,7 +38,42 @@ head(elec)
 plot(dat$electrode, type = "l")
 smoothed.dx <- predict(elec, deriv = 1)$y
 plot(smoothed.dx, type = "l")
-which(c(smoothed.dx,NA) > 0 & c(NA, smoothed.dx) < 0) 
+which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
+
+# What about smoothing the electrode data first?
+# Right idea, maybe, but this didn't work. Do it with the arguments in smooth.spline().
+dat$electrode_smoothed <- mavg(dat$electrode, n = 250)
+plot(dat$time_sec, dat$electrode_smoothed, type = "l")
+elec_smoothed <- smooth.spline(dat[!is.na(dat$electrode_smoothed), "electrode_smoothed"])
+smoothed_smoothed.dx <- predict(elec_smoothed, deriv = 1)$y
+# smoothed_smoothed.dx <- mavg(smoothed_smoothed.dx, n = 200)
+# smoothed_smoothed.dx[abs(smoothed_smoothed.dx) < 3] <- 0
+plot(smoothed_smoothed.dx, type = "l")
+which(c(smoothed_smoothed.dx,NA) > 0 & c(NA, smoothed_smoothed.dx) < 0) 
+
+# Try args in smooth.spline(). That did it!
+plot(dat$time_sec, dat$electrode, type = "l")
+elec <- smooth.spline(dat$electrode, spar = .5)
+smoothed.dx <- predict(elec, deriv = 1)$y
+plot(smoothed.dx, type = "l")
+abline(h = 0)
+peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
+
+plot(dat$time_sec, dat$electrode, type = "l")
+peaks <- find_stim_peaks(dat)
+for (i in peaks) {
+        abline(v = i)
+}
+
+# What about loess. Nope.
+plot(dat$time_sec, dat$electrode, type = "l")
+elec <- predict(loess(formula = electrode ~ time_sec, dat, span = 0.05))
+plot(elec, type = "l")
+elec <- smooth.spline(elec)
+smoothed.dx <- predict(elec, deriv = 1)$y
+plot(smoothed.dx, type = "l")
+which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
+
 
 par(mfrow = c(2, 1), mar = c(4, 4, 0, 1), oma = c(0, 0, 0, 0))
 plot(dat$electrode[1500:3000], type = "l")
@@ -155,3 +192,26 @@ for (i in wins) {
 lapply(dat_list, function(x) {plot(x$time_sec, x$electrode, type = "l")})
 
 plot(dat[dat$time_sec < 120, ])
+
+x <- c(14,15,12,11,12,13,14,15,16,15,14,13,12,11,14,12) 
+plot(x, type = "l")
+smoothed.dx <- predict(smooth.spline(x), deriv=1)$y 
+plot(smoothed.dx, type = "l")
+which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
+
+# synthesis of a 440 Hz sound with background noise
+n <- noisew(d=1,f=8000)
+s <- synth(d=1,f=8000,cf=440)
+ns <- n+s
+# remove noise (but low frequency content still there)
+a <- rmnoise(ns,f=8000)
+
+dat_list <- split_stims(dat)
+
+plot(dat$time_sec, dat$electrode, type = "l")
+for (row in split_stims(dat)) {
+        abline(v = r)
+}
+
+
+lapply(dat_list, function(x) {plot(x$time_sec, x$electrode, type = "l")})
