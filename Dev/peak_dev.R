@@ -1,5 +1,3 @@
-library(usethis)
-
 library(tidyverse)
 library(quantmod)
 
@@ -209,9 +207,7 @@ a <- rmnoise(ns,f=8000)
 dat_list <- split_stims(dat)
 
 plot(dat$time_sec, dat$electrode, type = "l")
-for (row in split_stims(dat)) {
-        abline(v = r)
-}
-
 
 lapply(dat_list, function(x) {plot(x$time_sec, x$electrode, type = "l")})
+
+class(dat_list[[1]])

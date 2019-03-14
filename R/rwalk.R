@@ -629,6 +629,8 @@ split_stims <- function(df) {
         lead_time_sec <- peaks_time_sec[1] - df$time_sec[1]
         
         stim_start <- peaks_time_sec - lead_time_sec
+        # Stimulus ends at the beginning of the next one, up to last one,
+        # which is the last in the data frame.
         stim_end <- c(stim_start[-1], max(df$time_sec))
         end_points <- cbind(stim_start, stim_end)
         
