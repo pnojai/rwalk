@@ -1,0 +1,16 @@
+Package: rwalk
+Title: Random Walk Model of Neurotransmitter Release and Uptake
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jai",
+           family = "Jeffryes",
+           role = c("aut", "cre"),
+           email = "jai@jeffryes.net")
+Description: What the package does (one paragraph).
+License: What license it uses
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat

@@ -25,7 +25,7 @@ convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
 
-compare_pulse(dat, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
+compare_pulse(dat, fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
               electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
               diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,

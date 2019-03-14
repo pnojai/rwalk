@@ -206,7 +206,7 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         results
 }
 
-compare_pulse <- function(dat, vmax = 4.57, km = .78, pulses, pulse_frequency, release = 2.75,
+compare_pulse <- function(dat, fil, vmax = 4.57, km = .78, pulses, pulse_freq, release = 2.75,
                           bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
                           diffusion_coefficient = .0000027, smoothing_count = 4,
                           convert_current = TRUE, calibration_current = NULL,
