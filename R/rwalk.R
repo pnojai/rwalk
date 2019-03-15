@@ -21,10 +21,10 @@ iteration_duration <- function(diffusion_coefficient, bin_size) {
         ((bin_size / 10000.0)^2) / (2 * diffusion_coefficient)
 }
 
-rwalk_cv_pulse <- function(vmax = 4.57, km = .78, release = 2.75, pulses = 30,
-                           pulse_freq = 50,bin_size = 2.0, electrode_distance = 50.0,
-                           dead_space_distance = 4.0, diffusion_coefficient = .0000027,
-                           duration = 1) {
+rwalk_cv_pulse <- function(vmax, km, release, pulses,
+                           pulse_freq, bin_size, electrode_distance,
+                           dead_space_distance, diffusion_coefficient,
+                           duration) {
         # Amperometry simulation
         # Author: Jai Jeffryes
         # Email: jai@jeffryes.net
@@ -649,3 +649,4 @@ split_stims <- function(df) {
         df_list
 
 }
+
