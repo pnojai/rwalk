@@ -393,10 +393,12 @@ rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
                  dead_space_distance, diffusion_coefficient,
                  duration, smoothing_count) {
         
+        # Don't pass smoothing_count. Not needed for rwalk matrix.
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
         
-        rw_electrode <- electrode_results(rw, electrode_pos(rw), smoothing_count = 4)
+        # Pass smoothing_count for the results from the electrode.
+        rw_electrode <- electrode_results(rw, electrode_pos(rw), smoothing_count)
         
         rw_electrode$src <- "simulation"
         
@@ -474,7 +476,8 @@ merge_sim_dat <- function(dat, vmax = 4.57, km = .78, pulses, pulse_freq, releas
         print("Building random walk...")
         rw <- rwalk_cv_pulse_run(vmax = vmax, km = km, pulses, pulse_freq, release = release, bin_size = bin_size,
                                  electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-                                 diffusion_coefficient = diffusion_coefficient, duration = dur)
+                                 diffusion_coefficient = diffusion_coefficient, duration = dur,
+                                 smoothing_count = smoothing_count)
         
         # rwalk_cv_pulse_run returns electrode results and source.
         
