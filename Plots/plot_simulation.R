@@ -17,6 +17,7 @@ duration = 1
 smoothing_count <- 4
 
 rw <- rwalk_cv_pulse_run(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
-                     dead_space_distance, diffusion_coefficient, duration)
+                         dead_space_distance, diffusion_coefficient, duration,
+                         smoothing_count = smoothing_count)
 
 plot_rwalk_sim(rw, release, vmax, km)
