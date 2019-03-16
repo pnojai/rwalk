@@ -93,7 +93,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 
                 # Mirror bin is identical.
                 mirror_bin <- bins
-                inside_neighbor <- mirror_bin - 1
+                # inside_neighbor <- mirror_bin - 1
                 rw[i, mirror_bin] <- rw[i, 1]
                 
                 # 2nd bins in take .711 from outside neighbor, .5 from inside
@@ -138,9 +138,9 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         
                         # Do it at the mirror bin. Don't fry your brain on the indexes.
                         mirror_bin <- bins - j + 1
-                        outside_neighbor <- mirror_bin + 1
-                        inside_neighbor <- mirror_bin - 1
                         
+                        # outside_neighbor <- mirror_bin + 1
+                        # inside_neighbor <- mirror_bin - 1
                         # val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
                         # val <- micmen(val, vmax, km, it_dur)
                         # rw[i, mirror_bin] <- val

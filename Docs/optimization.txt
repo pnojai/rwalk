@@ -1,0 +1,25 @@
+Plot 1000 bins.
+
+Before optimization
+System time
+   user  system elapsed 
+180.151   1.223 181.644 
+                          self.time self.pct total.time total.pct
+"mean"                        60.04    33.86      79.86     45.03
+"rwalk_cv_pulse"              54.92    30.97     170.88     96.36
+"micmen"                      17.78    10.03      20.80     11.73
+"mean.default"                12.50     7.05      15.24      8.59
+"%in%"                        10.32     5.82      10.54      5.94
+
+Optimized.
+System time
+ user  system elapsed 
+73.689   0.000  74.103
+   user  system elapsed 
+75.587   1.516  78.091 
+                             self.time self.pct total.time total.pct
+"rwalk_cv_pulse"                 38.64    38.42      96.28     95.72
+"mean"                           30.12    29.95      40.08     39.85
+"micmen"                          7.74     7.70       9.24      9.19
+"mean.default"                    6.06     6.03       7.52      7.48
+"%in%"                            5.10     5.07       5.14      5.11
