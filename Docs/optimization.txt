@@ -11,7 +11,7 @@ System time
 "mean.default"                12.50     7.05      15.24      8.59
 "%in%"                        10.32     5.82      10.54      5.94
 
-Optimized.
+Optimized. Copied the mirrored bins, instead of recalculating
 System time
  user  system elapsed 
 73.689   0.000  74.103
@@ -23,3 +23,113 @@ System time
 "micmen"                          7.74     7.70       9.24      9.19
 "mean.default"                    6.06     6.03       7.52      7.48
 "%in%"                            5.10     5.07       5.14      5.11
+
+Optimized. Don't even copy. Drop electrode reference to mirror neighbor.
+System time
+  user  system elapsed 
+ 67.776   0.975  68.914
+    user  system elapsed 
+ 68.006   0.497  68.743
+                             self.time self.pct total.time total.pct
+"mean"                           28.64    34.77      37.16     45.12
+"rwalk_cv_pulse"                 25.14    30.52      78.70     95.56
+"micmen"                          7.98     9.69       9.12     11.07
+"mean.default"                    5.30     6.44       6.54      7.94
+"%in%"                            5.08     6.17       5.20      6.31
+
+Optimized. Vectorized. Wow.
+System time
+  user  system elapsed 
+  4.847   0.341   5.215
+                          self.time self.pct total.time total.pct
+"save"                         0.64     8.70       0.64      8.70
+"[.data.frame"                 0.62     8.42       2.08     28.26
+"matrix"                       0.52     7.07       0.52      7.07
+"rwalk_cv_pulse"               0.48     6.52       2.12     28.80
+"%in%"                         0.36     4.89       0.68      9.24
+"cbind"                        0.30     4.08       0.32      4.35
+"[[.data.frame"                0.24     3.26       0.70      9.51
+"anyDuplicated"                0.22     2.99       0.28      3.80
+"[["                           0.18     2.45       0.88     11.96
+"$"                            0.16     2.17       0.24      3.26
+"mean"                         0.16     2.17       0.20      2.72
+"sys.call"                     0.16     2.17       0.16      2.17
+"rbind"                        0.14     1.90       0.60      8.15
+"names"                        0.14     1.90       0.14      1.90
+"rowMeans"                     0.12     1.63       0.32      4.35
+"length"                       0.12     1.63       0.12      1.63
+"<Anonymous>"                  0.10     1.36       2.56     34.78
+"grid.Call.graphics"           0.10     1.36       0.80     10.87
+"structure"                    0.10     1.36       0.56      7.61
+"stopifnot"                    0.10     1.36       0.40      5.43
+"$<-"                          0.10     1.36       0.28      3.80
+"micmen"                       0.10     1.36       0.18      2.45
+"is.matrix"                    0.10     1.36       0.10      1.36
+"doTryCatch"                   0.08     1.09       0.78     10.60
+"dim"                          0.08     1.09       0.14      1.90
+"lapply"                       0.06     0.82       3.90     52.99
+"tail"                         0.06     0.82       2.70     36.68
+"tail.data.frame"              0.06     0.82       1.42     19.29
+"findCenvVar"                  0.06     0.82       0.08      1.09
+"anyDuplicated.default"        0.06     0.82       0.06      0.82
+"ls"                           0.06     0.82       0.06      0.82
+"["                            0.04     0.54       2.16     29.35
+"tryCatch"                     0.04     0.54       0.90     12.23
+"withCallingHandlers"          0.04     0.54       0.28      3.80
+"grid.Call"                    0.04     0.54       0.10      1.36
+"unlist"                       0.04     0.54       0.06      0.82
+".subset2"                     0.04     0.54       0.04      0.54
+"*"                            0.04     0.54       0.04      0.54
+"/"                            0.04     0.54       0.04      0.54
+"as.vector"                    0.04     0.54       0.04      0.54
+"deparse"                      0.04     0.54       0.04      0.54
+"diff.default"                 0.04     0.54       0.04      0.54
+"dontCheck"                    0.04     0.54       0.04      0.54
+"environment"                  0.04     0.54       0.04      0.54
+"gsub"                         0.04     0.54       0.04      0.54
+"is.factor"                    0.04     0.54       0.04      0.54
+"parent.frame"                 0.04     0.54       0.04      0.54
+"rootVP"                       0.04     0.54       0.04      0.54
+"seq_along"                    0.04     0.54       0.04      0.54
+"unclass"                      0.04     0.54       0.04      0.54
+"FUN"                          0.02     0.27       3.74     50.82
+"pushvpgp"                     0.02     0.27       0.82     11.14
+"tryCatchList"                 0.02     0.27       0.82     11.14
+"tryCatchOne"                  0.02     0.27       0.80     10.87
+".Call"                        0.02     0.27       0.42      5.71
+"valid.data"                   0.02     0.27       0.38      5.16
+"mapply"                       0.02     0.27       0.30      4.08
+"is.unit"                      0.02     0.27       0.22      2.99
+"is.data.frame"                0.02     0.27       0.20      2.72
+"grid.draw.grob"               0.02     0.27       0.14      1.90
+"$.data.frame"                 0.02     0.27       0.08      1.09
+"makeContext.gTableChild"      0.02     0.27       0.06      0.82
+"dim.data.frame"               0.02     0.27       0.04      0.54
+"findVar"                      0.02     0.27       0.04      0.54
+"ifelse"                       0.02     0.27       0.04      0.54
+"mean.default"                 0.02     0.27       0.04      0.54
+"order"                        0.02     0.27       0.04      0.54
+"<"                            0.02     0.27       0.02      0.27
+"all"                          0.02     0.27       0.02      0.27
+"anyNA"                        0.02     0.27       0.02      0.27
+"as.character"                 0.02     0.27       0.02      0.27
+"as.graphicsAnnot"             0.02     0.27       0.02      0.27
+"as.list"                      0.02     0.27       0.02      0.27
+"attr"                         0.02     0.27       0.02      0.27
+"attributes"                   0.02     0.27       0.02      0.27
+"c"                            0.02     0.27       0.02      0.27
+"cb$setcurexpr"                0.02     0.27       0.02      0.27
+"editDetails"                  0.02     0.27       0.02      0.27
+"file"                         0.02     0.27       0.02      0.27
+"findLocals1"                  0.02     0.27       0.02      0.27
+"labeling::extended"           0.02     0.27       0.02      0.27
+"lengths"                      0.02     0.27       0.02      0.27
+"list"                         0.02     0.27       0.02      0.27
+"match.names"                  0.02     0.27       0.02      0.27
+"mayCallBrowser"               0.02     0.27       0.02      0.27
+"preDrawDetails"               0.02     0.27       0.02      0.27
+"prod"                         0.02     0.27       0.02      0.27
+"split.default"                0.02     0.27       0.02      0.27
+"strsplit"                     0.02     0.27       0.02      0.27
+"validGP"                      0.02     0.27       0.02      0.27
+"validGrob"                    0.02     0.27       0.02      0.27

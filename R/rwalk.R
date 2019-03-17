@@ -106,26 +106,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 }
                 
                 # Diffuse the molecules until you get to the electrode.
-                # Think about it like you're working inwards along the displacements from the electrode.
-                for (j in 3:(electrode_pos - 1)) { # Only difference from the amperometry simulation.
-                        outside_neighbor <- j - 1
-                        inside_neighbor <- j + 1
-                        
-                        val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
-                        val <- micmen(val, vmax, km, it_dur)
-                        rw[i, j] <- val
-                        if (i %in% release_time_sec_idx & !dead_space_bin[j]) {
-                                #print(paste("Releasing in time index:", i))
-                                rw[i, j] <- rw[i, j] + release_timed
-                        }
-                }
-
-                if (i == (iterations + 1)) {
-                        print("rw, OLD WAY...")
-                        print(rw[i, -c(1:2)])
-                }
-                
-                # What about not iterating. Vectorize.
+                # Vectorized this.
                 rw_outside_neighbor <- rw[(i - 1), (3 - 1):(electrode_pos - 1 - 1)]
                 rw_inside_neighbor <- rw[(i - 1), (3 + 1):(electrode_pos - 1 + 1)]
                 val_v <- rowMeans(cbind(rw_outside_neighbor, rw_inside_neighbor))
@@ -138,12 +119,6 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         val_v[!dead_space_bin[3:(electrode_pos - 1)]] <- val_v[!dead_space_bin[3:(electrode_pos - 1)]] + release_timed
                         rw[i, 3:(electrode_pos - 1)] <- val_v
                 }
-                
-                if (i == (iterations + 1)) {
-                        print("rw, NEW WAY...")
-                        print(rw[i, -c(1:2)])
-                }
-                
                 
                 # Since the neighbors are symmetric, averaging them is the same as taking
                 # the whole of one neighbor.
