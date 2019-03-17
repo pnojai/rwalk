@@ -93,11 +93,6 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         rw[i, 1] <- rw[i, 1] + release_timed
                 }
                 
-                # Mirror bin is identical.
-                mirror_bin <- bins
-                # inside_neighbor <- mirror_bin - 1
-#                rw[i, mirror_bin] <- rw[i, 1]
-                
                 # 2nd bins in take .711 from outside neighbor, .5 from inside
                 curr_bin <- 2
                 inside_neighbor <- curr_bin + 1
@@ -109,20 +104,6 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         #print(paste("Releasing in time index:", i))
                         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
                 }
-                
-                # Same.
-                mirror_bin <- bins - 1
-                # inside_neighbor <- mirror_bin - 1
-                # outside_neighbor <- mirror_bin + 1
-                # val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
-                # val <- micmen(val, vmax, km, it_dur)
-                # rw[i, mirror_bin] <- val
-                # if (i %in% release_time_sec_idx & !dead_space_bin[mirror_bin]) {
-                #         #print(paste("Releasing in time index:", i))
-                #         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed # That was a bug, I think.
-                #                       Should have been mirror_bin, not curr_bin.
-                # }
- #               rw[i, mirror_bin] <- rw[i, curr_bin]
                 
                 # Diffuse the molecules until you get to the electrode.
                 # Think about it like you're working inwards along the displacements from the electrode.
@@ -137,26 +118,33 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                                 #print(paste("Releasing in time index:", i))
                                 rw[i, j] <- rw[i, j] + release_timed
                         }
-                        
-                        # Do it at the mirror bin. Don't fry your brain on the indexes.
-  #                      mirror_bin <- bins - j + 1
-                        
-                        # outside_neighbor <- mirror_bin + 1
-                        # inside_neighbor <- mirror_bin - 1
-                        # val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
-                        # val <- micmen(val, vmax, km, it_dur)
-                        # rw[i, mirror_bin] <- val
-                        # if (i %in% release_time_sec_idx & !dead_space_bin[mirror_bin]) {
-                        #         #print(paste("Releasing in time index:", i))
-                        #         rw[i, mirror_bin] <- rw[i, mirror_bin] + release_timed
-                        # }
- #                       rw[i, mirror_bin] <- rw[i, j]
-                        
+                }
+
+                if (i == (iterations + 1)) {
+                        print("rw, OLD WAY...")
+                        print(rw[i, -c(1:2)])
                 }
                 
-                # Diffuse the molecules at the electrode.
-#                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
-  
+                # What about not iterating. Vectorize.
+                rw_outside_neighbor <- rw[(i - 1), (3 - 1):(electrode_pos - 1 - 1)]
+                rw_inside_neighbor <- rw[(i - 1), (3 + 1):(electrode_pos - 1 + 1)]
+                val_v <- rowMeans(cbind(rw_outside_neighbor, rw_inside_neighbor))
+                val_v<- micmen(val_v, vmax, km, it_dur)
+                
+                rw[i, 3:(electrode_pos - 1)] <- val_v
+                
+                if (i %in% release_time_sec_idx) {
+                        #print(paste("Releasing in time index:", i))
+                        val_v[!dead_space_bin[3:(electrode_pos - 1)]] <- val_v[!dead_space_bin[3:(electrode_pos - 1)]] + release_timed
+                        rw[i, 3:(electrode_pos - 1)] <- val_v
+                }
+                
+                if (i == (iterations + 1)) {
+                        print("rw, NEW WAY...")
+                        print(rw[i, -c(1:2)])
+                }
+                
+                
                 # Since the neighbors are symmetric, averaging them is the same as taking
                 # the whole of one neighbor.
                 val <- rw[i - 1, electrode_pos - 1]
