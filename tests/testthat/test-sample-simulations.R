@@ -44,14 +44,14 @@ test_that("CV simulation matrix matches sample.", {
         expect_equivalent(xlsx_results, rw)
 })
 
-test_that("CV simulation results vector matches sample.", {
+test_that("CV simulation electrode matches sample", {
         # Open the Excel example.
         # Read the data range you're interested in, namely the matrix.
         
         library(openxlsx)
         
         # Read simulation
-        #xlsx <- readWorkbook("./../../Simulations/RW_CV.xlsx", sheet = 1, startRow = 8, colNames = FALSE, cols = 5:56)
+        xlsx <- readWorkbook("./../../Simulations/RW_CV.xlsx", sheet = 1, startRow = 8, colNames = FALSE, cols = c(5, 31))
         
         # Make a vector of the timestamp column
         time_sec_exists <- !is.na(xlsx[,1])
@@ -62,8 +62,8 @@ test_that("CV simulation results vector matches sample.", {
         xlsx_results <- xlsx[result_rows_boolean, -1] # Don't use the time stamp column yet
         
         # Combine the timestamp column and the results matrix.
-        xlsx_results <- cbind(time_sec, xlsx_results)
-        
+        xlsx_results <- as.data.frame(cbind(time_sec, xlsx_results))
+
         # Run the simulation.
         # Random Walk.
         # Build CV model and plot it.
@@ -84,6 +84,8 @@ test_that("CV simulation results vector matches sample.", {
         
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
+        
+        rw <- rw[ , c(1, 27)]
         
         expect_equivalent(xlsx_results, rw)
 })

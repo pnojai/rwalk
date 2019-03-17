@@ -25,6 +25,8 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                            pulse_freq, bin_size, electrode_distance,
                            dead_space_distance, diffusion_coefficient,
                            duration) {
+        # 3/16/2019. You don't need all the cells on the right side. Started paring those down.
+        
         # Amperometry simulation
         # Author: Jai Jeffryes
         # Email: jai@jeffryes.net
@@ -63,7 +65,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         releases <- 0:(pulses - 1) * pulse_dur
         # Closest timestamps in matrix for releases.
         release_time_sec_idx <- sapply(releases, function(x) {which.min(abs(time_sec - x))})
-
+        
         # Position the electrode and the dead space
         electrode_pos <- electrode_pos(rw, time_column = FALSE) # No time series on the front yet.
         
@@ -94,7 +96,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 # Mirror bin is identical.
                 mirror_bin <- bins
                 # inside_neighbor <- mirror_bin - 1
-                rw[i, mirror_bin] <- rw[i, 1]
+#                rw[i, mirror_bin] <- rw[i, 1]
                 
                 # 2nd bins in take .711 from outside neighbor, .5 from inside
                 curr_bin <- 2
@@ -120,7 +122,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 #         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed # That was a bug, I think.
                 #                       Should have been mirror_bin, not curr_bin.
                 # }
-                rw[i, mirror_bin] <- rw[i, curr_bin]
+ #               rw[i, mirror_bin] <- rw[i, curr_bin]
                 
                 # Diffuse the molecules until you get to the electrode.
                 # Think about it like you're working inwards along the displacements from the electrode.
@@ -137,7 +139,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         }
                         
                         # Do it at the mirror bin. Don't fry your brain on the indexes.
-                        mirror_bin <- bins - j + 1
+  #                      mirror_bin <- bins - j + 1
                         
                         # outside_neighbor <- mirror_bin + 1
                         # inside_neighbor <- mirror_bin - 1
@@ -153,7 +155,10 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 }
                 
                 # Diffuse the molecules at the electrode.
-                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
+#                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
+  
+                val <- rw[i - 1, electrode_pos - 1]
+                
                 # Note: there is no Michaelis-Menten correction for uptake at the electrode.
                 rw[i, electrode_pos] <- val
                 if (i %in% release_time_sec_idx & !dead_space_bin[electrode_pos]) {

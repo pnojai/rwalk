@@ -274,6 +274,156 @@ rwalk_cv <- function(vmax = 4.57, km = .78, release = 2.75, bin_size = 2.0,
         rw_df
 }
 
+rwalk_cv_pulse_before_reduced <- function(vmax, km, release, pulses,
+                                          pulse_freq, bin_size, electrode_distance,
+                                          dead_space_distance, diffusion_coefficient,
+                                          duration) {
+        # Amperometry simulation
+        # Author: Jai Jeffryes
+        # Email: jai@jeffryes.net
+        
+        # Parameters
+        # vmax: Micro M / sec.
+        # km: Micro M.
+        # release: Micro M.
+        # bin_size: Micrometres.
+        # bin_number_left: Number of bins left of the electrode.
+        # bin_number_right: Number of bins right of the electrode.
+        # diffusion_coefficient: square centimeters / second.
+        # duration: span of diffusion in seconds.
+        
+        # Calculate the duration of an iteration.
+        it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
+        
+        iterations <- as.integer(duration / it_dur)
+        
+        # Calculate bin number
+        bin_number_displace <- as.integer(electrode_distance / bin_size)
+        
+        # Initialize a matrix. Give it an extra row for time = 0.
+        # Bins = specified columns to the left of the electrode, to the right, and electrode in the middle.
+        bins <- 2 * bin_number_displace  + 1
+        rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
+        
+        time_sec <- seq(from = 0, by = it_dur, length.out = nrow(rw))
+        
+        # Calculate releases and assign them to time stamps.
+        # Prorate the release across all pulses.
+        release_timed <- release / pulses
+        # Time between pulses.
+        pulse_dur <- 1.0 / pulse_freq
+        # Times for releases.
+        releases <- 0:(pulses - 1) * pulse_dur
+        # Closest timestamps in matrix for releases.
+        release_time_sec_idx <- sapply(releases, function(x) {which.min(abs(time_sec - x))})
+        
+        # Position the electrode and the dead space
+        electrode_pos <- electrode_pos(rw, time_column = FALSE) # No time series on the front yet.
+        
+        # Identify dead spaces in a logical vector
+        dead_space_displace <- as.integer(dead_space_distance / bin_size)
+        dead_space_range <- (bin_number_displace - dead_space_displace + 1):(bin_number_displace + dead_space_displace + 1)
+        dead_space_bin <- rep(FALSE, bins)
+        dead_space_bin[dead_space_range] <- TRUE
+        
+        # Release at time 0 (row 1). Don't release to dead space.
+        # rw[1, !dead_space_bin] <- release
+        rw[1, !dead_space_bin] <- release_timed
+        
+        # Iterate in time
+        for (i in 2:(iterations + 1)) {
+                # Fill extreme bins.
+                # Outside bins take from inside neighbor only
+                curr_bin <- 1
+                inside_neighbor <- curr_bin + 1
+                val <- mean(c(rw[(i - 1), inside_neighbor], 0))
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, 1] <- val
+                if (i %in% release_time_sec_idx & !dead_space_bin[1]) {
+                        #print(paste("Releasing in time index:", i))
+                        rw[i, 1] <- rw[i, 1] + release_timed
+                }
+                
+                # Mirror bin is identical.
+                mirror_bin <- bins
+                # inside_neighbor <- mirror_bin - 1
+                rw[i, mirror_bin] <- rw[i, 1]
+                
+                # 2nd bins in take .711 from outside neighbor, .5 from inside
+                curr_bin <- 2
+                inside_neighbor <- curr_bin + 1
+                outside_neighbor <- curr_bin - 1
+                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                val <- micmen(val, vmax, km, it_dur)
+                rw[i, curr_bin] <- val
+                if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
+                        #print(paste("Releasing in time index:", i))
+                        rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
+                }
+                
+                # Same.
+                mirror_bin <- bins - 1
+                # inside_neighbor <- mirror_bin - 1
+                # outside_neighbor <- mirror_bin + 1
+                # val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                # val <- micmen(val, vmax, km, it_dur)
+                # rw[i, mirror_bin] <- val
+                # if (i %in% release_time_sec_idx & !dead_space_bin[mirror_bin]) {
+                #         #print(paste("Releasing in time index:", i))
+                #         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed # That was a bug, I think.
+                #                       Should have been mirror_bin, not curr_bin.
+                # }
+                rw[i, mirror_bin] <- rw[i, curr_bin]
+                
+                # Diffuse the molecules until you get to the electrode.
+                # Think about it like you're working inwards along the displacements from the electrode.
+                for (j in 3:(electrode_pos - 1)) { # Only difference from the amperometry simulation.
+                        outside_neighbor <- j - 1
+                        inside_neighbor <- j + 1
+                        
+                        val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
+                        val <- micmen(val, vmax, km, it_dur)
+                        rw[i, j] <- val
+                        if (i %in% release_time_sec_idx & !dead_space_bin[j]) {
+                                #print(paste("Releasing in time index:", i))
+                                rw[i, j] <- rw[i, j] + release_timed
+                        }
+                        
+                        # Do it at the mirror bin. Don't fry your brain on the indexes.
+                        mirror_bin <- bins - j + 1
+                        
+                        # outside_neighbor <- mirror_bin + 1
+                        # inside_neighbor <- mirror_bin - 1
+                        # val <- mean(c(rw[i - 1, outside_neighbor], rw[i - 1, inside_neighbor]))
+                        # val <- micmen(val, vmax, km, it_dur)
+                        # rw[i, mirror_bin] <- val
+                        # if (i %in% release_time_sec_idx & !dead_space_bin[mirror_bin]) {
+                        #         #print(paste("Releasing in time index:", i))
+                        #         rw[i, mirror_bin] <- rw[i, mirror_bin] + release_timed
+                        # }
+                        rw[i, mirror_bin] <- rw[i, j]
+                        
+                }
+                
+                # Diffuse the molecules at the electrode.
+                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
+                # Note: there is no Michaelis-Menten correction for uptake at the electrode.
+                rw[i, electrode_pos] <- val
+                if (i %in% release_time_sec_idx & !dead_space_bin[electrode_pos]) {
+                        #print(paste("Releasing in time index:", i))
+                        rw[i, electrode_pos] <- rw[i, electrode_pos] + release_timed
+                }
+                
+        }
+        
+        # Add the time series to the front of the data frame.
+        rw_df <- as.data.frame(cbind(time_sec, rw))
+        # Name the location of the electrode data.
+        colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
+        
+        rw_df
+}
+
 compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.75,
                     bin_size = .5, electrode_distance = 50.0, dead_space_distance = 4.0,
                     diffusion_coefficient = .0000027, smoothing_count = 4,
