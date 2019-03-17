@@ -150,13 +150,15 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                         #         #print(paste("Releasing in time index:", i))
                         #         rw[i, mirror_bin] <- rw[i, mirror_bin] + release_timed
                         # }
-                        rw[i, mirror_bin] <- rw[i, j]
+ #                       rw[i, mirror_bin] <- rw[i, j]
                         
                 }
                 
                 # Diffuse the molecules at the electrode.
 #                val <- .5 * rw[i - 1, electrode_pos - 1] + .5 * rw[i - 1, electrode_pos + 1]
   
+                # Since the neighbors are symmetric, averaging them is the same as taking
+                # the whole of one neighbor.
                 val <- rw[i - 1, electrode_pos - 1]
                 
                 # Note: there is no Michaelis-Menten correction for uptake at the electrode.
