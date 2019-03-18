@@ -4,15 +4,6 @@ micmen <- function(x, vmax = 4.57, km = .78, duration) {
         
 }
 
-# Test micmen()
-# Inputs
-# x: 1.375
-# vmax: 4.57 (default)
-# km: .78 (default)
-# duration: .007407
-# Expected result: 1.353
-micmen(x = 1.375, duration = .007407)
-
 iteration_duration <- function(diffusion_coefficient, bin_size) {
         # diffusion_coefficient: square centimeters / second.
         # bin_size: micrometres.
@@ -25,12 +16,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                            pulse_freq, bin_size, electrode_distance,
                            dead_space_distance, diffusion_coefficient,
                            duration) {
-        # 3/16/2019. You don't need all the cells on the right side. Started paring those down.
-        
-        # Amperometry simulation
-        # Author: Jai Jeffryes
-        # Email: jai@jeffryes.net
-        
+
         # Parameters
         # vmax: Micro M / sec.
         # km: Micro M.
@@ -59,12 +45,9 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         # Calculate releases and assign them to time stamps.
         # Prorate the release across all pulses.
         release_timed <- release / pulses
-        # Time between pulses.
-        pulse_dur <- 1.0 / pulse_freq
-        # Times for releases.
-        releases <- 0:(pulses - 1) * pulse_dur
+        
         # Closest timestamps in matrix for releases.
-        release_time_sec_idx <- sapply(releases, function(x) {which.min(abs(time_sec - x))})
+        release_time_sec_idx <- position_releases(pulses, pulse_freq, time_sec)
         
         # Position the electrode and the dead space
         electrode_pos <- electrode_pos(rw, time_column = FALSE) # No time series on the front yet.
@@ -617,3 +600,15 @@ split_stims <- function(df) {
 
 }
 
+position_releases <- function(pulses, pulse_freq, time_sec) {
+        # Time between pulses.
+        pulse_dur <- 1.0 / pulse_freq
+
+        # Times for releases.
+        releases <- 0:(pulses - 1) * pulse_dur
+        
+        # Closest timestamps in matrix for releases.
+        result <- sapply(releases, function(x) {which.min(abs(time_sec - x))})
+        
+        result
+}

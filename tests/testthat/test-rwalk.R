@@ -30,3 +30,39 @@ test_that("rwalk_cv_pulse_run does not raise error", {
                       ,
                       "Formatting results...")
 })
+
+test_that("Michaelis-Menten function is correct", {
+        # Test micmen()
+        # Inputs
+        # x: 1.375
+        # vmax: 4.57 (default)
+        # km: .78 (default)
+        # duration: .007407
+        # Expected result: 1.353
+        expect_equal(micmen(x = 1.375, vmax = 4.57, duration = .007407), expected = 1.353, tolerance = 0.0003)
+        
+})
+
+test_that("position_releases() is correct", {
+        pulses <- 30
+        pulse_freq <- 50
+        
+        diffusion_coefficient <- 2.7 * 10^-6
+        bin_size <- 2.0
+        electrode_distance <- 50
+        duration <- 49
+        
+        bin_number_displace <- as.integer(electrode_distance / bin_size)
+        bins <- 2 * bin_number_displace  + 1
+        it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
+        
+        iterations <- as.integer(duration / it_dur)
+        rw <- matrix(rep(0.0, (bins) * (iterations + 1)), iterations + 1, bins)
+        
+        it_dur <- iteration_duration(diffusion_coefficient = diffusion_coefficient, bin_size = bin_size)
+        time_sec <- seq(from = 0, by = it_dur, length.out = nrow(rw))
+        
+        expected_result <- c(1,4,6,9,12,14,17,20,23,25,28,31,33,36,39,41,44,47,50,52,55,58,60,63,66,68,71,74,77,79)
+        expect_equal(position_releases(pulses, pulse_freq, time_sec), expected_result)
+
+})
