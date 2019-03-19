@@ -1,3 +1,5 @@
+library(testthat)
+
 context("test-rwalk")
 
 test_that("rwalk_cv_pulse_run does not raise error", {

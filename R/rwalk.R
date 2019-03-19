@@ -322,7 +322,9 @@ get_stim_start <- function(dat_part) {
         # Change in slopes.
         dat_part$delta_slope[3:n] <- dat_part$slope[3:n] - dat_part$slope[2:(n-1)]
         # Window them to shake out premature outliers. Moving average.
-        dat_part$delta_slope_smooth <- mavg(dat_part$delta_slope, n = 3)
+        
+        # n = 3 sometimes doesn't find the start. Trying n = 5.
+        dat_part$delta_slope_smooth <- mavg(dat_part$delta_slope, n = 5)
 
         # Largest change in slope is assumed beginning of stimulus.
         max_delta_slope_smooth <- max(dat_part$delta_slope_smooth, na.rm = TRUE)
