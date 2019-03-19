@@ -1,3 +1,14 @@
+#' Title
+#'
+#' @param x numeric Concentration in micro-Molar.
+#' @param vmax numeric in micro-Molar/s.
+#' @param km numeric in micro-Molar.
+#' @param duration numeric in seconds.
+#'
+#' @return numeric
+#' @export
+#'
+#' @examples micmen(x = 1.375, vmax = 4.57, duration = .007407)
 micmen <- function(x, vmax = 4.57, km = .78, duration) {
         # Correct for uptake according to the Michaelis-Menten equation.
         x - ((( vmax * x ) / ( km + x )) * duration )
