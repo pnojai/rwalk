@@ -571,7 +571,7 @@ find_stim_peaks <- function(df) {
         #   Vector of time_sec values
         
         # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
-        electrode <- smooth.spline(df$electrode, spar = .5)
+        electrode <- stats::smooth.spline(df$electrode, spar = .5)
         # Get the derivative.
         smoothed.dx <- predict(electrode, deriv = 1)$y
         # Where the derivative goes from negative to positive (crosses 0) is a peak.
