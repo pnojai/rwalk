@@ -282,7 +282,7 @@ current_to_concentration <- function(current_df, calibration_current, calibratio
         
         current_df$electrode <- concentration
 
-        # utils::write.csv(current_df, file = "Data/debug_current_df.csv")
+        # utils::write.csv(current_df, file = "input/debug_current_df.csv")
         
         current_df        
 }
@@ -432,7 +432,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
                 # print(paste("y_base:", y_base))
                 print(paste("dur:", dur))
                 
-                utils::write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
+                utils::write.csv(dat[1:idx_max_obs, ], "input/debug_datToMax")
         }
         
         # Calculate random walk.
@@ -472,7 +472,7 @@ calc_fit <- function(sim_w_dat) {
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
         
-        # utils::write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        # utils::write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "input/compare.csv")
         
         # Correlate the simulation and the experimental data.
         # Need an equal number of points on each side. Up sample the experimental data

@@ -1,4 +1,4 @@
-fil <- "Data/AMPH_test.csv"
+fil <- "input/AMPH_test.csv"
 sample_rate <- 100
 dat <- read_experiment_csv(fil, sr = sample_rate)
 

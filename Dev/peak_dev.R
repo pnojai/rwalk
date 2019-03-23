@@ -1,7 +1,7 @@
 library(tidyverse)
 library(quantmod)
 
-fil <- "./Data/181015_10mg-kgAMPH_50mM Nimo_2_outlier_scrub.csv"
+fil <- "./input/181015_10mg-kgAMPH_50mM Nimo_2_outlier_scrub.csv"
 
 sample_rate <- 100
 

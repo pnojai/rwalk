@@ -1,7 +1,7 @@
 # Exported sheets to CSV.
 
 # Load data files
-data_path <- "./Data/"
+data_path <- "./input/"
 
 amph_test <- read.csv(paste(data_path, "AMPH_test.csv", sep = ""))
 timestamps_wt_wt <- read.csv(paste(data_path, "Timestamps_WT_WT.csv", sep = ""))

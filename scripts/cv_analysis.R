@@ -1,6 +1,6 @@
 library(tidyverse)
 
-fn <- "Data/AMPH_test.csv"
+fn <- "input/AMPH_test.csv"
 dat <- read_experiment_csv(fn, sr = 100)
 
 # Set plotting parameters for simulation
@@ -45,7 +45,7 @@ ggplot(data = sim_w_dat) +
         geom_line(mapping = aes(x = time_sec, y = electrode, colour = src))
 
 # Do this again, but trim the front off the experimental data
-fn <- "Data/AMPH_test.csv"
+fn <- "input/AMPH_test.csv"
 dat <- read_experiment_csv(fn, sr = 100)
 
 # Set plotting parameters for simulation

@@ -1,7 +1,7 @@
 context("test-fit")
 
 test_that("Data file splits stimuli", {
-        fil <- "./../../Data/181015_10mg-kgAMPH_50mM Nimo_2_outlier_scrub.csv"
+        fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
         
         sample_rate <- 100
         

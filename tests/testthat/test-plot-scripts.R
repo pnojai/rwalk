@@ -2,8 +2,6 @@ context("test-plot-scripts")
 
 test_that("Simulation script creates data.frame for plotting", {
         # Test a short electrode distance. We don't need to see resolution, just show that it runs.
-        library(tidyverse)
-        
         vmax <- 4.57
         km <- 0.78
         release <- 2.75
@@ -26,8 +24,6 @@ test_that("Simulation script creates data.frame for plotting", {
 
 test_that("Plotting simulation returns no error.", {
         # Test a short electrode distance. We don't need to see resolution, just show that it runs.
-        library(tidyverse)
-        
         vmax <- 4.57
         km <- 0.78
         release <- 2.75
@@ -50,9 +46,8 @@ test_that("Plotting simulation returns no error.", {
 
 test_that("plot_comparison.R", {
         # Test a short electrode distance. We don't need to see resolution, just show that it runs.
-        library(tidyverse)
+        fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_1st_stim.csv"
         
-        fil <- "./../../Data/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv"
         sample_rate <- 100
         
         dat <- read_experiment_csv(fil, sr = sample_rate)

@@ -1,7 +1,18 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-rwalk
-=====
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# rwalk
 
 This package is under development.
 
@@ -9,14 +20,13 @@ This is a minimal build with incomplete documentation.
 
 The package rwalk consists of tools for random walks and Schmitz/Sulzer modified random walks for simulations of electrochemical detection of neurotransmitter release and reuptake. Developed with the Sulzer Lab at Columbia University.
 
-<http://sulzerlab.org/index.html>
+http://sulzerlab.org/index.html
 
 Acknowledgements:
 
--   David Sulzer, Ph.D., Depts. Neurology & Psychiatry, Columbia University, New York, NY. Dept. Neuroscience, New York State Psychiatric Institute.
+* David Sulzer, Ph.D., Depts. Neurology & Psychiatry, Columbia University, New York, NY. Dept. Neuroscience, New York State Psychiatric Institute.
 
-Installation
-------------
+## Installation
 
 ``` r
 library(devtools)
