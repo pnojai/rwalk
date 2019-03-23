@@ -255,7 +255,7 @@ get_slope_intercepts <- function(slp_intcpt_df, ts) {
         
 }
 
-rsq <- function (x, y) cor(x, y) ^ 2
+rsq <- function (x, y) stats::cor(x, y) ^ 2
 
 current_to_concentration <- function(current_df, calibration_current, calibration_concentration) {
         # current_df
@@ -573,7 +573,7 @@ find_stim_peaks <- function(df) {
         # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
         electrode <- stats::smooth.spline(df$electrode, spar = .5)
         # Get the derivative.
-        smoothed.dx <- predict(electrode, deriv = 1)$y
+        smoothed.dx <- stats::predict(electrode, deriv = 1)$y
         # Where the derivative goes from negative to positive (crosses 0) is a peak.
         peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
         
