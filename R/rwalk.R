@@ -1,3 +1,14 @@
+#' Title
+#'
+#' @param x numeric Concentration in micro-Molar.
+#' @param vmax numeric in micro-Molar/s.
+#' @param km numeric in micro-Molar.
+#' @param duration numeric in seconds.
+#'
+#' @return numeric
+#' @export
+#'
+#' @examples micmen(x = 1.375, vmax = 4.57, duration = .007407)
 micmen <- function(x, vmax = 4.57, km = .78, duration) {
         # Correct for uptake according to the Michaelis-Menten equation.
         x - ((( vmax * x ) / ( km + x )) * duration )
@@ -185,7 +196,7 @@ read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # Convert sampling rate to seconds.
         sr_s <- sr * 10^-3
         
-        dat <- read.csv(fil, header = header)
+        dat <- utils::read.csv(fil, header = header)
         
         time_sec <- seq(from = 0, by = sr_s, length.out = nrow(dat))
         
@@ -227,7 +238,7 @@ get_slope_intercepts <- function(slp_intcpt_df, ts) {
 
         get1 <- function(ts_arg) {
                 # Returns a data frame
-                tail(slp_intcpt_df[slp_intcpt_df$time_sec < ts_arg, 3:4], 1)
+                utils::tail(slp_intcpt_df[slp_intcpt_df$time_sec < ts_arg, 3:4], 1)
         }
 
         # Returns a list of data frames.
@@ -244,7 +255,7 @@ get_slope_intercepts <- function(slp_intcpt_df, ts) {
         
 }
 
-rsq <- function (x, y) cor(x, y) ^ 2
+rsq <- function (x, y) stats::cor(x, y) ^ 2
 
 current_to_concentration <- function(current_df, calibration_current, calibration_concentration) {
         # current_df
@@ -271,7 +282,7 @@ current_to_concentration <- function(current_df, calibration_current, calibratio
         
         current_df$electrode <- concentration
 
-        # write.csv(current_df, file = "Data/debug_current_df.csv")
+        # utils::write.csv(current_df, file = "Data/debug_current_df.csv")
         
         current_df        
 }
@@ -282,12 +293,12 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
         #   interpolation, etc). Each source plots its own curve.
 
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
-        ggplot(data = dat_w_src) +
-                geom_line(mapping = aes(x = time_sec, y = electrode)) +
-                labs(title = "Cyclic Voltammetry Simulation",
+        ggplot2::ggplot(data = dat_w_src) +
+                ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode)) +
+                ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      x = "time [s]",
                      y = expression(paste("Concentration [", mu, "M]"))) +
-                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+                ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
@@ -300,14 +311,14 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
                          "r2=", if (!is.null(r2)) {round(r2, 6)}, sep = "")
-        ggplot(data = dat_w_src) +
-                geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
-                labs(title = "Cyclic Voltammetry Simulation",
+        ggplot2::ggplot(data = dat_w_src) +
+                ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
+                ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      subtitle = paste("Input Data File: ", fil),
                      x = "time [s]",
                      y = expression(paste("Concentration [", mu, "M]")),
                      colour = "source") +
-                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+                ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
 get_stim_start <- function(dat_part) {
@@ -421,7 +432,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
                 # print(paste("y_base:", y_base))
                 print(paste("dur:", dur))
                 
-                write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
+                utils::write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
         }
         
         # Calculate random walk.
@@ -461,7 +472,7 @@ calc_fit <- function(sim_w_dat) {
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
         
-        # write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        # utils::write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
         
         # Correlate the simulation and the experimental data.
         # Need an equal number of points on each side. Up sample the experimental data
@@ -560,9 +571,9 @@ find_stim_peaks <- function(df) {
         #   Vector of time_sec values
         
         # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
-        electrode <- smooth.spline(df$electrode, spar = .5)
+        electrode <- stats::smooth.spline(df$electrode, spar = .5)
         # Get the derivative.
-        smoothed.dx <- predict(electrode, deriv = 1)$y
+        smoothed.dx <- stats::predict(electrode, deriv = 1)$y
         # Where the derivative goes from negative to positive (crosses 0) is a peak.
         peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
         

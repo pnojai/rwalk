@@ -1,10 +1,6 @@
-library(testthat)
-
 context("test-rwalk")
 
 test_that("rwalk_cv_pulse_run does not raise error", {
-        library(tidyverse)
-        
         fil <- "./../../Data/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv"
         sample_rate <- 100
         
