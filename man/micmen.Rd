@@ -2,25 +2,25 @@
 % Please edit documentation in R/rwalk.R
 \name{micmen}
 \alias{micmen}
-\title{Title}
+\title{Michaelis-Menten}
 \usage{
-micmen(x, vmax = 4.57, km = 0.78, duration)
+micmen(x, vmax, km, duration)
 }
 \arguments{
-\item{x}{numeric Concentration in micro-Molar.}
+\item{x}{Concentration in micromoles}
 
-\item{vmax}{numeric in micro-Molar/s.}
+\item{vmax}{Micromoles}
 
-\item{km}{numeric in micro-Molar.}
+\item{km}{Micromoles}
 
-\item{duration}{numeric in seconds.}
+\item{duration}{Seconds}
 }
 \value{
 numeric
 }
 \description{
-Title
+Correct for uptake according to the Michaelis-Menten equation.
 }
 \examples{
-micmen(x = 1.375, vmax = 4.57, duration = .007407)
+micmen(x = 1.375, vmax = 4.57, km = .78, duration = .007407)
 }

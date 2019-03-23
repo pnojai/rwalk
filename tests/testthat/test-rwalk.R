@@ -31,14 +31,7 @@ test_that("rwalk_cv_pulse_run does not raise error", {
 })
 
 test_that("Michaelis-Menten function is correct", {
-        # Test micmen()
-        # Inputs
-        # x: 1.375
-        # vmax: 4.57 (default)
-        # km: .78 (default)
-        # duration: .007407
-        # Expected result: 1.353
-        expect_equal(micmen(x = 1.375, vmax = 4.57, duration = .007407), expected = 1.353, tolerance = 0.0003)
+        expect_equal(micmen(x = 1.375, vmax = 4.57, km = .78, duration = .007407), expected = 1.353, tolerance = 0.0003)
         
 })
 

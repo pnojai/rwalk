@@ -1,20 +1,33 @@
-#' Title
+#' Michaelis-Menten
+#' 
+#' Correct for uptake according to the Michaelis-Menten equation.
 #'
-#' @param x numeric Concentration in micro-Molar.
-#' @param vmax numeric in micro-Molar/s.
-#' @param km numeric in micro-Molar.
-#' @param duration numeric in seconds.
+#' @param x Concentration in micromoles
+#' @param vmax Micromoles
+#' @param km Micromoles
+#' @param duration Seconds
 #'
 #' @return numeric
 #' @export
 #'
-#' @examples micmen(x = 1.375, vmax = 4.57, duration = .007407)
-micmen <- function(x, vmax = 4.57, km = .78, duration) {
-        # Correct for uptake according to the Michaelis-Menten equation.
+#' @examples micmen(x = 1.375, vmax = 4.57, km = .78, duration = .007407)
+micmen <- function(x, vmax, km, duration) {
         x - ((( vmax * x ) / ( km + x )) * duration )
         
 }
 
+#' Iteration duration
+#' 
+#' Return the length of time between iterations of a random walk matrix.
+#' Given by: t = x^2 / 2D
+#'
+#' @param diffusion_coefficient Square centimeters per second.
+#' @param bin_size Distance between release bins in microns.
+#'
+#' @return numeric
+#' @export
+#'
+#' @examples
 iteration_duration <- function(diffusion_coefficient, bin_size) {
         # diffusion_coefficient: square centimeters / second.
         # bin_size: micrometres.
@@ -23,6 +36,40 @@ iteration_duration <- function(diffusion_coefficient, bin_size) {
         ((bin_size / 10000.0)^2) / (2 * diffusion_coefficient)
 }
 
+#' Build a random walk matrix for cyclic voltammetry
+#' 
+#' The random walk models concentration at time intervals and bin distances
+#' from an electrode. For performance optimization, only bins to the left of
+#' the electrode are included in the matrix, as the right bin values are
+#' symmetric with respect to the left.
+#' 
+#' Given a pulse train, the function prorates the given release evenly to the
+#' nearest appropriate time iteration.
+#' 
+#' Resolution of the matrix can be customized with the parameters bin_size and
+#' electrode_distance.
+#' 
+#' The function supports an assumption of dead space at the insertion point
+#' of the electrode.
+#'
+#' @param vmax For Michaelis-Menten correction of uptake. Microns per second.
+#' @param km For Michaelis-Menten. Microns.
+#' @param release Concentration in micromoles.
+#' @param pulses Count of pulses in the pulse train.
+#' @param pulse_freq Pulse frequency in Hz.
+#' @param bin_size Spacing of the modelled release bins in microns.
+#' @param electrode_distance Distance from the electrode to the last bin in microns.
+#' @param dead_space_distance Distance in microns of one side of the dead space measured
+#' from the electrode.
+#' @param diffusion_coefficient Diffusion constant in square centimeters per second.
+#' @param duration Span of time for modelling release diffusion measured in seconds.
+#'
+#' @return rw_df. Data frame of the modelled random walk. The first column is
+#' rw_df$time_sec, the time in seconds of the iteration. The results reside in the
+#' values modelled at the location of the electrode in column rw_df$electrode.
+#' @export
+#'
+#' @examples
 rwalk_cv_pulse <- function(vmax, km, release, pulses,
                            pulse_freq, bin_size, electrode_distance,
                            dead_space_distance, diffusion_coefficient,
@@ -135,6 +182,25 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         rw_df
 }
 
+#' Electrode position
+#' 
+#' The index of the column in the random walk matrix representing the location
+#' of the electrode. The model locates the electrode in the middle of a
+#' one-dimensional string of release points. However, for performance
+#' optimization, the release bins to the right of the electrode are not
+#' populated. They are not needed for the calculation of the electrode results,
+#' since the bin values to the right and left of the electrode are symmetric.
+#'
+#' @param rw. A calculated random walk matrix in the form of a data frame.
+#' The electrode bin is the middle column of the data frame.
+#' @param time_column. Logical. Indicates the presence of a time series column
+#' at the front of the data frame.
+#'
+#' @return Numeric. The column index indicating the location in the data frame
+#' of the electrode results.
+#' @export
+#'
+#' @examples
 electrode_pos <- function(rw, time_column = TRUE) {
         # Electrode is the middle bin.
         if (time_column == TRUE) {
@@ -146,6 +212,23 @@ electrode_pos <- function(rw, time_column = TRUE) {
         pos
 }
 
+#' Electrode results
+#' 
+#' Returns the time series and electrode results of a given random walk
+#' matrix. The rest of the matrix serves only to compute the electrode
+#' results and are unnecessary for subsequent plotting.
+#'
+#' @param rwalk_df. A calculated random walk matrix in the form of a
+#' data frame.
+#' @param electrode_pos. The column index within the random walk matrix,
+#' locating the electrode results. 
+#' @param smoothing_count. Integer. The electrode results can be smoothed
+#' using a moving average applied across the indicated number of values.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         results <- as.data.frame(
                 cbind(time_sec = rwalk_df[-1, "time_sec"],
@@ -167,6 +250,28 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
         results
 }
 
+#' Title
+#'
+#' @param dat 
+#' @param fil 
+#' @param vmax 
+#' @param km 
+#' @param pulses 
+#' @param pulse_freq 
+#' @param release 
+#' @param bin_size 
+#' @param electrode_distance 
+#' @param dead_space_distance 
+#' @param diffusion_coefficient 
+#' @param smoothing_count 
+#' @param convert_current 
+#' @param calibration_current 
+#' @param calibration_concentration 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
                           diffusion_coefficient, smoothing_count,
@@ -190,6 +295,16 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                 
 }
 
+#' Title
+#'
+#' @param fil 
+#' @param sr 
+#' @param header 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # sr: Sampling rate in milliseconds.
         
@@ -209,6 +324,14 @@ read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         results
 }
 
+#' Title
+#'
+#' @param dat 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 slope_intercept_df <- function(dat) {
         # dat: data frame of time stamps and electrode values.
         max_row <- nrow(dat)
@@ -229,6 +352,15 @@ slope_intercept_df <- function(dat) {
         dat
         }
 
+#' Title
+#'
+#' @param slp_intcpt_df 
+#' @param ts 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_slope_intercepts <- function(slp_intcpt_df, ts) {
         # df is a data frame containing slopes and intercepts of line segments.
         #  1: time_sec
@@ -257,6 +389,16 @@ get_slope_intercepts <- function(slp_intcpt_df, ts) {
 
 rsq <- function (x, y) stats::cor(x, y) ^ 2
 
+#' Title
+#'
+#' @param current_df 
+#' @param calibration_current 
+#' @param calibration_concentration 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 current_to_concentration <- function(current_df, calibration_current, calibration_concentration) {
         # current_df
         # Readings of current in pico amperes.
@@ -287,6 +429,17 @@ current_to_concentration <- function(current_df, calibration_current, calibratio
         current_df        
 }
 
+#' Title
+#'
+#' @param dat_w_src 
+#' @param release 
+#' @param vmax 
+#' @param km 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
         # dat_w_src
         # Tall data frame with column indicating source (experiment, simulation,
@@ -301,6 +454,21 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
                 ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
+#' Title
+#'
+#' @param dat_w_src 
+#' @param fil 
+#' @param release 
+#' @param vmax 
+#' @param km 
+#' @param r2 
+#' @param calibration_current 
+#' @param calibration_concentration 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                            calibration_current = NULL, calibration_concentration = NULL) {
         # dat_w_src
