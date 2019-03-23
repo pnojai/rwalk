@@ -294,7 +294,7 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
 
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
         ggplot2::ggplot(data = dat_w_src) +
-                ggplot2::geom_line(mapping = aes(x = time_sec, y = electrode)) +
+                ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode)) +
                 ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      x = "time [s]",
                      y = expression(paste("Concentration [", mu, "M]"))) +
@@ -311,14 +311,14 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
                          "r2=", if (!is.null(r2)) {round(r2, 6)}, sep = "")
-        ggplot(data = dat_w_src) +
-                geom_line(mapping = aes(x = time_sec, y = electrode, colour = src)) +
-                labs(title = "Cyclic Voltammetry Simulation",
+        ggplot2::ggplot(data = dat_w_src) +
+                ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
+                ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      subtitle = paste("Input Data File: ", fil),
                      x = "time [s]",
                      y = expression(paste("Concentration [", mu, "M]")),
                      colour = "source") +
-                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+                ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
 get_stim_start <- function(dat_part) {
