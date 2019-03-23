@@ -196,7 +196,7 @@ read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # Convert sampling rate to seconds.
         sr_s <- sr * 10^-3
         
-        dat <- read.csv(fil, header = header)
+        dat <- utils::read.csv(fil, header = header)
         
         time_sec <- seq(from = 0, by = sr_s, length.out = nrow(dat))
         
@@ -238,7 +238,7 @@ get_slope_intercepts <- function(slp_intcpt_df, ts) {
 
         get1 <- function(ts_arg) {
                 # Returns a data frame
-                tail(slp_intcpt_df[slp_intcpt_df$time_sec < ts_arg, 3:4], 1)
+                utils::tail(slp_intcpt_df[slp_intcpt_df$time_sec < ts_arg, 3:4], 1)
         }
 
         # Returns a list of data frames.
@@ -282,7 +282,7 @@ current_to_concentration <- function(current_df, calibration_current, calibratio
         
         current_df$electrode <- concentration
 
-        # write.csv(current_df, file = "Data/debug_current_df.csv")
+        # utils::write.csv(current_df, file = "Data/debug_current_df.csv")
         
         current_df        
 }
@@ -293,12 +293,12 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
         #   interpolation, etc). Each source plots its own curve.
 
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, sep = "")
-        ggplot(data = dat_w_src) +
-                geom_line(mapping = aes(x = time_sec, y = electrode)) +
-                labs(title = "Cyclic Voltammetry Simulation",
+        ggplot2::ggplot(data = dat_w_src) +
+                ggplot2::geom_line(mapping = aes(x = time_sec, y = electrode)) +
+                ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      x = "time [s]",
                      y = expression(paste("Concentration [", mu, "M]"))) +
-                annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+                ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
 }
 
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
@@ -432,7 +432,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
                 # print(paste("y_base:", y_base))
                 print(paste("dur:", dur))
                 
-                write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
+                utils::write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
         }
         
         # Calculate random walk.
@@ -472,7 +472,7 @@ calc_fit <- function(sim_w_dat) {
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
         
-        # write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        # utils::write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
         
         # Correlate the simulation and the experimental data.
         # Need an equal number of points on each side. Up sample the experimental data
