@@ -5,7 +5,7 @@
 
 library(tidyverse)
 
-fil <- "Data/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv"
+fil <- "input/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv"
 sample_rate <- 100
 
 dat <- read_experiment_csv(fil, sr = sample_rate)
@@ -35,7 +35,7 @@ release_by <- 0
 
 # Put the arguments in a list.
 arg.list <- list(
-        #"Data/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv",
+        #"input/181015_10mg-kgAMPH_50mM Nimo_2_1st_stim.csv",
         # 100,
         dat,
         0,

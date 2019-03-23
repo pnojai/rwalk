@@ -37,7 +37,7 @@ head(res_bin05)
 # res_df_bin05[res_df_bin05[,1] == .2]
 
 # Look at some experimental data. Read it.
-dat <- read_experiment_csv("Data/AMPH_test.csv")
+dat <- read_experiment_csv("input/AMPH_test.csv")
 # Plot it
 plot(row.names(dat), dat[ ,1], type = "l")
 

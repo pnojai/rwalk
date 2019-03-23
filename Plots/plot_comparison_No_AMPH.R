@@ -5,9 +5,9 @@
 
 library(tidyverse)
 
-# fil <- "Data/181015_10mg-kgAMPH_50mM Nimo_2_1_stim.csv"
+# fil <- "input/181015_10mg-kgAMPH_50mM Nimo_2_1_stim.csv"
 # This needs a scrubbed file with only one stimulus.
-fil <- "Data/181002_DAinuse.csv" # <-- scrub this one.
+fil <- "input/181002_DAinuse.csv" # <-- scrub this one.
 sample_rate <- 100
 
 dat <- read_experiment_csv(fil, sr = sample_rate)

@@ -1,6 +1,6 @@
 library(tidyverse)
 
-fil <- "Data/AMPH_test.csv"
+fil <- "input/AMPH_test.csv"
 sample_rate <- 100
 vmax <- 4.57
 km <- 0.78

@@ -54,7 +54,7 @@ test_that("CV simulation electrode matches sample", {
         library(openxlsx)
         
         # Read simulation
-        xlsx <- readWorkbook("./../../Simulations/RW_CV.xlsx", sheet = 1, startRow = 8, colNames = FALSE, cols = c(5, 31))
+        xlsx <- readWorkbook("./../testdata/RW_CV.xlsx", sheet = 1, startRow = 8, colNames = FALSE, cols = c(5, 31))
         
         # Make a vector of the timestamp column
         time_sec_exists <- !is.na(xlsx[,1])

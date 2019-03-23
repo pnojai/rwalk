@@ -476,7 +476,7 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
                 # print(paste("y_base:", y_base))
                 print(paste("dur:", dur))
                 
-                write.csv(dat[1:idx_max_obs, ], "Data/debug_datToMax")
+                write.csv(dat[1:idx_max_obs, ], "input/debug_datToMax")
         }
         
         # Calculate random walk.
@@ -501,7 +501,7 @@ compare <- function(fil, sample_rate = 100, vmax = 4.57, km = .78, release = 2.7
         
         sim_w_dat <- rbind(sim_w_src, dat_w_src)
         
-        # write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "Data/compare.csv")
+        # write.csv(sim_w_dat[sim_w_dat$time_sec >= min_time, ], file = "input/compare.csv")
         
         # Correlate the simulation and the experimental data.
         # Need an equal number of points on each side. Up sample the experimental data

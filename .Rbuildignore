@@ -1,7 +1,8 @@
+^README\.Rmd$
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^Data
+^input
 ^Simulations
 ^Docs
 ^Dev
