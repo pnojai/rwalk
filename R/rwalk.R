@@ -793,3 +793,23 @@ position_releases <- function(pulses, pulse_freq, time_sec) {
         
         result
 }
+
+#' Get arguments for best fit
+#' 
+#' Given a data frame of arguments for building a random walk model, return
+#' the ones that fit best to the experimental data determined by their r-squared
+#' value. 
+#'
+#' @param arg_df Data frame. Calculated by calc_fit_multi(). One row contains
+#' the arguments for building a random walk model. Column arg_df$r2 is the
+#' r-squared value correlating the model built by those arguments and the experimental
+#' data.
+#'
+#' @return One-row data data frame.
+#' @export
+#'
+#' @examples
+get_best_args <- function(arg_df) {
+        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -14]
+        result
+}
