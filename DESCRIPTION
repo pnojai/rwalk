@@ -18,4 +18,5 @@ Suggests:
 Imports: 
     stats,
     utils,
-    ggplot2
+    ggplot2,
+    plyr
