@@ -805,7 +805,7 @@ position_releases <- function(pulses, pulse_freq, time_sec) {
 #' r-squared value correlating the model built by those arguments and the experimental
 #' data.
 #'
-#' @return One-row data data frame.
+#' @return One-row data frame.
 #' @export
 #'
 #' @examples
