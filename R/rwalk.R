@@ -813,3 +813,25 @@ get_best_args <- function(arg_df) {
         result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -14]
         result
 }
+
+#' Compare random walk to experimental data (arguments in data frame)
+#' 
+#' A wrapper for compare_pulse, supporting an alternate protocol with
+#' the random walk arguments supplied in a one-row data frame.
+#'
+#' @param dat Data frame. Experimental data for one stimulus supplied by
+#' read_experiment_csv().
+#'  
+#' @param fil Character. String representing the file which supplied the 
+#' dat data frame. For annotation of the plot.
+#' 
+#' @param args_df One-row data frame. Arguments for calculating a random
+#' walk. 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+compare_pulse_args_df <- function(dat, fil, args_df) {
+        do.call(compare_pulse, c(list(dat), fil, args_df))
+}

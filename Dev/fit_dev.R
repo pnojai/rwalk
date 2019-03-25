@@ -136,8 +136,9 @@ ncol(fit_args_df)
 best_fit_df <- arrange(fit_args_df, desc(r2))[1 , -14]
 best_fit_df
 
-# do.call(merge_sim_dat, c(list(dat), x))
-do.call(compare_pulse, c(list(dat_list[[1]]), fil, best_fit))
+best_args_df <- get_best_args(fit_args_df)
+
+do.call(compare_pulse, c(list(dat_list[[1]]), fil, best_fit_df))
 
 compare_pulse(dat_list[[1]], fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
@@ -145,3 +146,4 @@ compare_pulse(dat_list[[1]], fil = fil, vmax = vmax, km = km, pulses = pulses, p
               diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,
               calibration_current = calibration_current, calibration_concentration = calibration_concentration)
 
+compare_pulse_args_df(dat_list[[1]], paste(fil, "#1"), best_args_df)
