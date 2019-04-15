@@ -1,0 +1,41 @@
+#+STARTUP: overview
+#+STARTUP: indent
+
+* Set up
+** Open Firefox to sulzerlab.org with zoom.
+** Open RW_CV.xlsx in Excel.
+** Open 5916.full.pdf.
+** File browser: rwalk/input.
+** RStudio
+*** load_all()
+*** plot_simulation.R
+*** plot_comparison_lab_pres.R
+*** plot_comparison_best_fit_lab_pres.R
+* Sulzer Lab.
+Random walk tutorial.
+* Excel orientation.
+** Bins, electrodes.
+** Graph
+** Inputs and Michael-Menten correction
+* Customization.
+More time, more bins (resolution)
+* Labor saving, convenience.
+** R and RStudio.
+** plot_simulation.R
+Duration, bin size, inputs.
+* What do you do with it?
+** 5916.full.pdf, p. 2919. Fig. 3.
+** Fit. R-squared
+** Infer Vmax, km.
+* plot_comparison_lab_pres.R
+** Walk through fitting.
+Next, /Do-my-job/ button.
+* More time savings.
+** plot_comparison_best_fit_lab_pres.R
+*** Split and fit.
+*** Execute short demo.
+*** Show results of long demo.
+* More labor saving, conversion of current to concentration.
+** Time_stamp_WT_Amph.CSV.
+** 181015...
+** You could be headed for the bus, or Coogan's.

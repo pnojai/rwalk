@@ -4,3 +4,25 @@
 *~
 input/
 .Rproj.user
+
+Docs/PresentationNotes\.html
+
+Docs/PresentationNotes\.aux
+
+Docs/PresentationNotes\.log
+
+Docs/PresentationNotes\.out
+
+Docs/PresentationNotes\.pdf
+
+Docs/PresentationNotes\.synctex\.gz
+
+Docs/PresentationNotes\.tex
+
+Docs/PresentationNotes\.toc
+
+Docs/PresentationNotes\.txt
+
+Simulations/PoreModelSulzer\.xls
+
+Simulations/RW DA diffusion in striatum\.xls
