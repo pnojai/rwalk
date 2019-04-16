@@ -116,9 +116,11 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         dead_space_bin <- rep(FALSE, bins)
         dead_space_bin[dead_space_range] <- TRUE
         
-        # Release at time 0 (row 1). Don't release to dead space.
-        # rw[1, !dead_space_bin] <- release
-        rw[1, !dead_space_bin] <- release_timed
+        # Release at time 0 (row 1).
+        # Don't release to dead space.
+        # Don't release to odd-numbered bins since Eugene's fix.
+        release_bin <- c(rep(c(FALSE, TRUE), floor(bins / 2)), FALSE)
+        rw[1, release_bin & !dead_space_bin] <- release_timed
         
         # Iterate in time
         for (i in 2:(iterations + 1)) {
