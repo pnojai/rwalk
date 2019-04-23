@@ -128,7 +128,7 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 # Outside bins take from inside neighbor only
                 curr_bin <- 1
                 inside_neighbor <- curr_bin + 1
-                val <- mean(c(rw[(i - 1), inside_neighbor], 0))
+                val <- mean(c(rw[(i - 1), inside_neighbor], 0)) * ((i - 1) %% 2) # Mod toggles inclusion
                 val <- micmen(val, vmax, km, it_dur)
                 rw[i, 1] <- val
                 if (i %in% release_time_sec_idx & !dead_space_bin[1]) {
@@ -140,7 +140,8 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 curr_bin <- 2
                 inside_neighbor <- curr_bin + 1
                 outside_neighbor <- curr_bin - 1
-                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                # i %% 2 toggles inclusion
+                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor] * (i %% 2)
                 val <- micmen(val, vmax, km, it_dur)
                 rw[i, curr_bin] <- val
                 if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
