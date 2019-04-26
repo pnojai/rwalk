@@ -572,3 +572,46 @@ trim_results <- function(df) {
         df_trim
 }
 
+# Don't need this test anymore, now that I have tests for the whole grid.
+test_that("CV simulation 1st iteration matches corrected sample", {
+        # Open the Excel example.
+        # Read the data range you're interested in, namely the matrix.
+        
+        library(openxlsx)
+        
+        # Read simulation
+        # readWorkbook() argument cols subsets incorrectly, maybe because skipEmptyCols is set to FALSE.
+        # Read row with releases, all columns. Then subset rows 5:31.
+        xlsx <- readWorkbook("./../testdata/RW_CV_corrected2.xlsx", sheet = 1, rows = 10, colNames = FALSE, skipEmptyCols = FALSE)
+        
+        xlsx <- xlsx[ , 6:31]
+        xlsx[is.na(xlsx)] <- 0
+        
+        # Run the simulation.
+        # Random Walk.
+        
+        library(tidyverse)
+        
+        vmax <- 4.57
+        km <- 0.78
+        release <- 2.75
+        
+        pulses <- 1
+        pulse_freq <- 1
+        bin_size <- 2.0
+        electrode_distance <- 50
+        dead_space_distance <- 4
+        diffusion_coefficient <- 2.7 * 10^-6
+        duration = 0.94815
+        
+        rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
+                             dead_space_distance, diffusion_coefficient, duration)
+        
+        # Release row in provided file.
+        # print(xlsx)
+        # Release row in rwalk.
+        # print(rw[2, 2:27])
+        
+        expect_equivalent(xlsx, rw[2, 2:27])
+        
+})

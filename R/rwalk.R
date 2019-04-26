@@ -190,7 +190,10 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         # Name the location of the electrode data.
         colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
         
-        rw_df
+        # Include every other row of the matrix. (Excluding the empty rows.)
+        included <- seq(1, nrow(rw_df), 2)
+        
+        rw_df[included, ]
 }
 
 #' Electrode position
