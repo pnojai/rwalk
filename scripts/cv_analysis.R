@@ -14,7 +14,7 @@ rw <- rwalk_cv(vmax = 4.57, km = .78, release = 6000, bin_size = 1.0,
                electrode_distance = 50, dead_space_distance = 4,
                diffusion_coefficient = 2.7*10^-6, duration = max_time)
 
-res <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+res <- electrode_results(rw, electrode_pos = electrode_pos(rw))
 
 # Plot the simulation
 ggplot(data = res) +
@@ -73,7 +73,7 @@ rw <- rwalk_cv(vmax = 4.57, km = .78, release = 6000, bin_size = 1.0,
                electrode_distance = 50, dead_space_distance = 4,
                diffusion_coefficient = 2.7*10^-6, duration = dur)
 
-res <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+res <- electrode_results(rw, electrode_pos = electrode_pos(rw))
 
 # Shift the time of the results.
 res$time_sec <- res$time_sec + min_time

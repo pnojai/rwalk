@@ -16,7 +16,6 @@ test_that("rwalk_cv_pulse_run does not raise error", {
         electrode_distance <- 50
         dead_space_distance <- 4
         diffusion_coefficient <- 2.7 * 10^-6
-        smoothing_count <- 4
         convert_current = TRUE
         calibration_current = 7500.0
         calibration_concentration = 5.0
@@ -24,7 +23,7 @@ test_that("rwalk_cv_pulse_run does not raise error", {
         expect_output(compare_pulse(dat, fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
                                     release = release, bin_size = bin_size,
                                     electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-                                    diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,
+                                    diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
                                     calibration_current = calibration_current, calibration_concentration = calibration_concentration)
                       ,
                       "Formatting results...")
@@ -82,7 +81,6 @@ test_that("get_best_fit_args is correct", {
         electrode_distance <- 50
         dead_space_distance <- 4
         diffusion_coefficient <- 2.7 * 10^-6
-        smoothing_count <- 4
         convert_current = TRUE
         calibration_current = 7500.0
         calibration_concentration = 5.0
@@ -92,7 +90,7 @@ test_that("get_best_fit_args is correct", {
                                 pulses, pulse_freq,
                                 release_min, release_max, release_by, bin_size, 
                                 electrode_distance, dead_space_distance, diffusion_coefficient, 
-                                smoothing_count, convert_current, calibration_current, calibration_concentration)
+                                convert_current, calibration_current, calibration_concentration)
         
         fit_args_df <- calc_fit_multi(dat_list[[1]], arg_df) 
         
@@ -128,7 +126,6 @@ test_that("compare_pulse_arg_df works", {
         electrode_distance <- 50
         dead_space_distance <- 4
         diffusion_coefficient <- 2.7 * 10^-6
-        smoothing_count <- 4
         convert_current = TRUE
         calibration_current = 7500.0
         calibration_concentration = 5.0
@@ -138,7 +135,7 @@ test_that("compare_pulse_arg_df works", {
                                 pulses, pulse_freq,
                                 release_min, release_max, release_by, bin_size, 
                                 electrode_distance, dead_space_distance, diffusion_coefficient, 
-                                smoothing_count, convert_current, calibration_current, calibration_concentration)
+                                convert_current, calibration_current, calibration_concentration)
         
         fit_args_df <- calc_fit_multi(dat_list[[1]], arg_df) 
         

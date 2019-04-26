@@ -236,31 +236,18 @@ electrode_pos <- function(rw, time_column = TRUE) {
 #' data frame.
 #' @param electrode_pos. The column index within the random walk matrix,
 #' locating the electrode results. 
-#' @param smoothing_count. Integer. The electrode results can be smoothed
-#' using a moving average applied across the indicated number of values.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
+electrode_results <- function(rwalk_df, electrode_pos) {
         results <- as.data.frame(
                 cbind(time_sec = rwalk_df[-1, "time_sec"],
                       electrode = rwalk_df[-1, "electrode"]
                       )
                 )
 
-        #Vector of lower indexes for means.
-        seq_low <- 1:nrow(results)
-        # Set up high sequence. The top boundary doesn't overflow.
-        seq_high <- smoothing_count:(nrow(results) + smoothing_count - 1)
-        seq_high <- pmin.int(seq_high, nrow(results)) # End of sequence doesn't exceed max indes.
-        
-        #Compute rolling average
-        results_smoothed <- rowMeans(cbind(results[seq_low, "electrode"], results[seq_high, "electrode"]))
-        
-        results[ , 2] <- results_smoothed
-        
         results
 }
 
@@ -277,7 +264,6 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
 #' @param electrode_distance 
 #' @param dead_space_distance 
 #' @param diffusion_coefficient 
-#' @param smoothing_count 
 #' @param convert_current 
 #' @param calibration_current 
 #' @param calibration_concentration 
@@ -288,7 +274,7 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
 #' @examples
 compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
-                          diffusion_coefficient, smoothing_count,
+                          diffusion_coefficient,
                           convert_current, calibration_current = NULL,
                           calibration_concentration = NULL) {
         
@@ -298,7 +284,7 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
         
         mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
                                   bin_size, electrode_distance, dead_space_distance,
-                                  diffusion_coefficient, smoothing_count,
+                                  diffusion_coefficient,
                                   convert_current, calibration_current,
                                   calibration_concentration)
         r2 <- calc_fit(mg)
@@ -536,14 +522,12 @@ mavg <- function(x, n=3) {
 rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
                  pulse_freq, bin_size, electrode_distance,
                  dead_space_distance, diffusion_coefficient,
-                 duration, smoothing_count) {
+                 duration) {
         
-        # Don't pass smoothing_count. Not needed for rwalk matrix.
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
         
-        # Pass smoothing_count for the results from the electrode.
-        rw_electrode <- electrode_results(rw, electrode_pos(rw), smoothing_count)
+        rw_electrode <- electrode_results(rw, electrode_pos(rw))
         
         rw_electrode$src <- "simulation"
         
@@ -558,7 +542,7 @@ rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
 
 merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
-                          diffusion_coefficient, smoothing_count,
+                          diffusion_coefficient,
                           convert_current, calibration_current = NULL,
                           calibration_concentration = NULL) {
         
@@ -621,14 +605,13 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
         print("Building random walk...")
         rw <- rwalk_cv_pulse_run(vmax = vmax, km = km, pulses, pulse_freq, release = release, bin_size = bin_size,
                                  electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-                                 diffusion_coefficient = diffusion_coefficient, duration = dur,
-                                 smoothing_count = smoothing_count)
+                                 diffusion_coefficient = diffusion_coefficient, duration = dur)
         
         # rwalk_cv_pulse_run returns electrode results and source.
         
         print("Formatting results...")
         # Pick off the results at the simulated electrode.
-        # sim <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+        # sim <- electrode_results(rw, electrode_pos = electrode_pos(rw))
         
         # Shift the time of the results.
         # sim$time_sec <- sim$time_sec + min_time
@@ -696,7 +679,7 @@ create_arg_df <- function(
                    pulses, pulse_freq,
                    release_min, release_max, release_by,
                    bin_size, electrode_distance,
-                  dead_space_distance, diffusion_coefficient, smoothing_count,
+                  dead_space_distance, diffusion_coefficient,
                   convert_current, calibration_current, calibration_concentration){
         
         vmax <- seq(vmax_min, vmax_max, vmax_by)
@@ -710,12 +693,12 @@ create_arg_df <- function(
                     release = release,
                     bin_size = bin_size, electrode_distance = electrode_distance,
                     dead_space_distance = dead_space_distance,
-                    diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,
+                    diffusion_coefficient = diffusion_coefficient,
                     convert_current = convert_current, calibration_current = calibration_current,
                     calibration_concentration = calibration_concentration, stringsAsFactors = FALSE)
         
         df <- df[c("vmax", "km", "pulses", "pulse_freq", "release", "bin_size", "electrode_distance",
-                 "dead_space_distance", "diffusion_coefficient", "smoothing_count",
+                 "dead_space_distance", "diffusion_coefficient",
                  "convert_current", "calibration_current", "calibration_concentration")]
 
         df
@@ -824,7 +807,7 @@ position_releases <- function(pulses, pulse_freq, time_sec) {
 #'
 #' @examples
 get_best_args <- function(arg_df) {
-        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -14]
+        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -13]
         result
 }
 
