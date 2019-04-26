@@ -12,9 +12,9 @@ rw_bin05 <- rwalk_cv(dead_space_distance = 4, bin_size = .5)
 str(rw_bin20)
 
 # Assemble results
-res_bin20 <- electrode_results(rw_bin20, electrode_pos = electrode_pos(rw_bin20), smoothing_count = 1)
-res_bin10 <- electrode_results(rw_bin10, electrode_pos = electrode_pos(rw_bin10), smoothing_count = 1)
-res_bin05 <- electrode_results(rw_bin05, electrode_pos = electrode_pos(rw_bin05), smoothing_count = 1)
+res_bin20 <- electrode_results(rw_bin20, electrode_pos = electrode_pos(rw_bin20))
+res_bin10 <- electrode_results(rw_bin10, electrode_pos = electrode_pos(rw_bin10))
+res_bin05 <- electrode_results(rw_bin05, electrode_pos = electrode_pos(rw_bin05))
 
 # Plot
 plot(row.names(res_bin20), res_bin20$electrode, type = "l")

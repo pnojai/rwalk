@@ -14,10 +14,8 @@ electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
 duration = 1
-smoothing_count <- 1
 
 rw <- rwalk_cv_pulse_run(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
-                         dead_space_distance, diffusion_coefficient, duration,
-                         smoothing_count = smoothing_count)
+                         dead_space_distance, diffusion_coefficient, duration)
 
 plot_rwalk_sim(rw, release, vmax, km)

@@ -32,7 +32,6 @@ bin_size <- 2.0
 electrode_distance <- 1000
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
@@ -42,7 +41,7 @@ arg_df <- create_arg_df(vmax_min, vmax_max, vmax_by, km_min,
                         pulses, pulse_freq,
                         release_min, release_max, release_by, bin_size, 
                         electrode_distance, dead_space_distance, diffusion_coefficient, 
-                        smoothing_count, convert_current, calibration_current, calibration_concentration)
+                        convert_current, calibration_current, calibration_concentration)
 
 arg_df
 
@@ -70,7 +69,6 @@ bin_size <- 2.0
 electrode_distance <- 1000
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
@@ -80,7 +78,7 @@ arg_df <- create_arg_df(vmax_min, vmax_max, vmax_by, km_min,
                         pulses, pulse_freq,
                         release_min, release_max, release_by, bin_size, 
                         electrode_distance, dead_space_distance, diffusion_coefficient, 
-                        smoothing_count, convert_current, calibration_current, calibration_concentration)
+                        convert_current, calibration_current, calibration_concentration)
 
 arg_df
 

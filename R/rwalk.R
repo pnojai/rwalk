@@ -524,7 +524,6 @@ rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
                  dead_space_distance, diffusion_coefficient,
                  duration) {
         
-        # Don't pass smoothing_count. Not needed for rwalk matrix.
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
         
@@ -808,7 +807,7 @@ position_releases <- function(pulses, pulse_freq, time_sec) {
 #'
 #' @examples
 get_best_args <- function(arg_df) {
-        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -14]
+        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -13]
         result
 }
 

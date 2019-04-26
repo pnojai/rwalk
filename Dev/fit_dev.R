@@ -17,7 +17,6 @@ bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
@@ -58,7 +57,7 @@ mg3 <- do.call(merge_sim_dat, arg.list)
 arg_df <- create_arg_df(vmax_min, vmax_max, vmax_by, km_min, 
                         km_max, km_by, release_min, release_max, release_by, bin_size, 
                         electrode_distance, dead_space_distance, diffusion_coefficient, 
-                        smoothing_count, convert_current, calibration_current, calibration_concentration)
+                        convert_current, calibration_current, calibration_concentration)
 
 head(arg_df)
 
@@ -76,13 +75,13 @@ lapply(split(arg_df, seq(nrow(arg_df))), function(x) {
 
 
 mg1 <- merge_sim_dat(fil, sample_rate, vmax, km, release, bin_size, electrode_distance,
-                     dead_space_distance, diffusion_coefficient, smoothing_count,
+                     dead_space_distance, diffusion_coefficient,
                      convert_current, calibration_current, calibration_concentration)
 
 compare_pulse(fil = fil, sample_rate = sample_rate, vmax = vmax, km = km,
         release = release, bin_size = bin_size,
         electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-        diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,
+        diffusion_coefficient = diffusion_coefficient,
         calibration_current = calibration_current, calibration_concentration = calibration_concentration)
 
 #####
@@ -113,7 +112,6 @@ bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
@@ -123,7 +121,7 @@ arg_df <- create_arg_df(vmax_min, vmax_max, vmax_by, km_min,
                         pulses, pulse_freq,
                         release_min, release_max, release_by, bin_size, 
                         electrode_distance, dead_space_distance, diffusion_coefficient, 
-                        smoothing_count, convert_current, calibration_current, calibration_concentration)
+                        convert_current, calibration_current, calibration_concentration)
 
 arg_df
 
@@ -143,7 +141,7 @@ do.call(compare_pulse, c(list(dat_list[[1]]), fil, best_fit_df))
 compare_pulse(dat_list[[1]], fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
               electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-              diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,
+              diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
               calibration_current = calibration_current, calibration_concentration = calibration_concentration)
 
 compare_pulse_args_df(dat_list[[1]], paste(fil, "#1"), best_args_df)
