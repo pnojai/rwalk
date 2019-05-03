@@ -193,8 +193,8 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         # Include every other row of the matrix. (Excluding the empty rows.)
         included <- seq(1, nrow(rw_df), 2)
         
-        #rw_df[included, ]
-        rw_df
+        rw_df[included, ]
+        # rw_df
 }
 
 #' Electrode position
@@ -248,8 +248,9 @@ electrode_results <- function(rwalk_df, electrode_pos) {
                       electrode = rwalk_df[-1, "electrode"]
                       )
                 )
-
+        
         results
+        
 }
 
 #' Title
