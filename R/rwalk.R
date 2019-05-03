@@ -141,35 +141,35 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 }
                 
                 # 2nd bins in take .711 from outside neighbor, .5 from inside
-                curr_bin <- 2
-                inside_neighbor <- curr_bin + 1
-                outside_neighbor <- curr_bin - 1
-                # i %% 2 toggles inclusion
-                if ((i %% 2) == 1) {
-                        val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
-                        val <- micmen(val, vmax, km, it_dur)
-                } else {
-                        val <- 0
-                }
-                rw[i, curr_bin] <- val
-                if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
-                        #print(paste("Releasing in time index:", i))
-                        rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
-                }
+                # curr_bin <- 2
+                # inside_neighbor <- curr_bin + 1
+                # outside_neighbor <- curr_bin - 1
+                # # i %% 2 toggles inclusion
+                # if ((i %% 2) == 1) {
+                #         val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                #         val <- micmen(val, vmax, km, it_dur)
+                # } else {
+                #         val <- 0
+                # }
+                # rw[i, curr_bin] <- val
+                # if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
+                #         #print(paste("Releasing in time index:", i))
+                #         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
+                # }
                 
                 # Diffuse the molecules until you get to the electrode.
                 # Vectorized this.
-                rw_outside_neighbor <- rw[(i - 1), (3 - 1):(electrode_pos - 1 - 1)]
-                rw_inside_neighbor <- rw[(i - 1), (3 + 1):(electrode_pos - 1 + 1)]
+                rw_outside_neighbor <- rw[(i - 1), (2 - 1):(electrode_pos - 1 - 1)]
+                rw_inside_neighbor <- rw[(i - 1), (2 + 1):(electrode_pos - 1 + 1)]
                 val_v <- rowMeans(cbind(rw_outside_neighbor, rw_inside_neighbor))
                 val_v<- micmen(val_v, vmax, km, it_dur)
                 
-                rw[i, 3:(electrode_pos - 1)] <- val_v
+                rw[i, 2:(electrode_pos - 1)] <- val_v
                 
                 if (i %in% release_time_sec_idx) {
                         #print(paste("Releasing in time index:", i))
-                        val_v[!dead_space_bin[3:(electrode_pos - 1)]] <- val_v[!dead_space_bin[3:(electrode_pos - 1)]] + release_timed
-                        rw[i, 3:(electrode_pos - 1)] <- val_v
+                        val_v[!dead_space_bin[2:(electrode_pos - 1)]] <- val_v[!dead_space_bin[2:(electrode_pos - 1)]] + release_timed
+                        rw[i, 2:(electrode_pos - 1)] <- val_v
                 }
                 
                 # Since the neighbors are symmetric, averaging them is the same as taking
@@ -193,8 +193,8 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         # Include every other row of the matrix. (Excluding the empty rows.)
         included <- seq(1, nrow(rw_df), 2)
         
-        rw_df[included, ]
-        # rw_df
+        # rw_df[included, ]
+        rw_df
 }
 
 #' Electrode position

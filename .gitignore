@@ -40,3 +40,7 @@ Simulations/RW_CV_test\.csv
 Simulations/~\$RW_CV\.xlsx
 
 tests/testdata/~\$RW_CV_corrected2\.xlsx
+
+tests/testdata/RW_CV_rwalk_computed\.csv
+
+tests/testdata/RW_CV_simulation_as_read\.csv

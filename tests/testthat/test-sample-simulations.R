@@ -9,7 +9,7 @@ test_that("CV simulation matrix matches sample.", {
         library(readr)
 
         # Read simulation
-        xlsx <- readWorkbook("./../testdata/RW_CV_corrected2.xlsx", sheet = 1, startRow = 8,
+        xlsx <- readWorkbook("./../testdata/RW_CV_corrected.xlsx", sheet = 1, startRow = 8,
                              skipEmptyRows = FALSE, colNames = FALSE, cols = c(5:31))
         
         # Make a vector of the timestamp column
@@ -62,7 +62,7 @@ test_that("CV simulation electrode matches sample", {
         library(readr)
         
         # Read simulation
-        xlsx <- readWorkbook("./../testdata/RW_CV_corrected2.xlsx", sheet = 1, startRow = 8,
+        xlsx <- readWorkbook("./../testdata/RW_CV_corrected.xlsx", sheet = 1, startRow = 8,
                              skipEmptyRows = FALSE, colNames = FALSE, cols = c(5, 31))
 
         # Make a vector of the timestamp column
@@ -117,7 +117,7 @@ test_that("CV simulation releases match corrected sample", {
         # Read simulation
         # readWorkbook() argument cols subsets incorrectly, maybe because skipEmptyCols is set to FALSE.
         # Read row with releases, all columns. Then subset rows 5:31.
-        xlsx <- readWorkbook("./../testdata/RW_CV_corrected2.xlsx", sheet = 1, rows = 8, colNames = FALSE, skipEmptyCols = FALSE)
+        xlsx <- readWorkbook("./../testdata/RW_CV_corrected.xlsx", sheet = 1, rows = 8, colNames = FALSE, skipEmptyCols = FALSE)
         
         xlsx <- xlsx[ , 6:31]
         xlsx[is.na(xlsx)] <- 0
