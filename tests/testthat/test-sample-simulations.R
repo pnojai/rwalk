@@ -24,7 +24,7 @@ test_that("CV simulation matrix matches sample.", {
         xlsx_results <- cbind(time_sec, xlsx_results)
         xlsx_results[is.na(xlsx_results)] <- 0
 
-        # write_csv(xlsx_results, "./../testdata/RW_CV_simulation_as_read.csv")        
+        write_csv(xlsx_results, "./../testdata/RW_CV_simulation_as_read.csv")        
         
         # Run the simulation.
         # Random Walk.
@@ -47,7 +47,7 @@ test_that("CV simulation matrix matches sample.", {
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
 
-        # write_csv(rw, "./../testdata/RW_CV_rwalk_computed.csv") 
+        write_csv(rw, "./../testdata/RW_CV_rwalk_computed.csv") 
         
         rw_left_side = rw[, 1:27] # Disregard bins to the right of the electrode
         
