@@ -24,7 +24,7 @@ test_that("CV simulation matrix matches sample.", {
         xlsx_results <- cbind(time_sec, xlsx_results)
         xlsx_results[is.na(xlsx_results)] <- 0
 
-        write_csv(xlsx_results, "./../testdata/RW_CV_simulation_as_read.csv")        
+        # write_csv(xlsx_results, "./../testdata/RW_CV_simulation_as_read.csv")        
         
         # Run the simulation.
         # Random Walk.
@@ -47,7 +47,7 @@ test_that("CV simulation matrix matches sample.", {
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
 
-        write_csv(rw, "./../testdata/RW_CV_rwalk_computed.csv") 
+        # write_csv(rw, "./../testdata/RW_CV_rwalk_computed.csv") 
         
         rw_left_side = rw[, 1:27] # Disregard bins to the right of the electrode
         
@@ -76,6 +76,8 @@ test_that("CV simulation electrode matches sample", {
         # Combine the timestamp column and the results matrix.
         xlsx_results <- as.data.frame(cbind(time_sec, xlsx_results))
 
+        # write_csv(xlsx_results, "./../testdata/RW_CV_simulation_electrode_as_read.csv")    
+        
         # Run the simulation.
         # Random Walk.
         # Build CV model and plot it.
@@ -100,19 +102,9 @@ test_that("CV simulation electrode matches sample", {
         rw <- rw[ , c(1, 27)]
         xlsx_results[is.na(xlsx_results[, 2]), 2] <- 0
         
-        # Spreadsheet by design only uses every other time iteration at the electrod.
-        included <- seq(1, nrow(xlsx_results), 2)
+        # write_csv(rw, "./../testdata/RW_CV_rwalk_electrode_computed.csv") 
         
-        # testresults <- cbind(xlsx_results, rw)
-        # write_csv(testresults, "./../testdata/RW_CV_test.csv")
-        
-        # print(head(xlsx_results[included, 1:2]))
-        # print(head(rw[, 1:2]))
-        
-        precision <- 0.006
-        is_result_outside_precision <- abs(rw[, 2] - xlsx_results[included, 2]) > precision
-        
-        expect_equivalent(sum(is_result_outside_precision), 0)
+        expect_equivalent(xlsx_results, rw)
 })
 
 test_that("CV simulation releases match corrected sample", {
