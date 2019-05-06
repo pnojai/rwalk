@@ -291,6 +291,7 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                                   calibration_concentration)
         r2 <- calc_fit(mg)
         
+        
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
                            calibration_concentration = calibration_concentration)
@@ -833,4 +834,8 @@ get_best_args <- function(arg_df) {
 #' @examples
 compare_pulse_args_df <- function(dat, fil, args_df) {
         do.call(compare_pulse, c(list(dat), fil, args_df))
+}
+
+set_fit_boundaries <- function(sim_w_dat, range, base_tolerance) {
+        c(2.377679, 25.15926)
 }
