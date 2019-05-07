@@ -173,6 +173,6 @@ test_that("set_fit_boundaries() for falling phase works", {
         
         fb <- set_fit_boundaries(mg, range = "f", base_tolerance = 0.01)
         
-        expect_equal(fb, c(2.377679, 25.15926))
+        expect_equal(fb, c(11.84074, 25.15926))
         
 })

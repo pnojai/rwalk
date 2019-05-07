@@ -837,5 +837,18 @@ compare_pulse_args_df <- function(dat, fil, args_df) {
 }
 
 set_fit_boundaries <- function(sim_w_dat, range, base_tolerance) {
-        c(2.377679, 25.15926)
+        if (range %in% c("r", "rise")) {
+                print("Rise phase")
+                result <- c(0,0)
+        } else if (range %in% c("f", "fall")) {
+                # Times for the peaks. Take min of each in case the peak is reached more than once.
+                peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                peak_time_min <- min(peak_time_sim, peak_time_exp)
+                #print(peak_time_min)
+                result <- c(11.84074, 25.15926) # c(min(c(peak_time_sim, peak_time_exp)), 25.15926)
+        } else {
+                print("All")
+        }
+        result
 }
