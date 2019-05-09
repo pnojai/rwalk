@@ -845,8 +845,12 @@ set_fit_boundaries <- function(sim_w_dat, range, base_tolerance) {
                 peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
                 peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
                 peak_time_min <- min(peak_time_sim, peak_time_exp)
-                #print(peak_time_min)
-                result <- c(11.84074, 25.15926) # c(min(c(peak_time_sim, peak_time_exp)), 25.15926)
+                
+                # Time for simulation arrival at baseline plus base_tolerance.
+                base_time_sim <- max(sim_w_dat$time_sec[sim_w_dat$electrode >= base_tolerance & sim_w_dat$src == "simulation"])
+                
+                result <- c(min(c(peak_time_sim, peak_time_exp)), base_time_sim) # c(11.84074, 25.15926) 
+                #result <- c(11.84074, 25.15926) 
         } else {
                 print("All")
         }
