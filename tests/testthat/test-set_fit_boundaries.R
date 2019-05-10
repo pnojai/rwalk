@@ -25,7 +25,7 @@ test_that("set_fit_boundaries(). Falling phase. Sim peaks first", {
                             convert_current, calibration_current,
                             calibration_concentration)
         
-        fb <- set_fit_boundaries(mg, range = "f", base_tolerance = 0.1)
+        fb <- set_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
         expect_equal(fb, c(11.84074, 25.15926), tolerance = 1.0e-6)
         
@@ -56,7 +56,7 @@ test_that("set_fit_boundaries(). Falling phase. Experiment peaks first", {
                             convert_current, calibration_current,
                             calibration_concentration)
         
-        fb <- set_fit_boundaries(mg, range = "f", base_tolerance = 0.1)
+        fb <- set_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
         print(fb)
         
