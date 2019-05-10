@@ -291,19 +291,12 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                                   convert_current, calibration_current,
                                   calibration_concentration)
         
-        if (!is.null(fit_region)) {
-                fit_range <- set_fit_boundaries(mg, fit_region, base_tolerance)
-        } else {
-                fit_range <- c(min(mg$time_sec), max(mg$time_sec))
-        }
-        
-        #r2 <- calc_fit(mg[mg$time_sec >= fit_range[1] & mg$time_sec <= fit_range[2], ])
-        r2 <- calc_fit(mg[mg$time_sec >= fit_range[1], ])
+        r2 <- calc_fit(mg, fit_region, base_tolerance)
         
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
                            calibration_concentration = calibration_concentration,
-                           fit_range = fit_range)
+                           fit_range = get_fit_boundaries(mg, fit_region, base_tolerance))
                 
 }
 
@@ -653,7 +646,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
 
 }
         
-calc_fit <- function(sim_w_dat) {
+calc_fit <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
@@ -686,8 +679,16 @@ calc_fit <- function(sim_w_dat) {
         
         sim_w_datup <- rbind(rw_w_src, dat_up[ , c(1, 4, 5)])
         
+        # Set the range for fitting based on times in random walk.
+        if (!is.null(fit_region)) {
+                fit_range <- get_fit_boundaries(sim_w_dat, fit_region, base_tolerance)
+        } else {
+                fit_range <- c(min(sim_w_dat$time_sec), max(sim_w_dat$time_sec))
+        }
+        
         # Correlate simulation and up sampled data
-        r2 <- rsq(rw_w_src[, 2], dat_up[ , 4])
+        r2 <- rsq(rw_w_src[rw_w_src$time_sec >= fit_range[1] & rw_w_src$time_sec <= fit_range[2], 2],
+                  dat_up[dat_up$time_sec >= fit_range[1] & dat_up$time_sec <= fit_range[2] , 4])
         
         # Return fit
         r2
@@ -854,22 +855,27 @@ compare_pulse_args_df <- function(dat, fil, args_df) {
         do.call(compare_pulse, c(list(dat), fil, args_df))
 }
 
-set_fit_boundaries <- function(sim_w_dat, fit_region, base_tolerance) {
-        if (fit_region %in% c("r", "rise")) {
-                print("Rise phase")
-        } else if (fit_region %in% c("f", "fall")) {
-                # Times for the peaks. Take min of each in case the peak is reached more than once.
-                peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
-                peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
-                peak_time_min <- min(peak_time_sim, peak_time_exp)
-                
-                # Time for simulation arrival at baseline plus base_tolerance.
-                base_time_sim <- max(sim_w_dat$time_sec[sim_w_dat$electrode >= base_tolerance & sim_w_dat$src == "simulation"])
-                
-                result <- c(min(c(peak_time_sim, peak_time_exp)), base_time_sim) # c(11.84074, 25.15926) 
-                #result <- c(11.84074, 25.15926) 
-        } else {
-                print("All")
+get_fit_boundaries <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
+        if (is.null(fit_region)) {result <- NULL}
+        if (is.null(base_tolerance)) {base_tolerance <- 0}
+        
+        if (!is.null(fit_region)) {
+                if (fit_region%in% c("r", "rise")) {
+                        print("Rise phase")
+                } else if (fit_region %in% c("f", "fall")) {
+                        # Times for the peaks. Take min of each in case the peak is reached more than once.
+                        peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                        peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                        peak_time_min <- min(peak_time_sim, peak_time_exp)
+                        
+                        # Time for simulation arrival at baseline plus base_tolerance.
+                        #base_time_sim <- max(sim_w_dat$time_sec[sim_w_dat$electrode >= base_tolerance & sim_w_dat$src == "simulation"])
+                        base_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$src == "experiment" & sim_w_dat$time_sec > peak_time_min & sim_w_dat$electrode <= base_tolerance])
+                        result <- c(min(c(peak_time_sim, peak_time_exp)), base_time_exp) # c(11.84074, 25.15926) 
+                        #result <- c(11.84074, 25.15926) 
+                } else {
+                        result <- NULL
+                }
         }
         result
 }

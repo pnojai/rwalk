@@ -1,6 +1,6 @@
-context("test-set-fit-boundaries")
+context("test-get-fit-boundaries")
 
-test_that("set_fit_boundaries(). Falling phase. Sim peaks first", {
+test_that("get_fit_boundaries(). Falling phase. Sim peaks first", {
         fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_1st_stim.csv"
         sample_rate <- 100
         
@@ -25,13 +25,13 @@ test_that("set_fit_boundaries(). Falling phase. Sim peaks first", {
                             convert_current, calibration_current,
                             calibration_concentration)
         
-        fb <- set_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
+        fb <- get_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
-        expect_equal(fb, c(11.84074, 25.15926), tolerance = 1.0e-6)
+        expect_equal(fb, c(11.84074, 32.3), tolerance = 1.0e-6)
         
 })
 
-test_that("set_fit_boundaries(). Falling phase. Experiment peaks first", {
+test_that("get_fit_boundaries(). Falling phase. Experiment peaks first", {
         fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_1st_stim.csv"
         sample_rate <- 100
         
@@ -56,10 +56,8 @@ test_that("set_fit_boundaries(). Falling phase. Experiment peaks first", {
                             convert_current, calibration_current,
                             calibration_concentration)
         
-        fb <- set_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
+        fb <- get_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
-        print(fb)
-        
-        expect_equal(fb, c(13, 28.13704), tolerance = 1.0e-6)
+        expect_equal(fb, c(13, 32.3), tolerance = 1.0e-6)
         
 })

@@ -23,7 +23,7 @@ convert_current <- TRUE
 calibration_current <- 7500.0
 calibration_concentration <- 5.0
 fit_region = "fall"
-base_tolerance <- 0.1
+base_tolerance <- 0.05
 
 compare_pulse(dat, fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
