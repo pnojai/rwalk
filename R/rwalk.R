@@ -278,7 +278,8 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
                           diffusion_coefficient,
                           convert_current, calibration_current = NULL,
-                          calibration_concentration = NULL) {
+                          calibration_concentration = NULL,
+                          fit_region = NULL, base_tolerance = NULL) {
         
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
@@ -289,11 +290,13 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                                   diffusion_coefficient,
                                   convert_current, calibration_current,
                                   calibration_concentration)
-        r2 <- calc_fit(mg)
+        
+        r2 <- calc_fit(mg, fit_region, base_tolerance)
         
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
-                           calibration_concentration = calibration_concentration)
+                           calibration_concentration = calibration_concentration,
+                           fit_range = get_fit_boundaries(mg, fit_region, base_tolerance))
                 
 }
 
@@ -472,7 +475,8 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
 #'
 #' @examples
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
-                           calibration_current = NULL, calibration_concentration = NULL) {
+                           calibration_current = NULL, calibration_concentration = NULL,
+                           fit_range = NULL) {
         # dat_w_src
         # Tall data frame with column indicating source (experiment, simulation,
         #   interpolation, etc). Each source plots its own curve.
@@ -481,7 +485,8 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
                          "r2=", if (!is.null(r2)) {round(r2, 6)}, sep = "")
-        ggplot2::ggplot(data = dat_w_src) +
+        
+        g <- ggplot2::ggplot(data = dat_w_src) +
                 ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
                 ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      subtitle = paste("Input Data File: ", fil),
@@ -489,6 +494,13 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                      y = expression(paste("Concentration [", mu, "M]")),
                      colour = "source") +
                 ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+        
+        if (!is.null(fit_range)) {
+                g <- g +
+                ggplot2::geom_vline(xintercept = fit_range[1], color = "grey54") +
+                        ggplot2::geom_vline(xintercept = fit_range[2], color = "grey54")
+        }
+        print(g)
 }
 
 get_stim_start <- function(dat_part) {
@@ -634,7 +646,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
 
 }
         
-calc_fit <- function(sim_w_dat) {
+calc_fit <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
@@ -667,8 +679,16 @@ calc_fit <- function(sim_w_dat) {
         
         sim_w_datup <- rbind(rw_w_src, dat_up[ , c(1, 4, 5)])
         
+        # Set the range for fitting based on times in random walk.
+        if (!is.null(fit_region)) {
+                fit_range <- get_fit_boundaries(sim_w_dat, fit_region, base_tolerance)
+        } else {
+                fit_range <- c(min(sim_w_dat$time_sec), max(sim_w_dat$time_sec))
+        }
+        
         # Correlate simulation and up sampled data
-        r2 <- rsq(rw_w_src[, 2], dat_up[ , 4])
+        r2 <- rsq(rw_w_src[rw_w_src$time_sec >= fit_range[1] & rw_w_src$time_sec <= fit_range[2], 2],
+                  dat_up[dat_up$time_sec >= fit_range[1] & dat_up$time_sec <= fit_range[2] , 4])
         
         # Return fit
         r2
@@ -833,4 +853,29 @@ get_best_args <- function(arg_df) {
 #' @examples
 compare_pulse_args_df <- function(dat, fil, args_df) {
         do.call(compare_pulse, c(list(dat), fil, args_df))
+}
+
+get_fit_boundaries <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
+        if (is.null(fit_region)) {result <- NULL}
+        if (is.null(base_tolerance)) {base_tolerance <- 0}
+        
+        if (!is.null(fit_region)) {
+                if (fit_region%in% c("r", "rise")) {
+                        print("Rise phase")
+                } else if (fit_region %in% c("f", "fall")) {
+                        # Times for the peaks. Take min of each in case the peak is reached more than once.
+                        peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                        peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                        peak_time_min <- min(peak_time_sim, peak_time_exp)
+                        
+                        # Time for simulation arrival at baseline plus base_tolerance.
+                        #base_time_sim <- max(sim_w_dat$time_sec[sim_w_dat$electrode >= base_tolerance & sim_w_dat$src == "simulation"])
+                        base_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$src == "experiment" & sim_w_dat$time_sec > peak_time_min & sim_w_dat$electrode <= base_tolerance])
+                        result <- c(min(c(peak_time_sim, peak_time_exp)), base_time_exp) # c(11.84074, 25.15926) 
+                        #result <- c(11.84074, 25.15926) 
+                } else {
+                        result <- NULL
+                }
+        }
+        result
 }

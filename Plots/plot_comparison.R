@@ -19,12 +19,15 @@ bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-convert_current = TRUE
-calibration_current = 7500.0
-calibration_concentration = 5.0
+convert_current <- TRUE
+calibration_current <- 7500.0
+calibration_concentration <- 5.0
+fit_region = "fall"
+base_tolerance <- 0.05
 
 compare_pulse(dat, fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
               electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
               diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
-              calibration_current = calibration_current, calibration_concentration = calibration_concentration)
+              calibration_current = calibration_current, calibration_concentration = calibration_concentration,
+              fit_region = fit_region, base_tolerance = base_tolerance)
