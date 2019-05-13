@@ -861,7 +861,15 @@ get_fit_boundaries <- function(sim_w_dat, fit_region = NULL, base_tolerance = NU
         
         if (!is.null(fit_region)) {
                 if (fit_region%in% c("r", "rise")) {
-                        print("Rise phase")
+                        # Start time of the simulation
+                        start_time <- min(sim_w_dat$time_sec[sim_w_dat$src == "simulation"])
+                        
+                        # Times for the peaks. Take min of each in case the peak is reached more than once.
+                        peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                        peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                        
+                        result <- c(start_time, max(c(peak_time_sim, peak_time_exp)))
+                        
                 } else if (fit_region %in% c("f", "fall")) {
                         # Times for the peaks. Take min of each in case the peak is reached more than once.
                         peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
