@@ -27,7 +27,7 @@ test_that("get_fit_boundaries(). Falling phase. Sim peaks first", {
         
         fb <- get_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
-        expect_equal(fb, c(11.84074, 32.3), tolerance = 1.0e-6)
+        expect_equal(fb, c(11.44074, 34.60000), tolerance = 1.0e-6)
         
 })
 
@@ -58,7 +58,7 @@ test_that("get_fit_boundaries(). Falling phase. Experiment peaks first", {
         
         fb <- get_fit_boundaries(mg, fit_region = "f", base_tolerance = 0.1)
         
-        expect_equal(fb, c(13, 32.3), tolerance = 1.0e-6)
+        expect_equal(fb, c(13, 34.6), tolerance = 1.0e-6)
         
 })
 
@@ -89,7 +89,7 @@ test_that("get_fit_boundaries(). Rising phase. Sim peaks first", {
         
         fb <- get_fit_boundaries(mg, fit_region = "r")
         
-        expect_equal(fb, c(10.71481, 13), tolerance = 1.0e-6)
+        expect_equal(fb, c(10.31481, 13), tolerance = 1.0e-6)
         
 })
 
@@ -120,6 +120,6 @@ test_that("get_fit_boundaries(). Rising phase. Experiment peaks first", {
         
         fb <- get_fit_boundaries(mg, fit_region = "r")
         
-        expect_equal(fb, c(10.71481, 16.5963), tolerance = 1.0e-6)
+        expect_equal(fb, c(10.31481, 16.19630), tolerance = 1.0e-6)
         
 })

@@ -145,3 +145,37 @@ test_that("compare_pulse_arg_df works", {
                       ,
                       "Formatting results...")
 })
+
+test_that("merge_sim_dat() baselines stim start", {
+        sample_rate <- 100
+
+        fil <- "./../testdata/180430_DA_saline_1.csv"
+        vmax <- 4.75
+        km <- 3.0
+        pulses <- 30
+        pulse_freq <- 50
+        release <- 3.2
+        bin_size <- 2
+        electrode_distance <- 1000
+        dead_space_distance <- 4
+        diffusion_coefficient <- 2.7 * 10^-6
+        convert_current = TRUE
+        calibration_current = 7500.0
+        calibration_concentration = 5.0
+        fit_region = NULL
+        base_tolerance <- 0.05
+        
+        # Read the train of stimuli. Break up into list. Throw away all but first.
+        dat <- read_experiment_csv(fil, sr = sample_rate)
+        dat_list <- split_stims(dat)
+        dat <- dat_list[[1]]
+        
+        mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
+                            bin_size, electrode_distance, dead_space_distance,
+                            diffusion_coefficient,
+                            convert_current, calibration_current,
+                            calibration_concentration)
+        
+        exp_start <- mg[mg$src == "experiment" & mg$time_sec == 0, "electrode"]
+        expect_equal(exp_start, 0.20291696)
+})

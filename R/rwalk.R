@@ -522,8 +522,8 @@ get_stim_start <- function(dat_part) {
         # Largest change in slope is assumed beginning of stimulus.
         max_delta_slope_smooth <- max(dat_part$delta_slope_smooth, na.rm = TRUE)
         
-        # Return the prior index.
-        idx_max_delta_slope_smooth <- which(dat_part$delta_slope_smooth == max_delta_slope_smooth) - 1
+        # Return the prior index. (I think you have to step back as many steps as you smooth.)
+        idx_max_delta_slope_smooth <- which(dat_part$delta_slope_smooth == max_delta_slope_smooth) - 5
         
         idx_max_delta_slope_smooth
         
@@ -585,6 +585,10 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
         
         # Get the index where the stimulus starts.
         idx_stim_start <- get_stim_start(dat[1:idx_max_obs, ])
+        
+        # Zero the electrode at the start of the stimulus.
+        y_shift <- -(dat[idx_stim_start, "electrode"])
+        dat$electrode <- dat$electrode + y_shift
         
         # Get the minimum observation in the 1st partition. Find the index.
         # REPLACED BY IDX_STIM_START
