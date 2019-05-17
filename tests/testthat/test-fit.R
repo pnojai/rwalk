@@ -31,14 +31,14 @@ test_that("calc_fit() for region = all", {
         convert_current <- TRUE
         calibration_current <- 7500.0
         calibration_concentration <- 5.0
-        fit_region = "fall"
         base_tolerance <- 0.1
         
+        # This data frame has the whole domain of results.
         mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
                             bin_size, electrode_distance, dead_space_distance,
                             diffusion_coefficient,
                             convert_current, calibration_current,
                             calibration_concentration)
         
-        expect_equal(calc_fit(mg), 0.87134, tolerance = 1.0e-6)
+        expect_equal(calc_fit(mg), 0.7705312, tolerance = 1.0e-6)
 })
