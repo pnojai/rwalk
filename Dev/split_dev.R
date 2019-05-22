@@ -1,9 +1,9 @@
-fil <- "./tests/testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
+fil <- "./tests/testdata/180430_DA_saline_1.csv"
 sample_rate <- 100
 dat <- read_experiment_csv(fil, sr = sample_rate)
 
 lead_time <- 10
-win_len <- 119
+win_len <- 120
 wins <- seq(from = lead_time, to = max(dat$time_sec), by = win_len)
 
 plot(dat$time_sec, dat$electrode, "l")

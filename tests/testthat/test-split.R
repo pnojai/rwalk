@@ -1,7 +1,7 @@
 context("test-split")
 
 test_that("split_stims() returns list of correct length", {
-        fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
+        fil <- "./../testdata/180430_DA_saline_1.csv"
         
         sample_rate <- 100
         
@@ -10,5 +10,5 @@ test_that("split_stims() returns list of correct length", {
         dat_list <- split_stims(dat)
         
         expect_is(dat_list, "list")
-        expect_equal(length(dat_list), 15)
+        expect_equal(length(dat_list), 5)
 })

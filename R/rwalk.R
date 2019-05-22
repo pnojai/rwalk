@@ -752,7 +752,7 @@ calc_fit_multi <- function(dat, arg_df) {
         
 }
 
-split_stims <- function(df) {
+split_stims <- function(df, lead_time_sec, win_len_sec) {
         # Parameters
         #   df: Data frame. From a file containing multiple stimulus events.
         #       $ time_sec
@@ -770,6 +770,36 @@ split_stims <- function(df) {
         # end_points <- cbind(stim_start, stim_end)
         
         # end_points <- 15
+        
+        # for (i in wins) {
+        #         plot(dat$time_sec[dat$time_sec >= i & dat$time_sec < i + win_len],
+        #              dat$electrode[dat$time_sec >= i & dat$time_sec < i + win_len], type = "l",
+        #              main = i)
+        # }
+
+        for (i in wins) {
+                first <- i
+                last <- min((i + win_len -1), nrow(dat))
+                
+                stim <- dat[first:last, ]
+                #print(str(stim))
+                
+                if (nrow(stim) == win_len) {
+                        dat_list <- c(dat_list, list(stim))
+                }
+                # str(dat_list)
+                # plot(electrode, type = "l", main = i)
+                # abline(v = max(which(dat$electrode == max(electrode))))
+        } 
+
+        wins <- seq(from = lead_time_sec, to = max(df$time_sec), by = win_len_sec)
+        
+        df_list <- list()
+
+        for (i in wins) {
+                
+        }        
+        
         
         df_list <- list(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
         # for (row in 1:nrow(end_points)) {
