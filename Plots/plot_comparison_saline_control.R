@@ -29,10 +29,7 @@ for (i in wins) {
 # Perform confirmed segmentation.
 dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
 
-<<<<<<< HEAD
-=======
 # Model parameters
->>>>>>> Issue_006
 vmax <- 4.8
 km <- 1.7
 pulses <- 30
