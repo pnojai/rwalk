@@ -279,8 +279,7 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           diffusion_coefficient,
                           convert_current, calibration_current = NULL,
                           calibration_concentration = NULL,
-                          fit_region = NULL, base_tolerance = NULL) {
-        
+                          fit_region = NULL, base_tolerance = NULL, plot_duration_sec = NULL) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
@@ -292,6 +291,11 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                                   calibration_concentration)
         
         r2 <- calc_fit(mg, fit_region, base_tolerance)
+        
+        if (!is.null(plot_duration_sec)) {
+                max_plot_time <- min(mg$time_sec[mg$src == "simulation"] + plot_duration_sec)
+                mg <- mg[mg$time_sec <= max_plot_time, ]
+        }
         
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
