@@ -61,9 +61,11 @@ test_that("position_releases() is correct", {
 test_that("get_best_fit_args is correct", {
         fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
         sample_rate <- 100
+        lead_time_sec <- 10
+        win_length_sec <- 119
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
         
         vmax_min <- 0.9
         vmax_max <- 1.0
@@ -106,9 +108,11 @@ test_that("get_best_fit_args is correct", {
 test_that("compare_pulse_arg_df works", {
         fil <- "./../testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
         sample_rate <- 100
+        lead_time_sec <- 10
+        win_length_sec <- 119
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
         
         vmax_min <- 1.0
         vmax_max <- 1.0
@@ -167,7 +171,10 @@ test_that("merge_sim_dat() baselines stim start", {
         
         # Read the train of stimuli. Break up into list. Throw away all but first.
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat)
+        lead_time_sec <- 10
+        win_length_sec <- 119
+        
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
         dat <- dat_list[[1]]
         
         mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,

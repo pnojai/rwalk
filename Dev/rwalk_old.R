@@ -615,3 +615,62 @@ test_that("CV simulation 1st iteration matches corrected sample", {
         expect_equivalent(xlsx, rw[2, 2:27])
         
 })
+
+find_stim_peaks <- function(df) {
+        # Used by an old version of split_stims(). Finding the peaks is insufficiently
+        # generalizable.
+        
+        # Parameters
+        #   df: Data frame
+        #       $ time_sec
+        #       $ electrode
+        #
+        # Returns
+        #   Vector of time_sec values
+        
+        # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
+        electrode <- stats::smooth.spline(df$electrode, spar = .5)
+        # Get the derivative.
+        smoothed.dx <- stats::predict(electrode, deriv = 1)$y
+        # Where the derivative goes from negative to positive (crosses 0) is a peak.
+        peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
+        
+        # Return times of peaks.
+        df[peaks, "time_sec"]
+        
+}
+
+split_stims <- function(df) {
+        # Old version of split stims that attempts to find peaks.
+        # The approach is insufficiently general. It doesn't work in enough contexts.
+        # Adopting a new approach in which the user explicitly defines how to split.
+        
+        # Parameters
+        #   df: Data frame. From a file containing multiple stimulus events.
+        #       $ time_sec
+        #       $ electrode
+        #
+        # Returns
+        #   df_list: List of data frames. Each list item is one stimulus event.
+        
+        peaks_time_sec <- find_stim_peaks(df)
+        lead_time_sec <- peaks_time_sec[1] - df$time_sec[1]
+        
+        stim_start <- peaks_time_sec - lead_time_sec
+        # Stimulus ends at the beginning of the next one, up to last one,
+        # which is the last in the data frame.
+        stim_end <- c(stim_start[-1], max(df$time_sec))
+        end_points <- cbind(stim_start, stim_end)
+        
+        df_list <- list()
+        for (row in 1:nrow(end_points)) {
+                stim_start <- end_points[row, "stim_start"]
+                stim_end <- end_points[row, "stim_end"]
+                
+                stim <- df[df$time_sec >= stim_start & df$time_sec < stim_end, ]
+                df_list <- c(df_list, list(stim))
+        }
+        
+        df_list
+        
+}

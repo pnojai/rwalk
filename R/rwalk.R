@@ -752,28 +752,7 @@ calc_fit_multi <- function(dat, arg_df) {
         
 }
 
-find_stim_peaks <- function(df) {
-        # Parameters
-        #   df: Data frame
-        #       $ time_sec
-        #       $ electrode
-        #
-        # Returns
-        #   Vector of time_sec values
-        
-        # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
-        electrode <- stats::smooth.spline(df$electrode, spar = .5)
-        # Get the derivative.
-        smoothed.dx <- stats::predict(electrode, deriv = 1)$y
-        # Where the derivative goes from negative to positive (crosses 0) is a peak.
-        peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
-        
-        # Return times of peaks.
-        df[peaks, "time_sec"]
-        
-}
-
-split_stims <- function(df) {
+split_stims <- function(df, lead_time_sec, win_length_sec) {
         # Parameters
         #   df: Data frame. From a file containing multiple stimulus events.
         #       $ time_sec
@@ -781,27 +760,26 @@ split_stims <- function(df) {
         #
         # Returns
         #   df_list: List of data frames. Each list item is one stimulus event.
-        
-        peaks_time_sec <- find_stim_peaks(df)
-        lead_time_sec <- peaks_time_sec[1] - df$time_sec[1]
-        
-        stim_start <- peaks_time_sec - lead_time_sec
-        # Stimulus ends at the beginning of the next one, up to last one,
-        # which is the last in the data frame.
-        stim_end <- c(stim_start[-1], max(df$time_sec))
-        end_points <- cbind(stim_start, stim_end)
-        
-        df_list <- list()
-        for (row in 1:nrow(end_points)) {
-                stim_start <- end_points[row, "stim_start"]
-                stim_end <- end_points[row, "stim_end"]
-                
-                stim <- df[df$time_sec >= stim_start & df$time_sec < stim_end, ]
-                df_list <- c(df_list, list(stim))
-        }
-        
-        df_list
+        win_start <- seq(from = lead_time_sec, to = max(df$time_sec), by = win_length_sec)
 
+        df_list <- list()
+        for (i in win_start) {
+                if (length(df_list) == 0) {
+                        last_nrow <- 0
+                } else {
+                        last_nrow <- nrow(df_list[[length(df_list)]])
+                }
+                
+                stim <- df[df$time_sec >= i & df$time_sec < (i + win_length_sec),]
+
+                if (nrow(stim) < last_nrow) {
+                        df_list[[length(df_list)]] <- rbind(df_list[[length(df_list)]], stim)
+                } else {
+                        df_list <- c(df_list, list(stim))
+                }
+        }
+
+        df_list
 }
 
 position_releases <- function(pulses, pulse_freq, time_sec) {
