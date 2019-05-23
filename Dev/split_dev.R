@@ -1,4 +1,4 @@
-fil <- "./tests/testdata/181015_10mg-kgAMPH_50mM_Nimo_2_outlier_scrub.csv"
+fil <- "./tests/testdata/180430_DA_saline_1.csv"
 sample_rate <- 100
 dat <- read_experiment_csv(fil, sr = sample_rate)
 
@@ -19,22 +19,6 @@ for (i in wins) {
 
 wins
 
-dat_1 <- dat[dat$time_sec <= 130, ]
-
-plot(dat_1$time_sec, dat_1$electrode, "l")
-abline(v = 10)
-
-head(dat_1)
-dat_list <- split_stims(dat)
-
-lead_time <- 10
-win_len <- 120
-wins <- seq(from = lead_time, to = max(dat$time_sec), by = win_len)
-
-plot(dat$time_sec[dat$time_sec > 850], dat$electrode[dat$time_sec > 850], "l")
-
-wins
-dat_list <- list()
 for (i in wins) {
         first <- i
         last <- min((i + win_len -1), nrow(dat))
