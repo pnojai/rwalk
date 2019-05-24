@@ -20,7 +20,6 @@ bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 convert_current = TRUE
 calibration_current = 7500.0
 calibration_concentration = 5.0
@@ -29,12 +28,12 @@ lapply(dat_list, function(x) {
         compare_pulse(x, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
                       release = release, bin_size = bin_size,
                       electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-                      diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,
+                      diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
                       calibration_current = calibration_current, calibration_concentration = calibration_concentration)
 })
 
 # compare_pulse(dat, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
 #               release = release, bin_size = bin_size,
 #               electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-#               diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count, convert_current = convert_current,
+#               diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
 #               calibration_current = calibration_current, calibration_concentration = calibration_concentration)

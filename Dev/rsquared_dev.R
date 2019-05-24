@@ -9,7 +9,6 @@ bin_size <- 2.0
 electrode_distance <- 50
 dead_space_distance <- 4
 diffusion_coefficient <- 2.7 * 10^-6
-smoothing_count <- 4
 
 # Read data file.
 dat <- read_experiment_csv(fil, sr = sample_rate)
@@ -39,7 +38,7 @@ rw <- rwalk_cv(vmax = vmax, km = km, release = release, bin_size = bin_size,
 
 str(rw)
 # Pick off the results at the simulated electrode.
-res <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+res <- electrode_results(rw, electrode_pos = electrode_pos(rw))
 
 # Shift the time of the results.
 res$time_sec <- res$time_sec + min_time

@@ -116,9 +116,11 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         dead_space_bin <- rep(FALSE, bins)
         dead_space_bin[dead_space_range] <- TRUE
         
-        # Release at time 0 (row 1). Don't release to dead space.
-        # rw[1, !dead_space_bin] <- release
-        rw[1, !dead_space_bin] <- release_timed
+        # Release at time 0 (row 1).
+        # Don't release to dead space.
+        # Don't release to odd-numbered bins since Eugene's fix.
+        release_bin <- c(rep(c(FALSE, TRUE), floor(bins / 2)), FALSE)
+        rw[1, release_bin & !dead_space_bin] <- release_timed
         
         # Iterate in time
         for (i in 2:(iterations + 1)) {
@@ -126,8 +128,12 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 # Outside bins take from inside neighbor only
                 curr_bin <- 1
                 inside_neighbor <- curr_bin + 1
-                val <- mean(c(rw[(i - 1), inside_neighbor], 0))
-                val <- micmen(val, vmax, km, it_dur)
+                if ((i - 1) %% 2 == 1) {
+                        val <- mean(c(rw[(i - 1), inside_neighbor], 0))
+                        val <- micmen(val, vmax, km, it_dur)
+                } else {
+                        val <- 0
+                }
                 rw[i, 1] <- val
                 if (i %in% release_time_sec_idx & !dead_space_bin[1]) {
                         #print(paste("Releasing in time index:", i))
@@ -135,30 +141,35 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
                 }
                 
                 # 2nd bins in take .711 from outside neighbor, .5 from inside
-                curr_bin <- 2
-                inside_neighbor <- curr_bin + 1
-                outside_neighbor <- curr_bin - 1
-                val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
-                val <- micmen(val, vmax, km, it_dur)
-                rw[i, curr_bin] <- val
-                if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
-                        #print(paste("Releasing in time index:", i))
-                        rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
-                }
+                # curr_bin <- 2
+                # inside_neighbor <- curr_bin + 1
+                # outside_neighbor <- curr_bin - 1
+                # # i %% 2 toggles inclusion
+                # if ((i %% 2) == 1) {
+                #         val <- .711 * rw[(i - 1), outside_neighbor] + .5 * rw[(i - 1), inside_neighbor]
+                #         val <- micmen(val, vmax, km, it_dur)
+                # } else {
+                #         val <- 0
+                # }
+                # rw[i, curr_bin] <- val
+                # if (i %in% release_time_sec_idx & !dead_space_bin[curr_bin]) {
+                #         #print(paste("Releasing in time index:", i))
+                #         rw[i, curr_bin] <- rw[i, curr_bin] + release_timed
+                # }
                 
                 # Diffuse the molecules until you get to the electrode.
                 # Vectorized this.
-                rw_outside_neighbor <- rw[(i - 1), (3 - 1):(electrode_pos - 1 - 1)]
-                rw_inside_neighbor <- rw[(i - 1), (3 + 1):(electrode_pos - 1 + 1)]
+                rw_outside_neighbor <- rw[(i - 1), (2 - 1):(electrode_pos - 1 - 1)]
+                rw_inside_neighbor <- rw[(i - 1), (2 + 1):(electrode_pos - 1 + 1)]
                 val_v <- rowMeans(cbind(rw_outside_neighbor, rw_inside_neighbor))
                 val_v<- micmen(val_v, vmax, km, it_dur)
                 
-                rw[i, 3:(electrode_pos - 1)] <- val_v
+                rw[i, 2:(electrode_pos - 1)] <- val_v
                 
                 if (i %in% release_time_sec_idx) {
                         #print(paste("Releasing in time index:", i))
-                        val_v[!dead_space_bin[3:(electrode_pos - 1)]] <- val_v[!dead_space_bin[3:(electrode_pos - 1)]] + release_timed
-                        rw[i, 3:(electrode_pos - 1)] <- val_v
+                        val_v[!dead_space_bin[2:(electrode_pos - 1)]] <- val_v[!dead_space_bin[2:(electrode_pos - 1)]] + release_timed
+                        rw[i, 2:(electrode_pos - 1)] <- val_v
                 }
                 
                 # Since the neighbors are symmetric, averaging them is the same as taking
@@ -179,7 +190,11 @@ rwalk_cv_pulse <- function(vmax, km, release, pulses,
         # Name the location of the electrode data.
         colnames(rw_df)[electrode_pos(rw_df, time_column = TRUE)] <- "electrode"
         
-        rw_df
+        # Include every other row of the matrix. (Excluding the empty rows.)
+        included <- seq(1, nrow(rw_df), 2)
+        
+        rw_df[included, ]
+        # rw_df
 }
 
 #' Electrode position
@@ -222,32 +237,20 @@ electrode_pos <- function(rw, time_column = TRUE) {
 #' data frame.
 #' @param electrode_pos. The column index within the random walk matrix,
 #' locating the electrode results. 
-#' @param smoothing_count. Integer. The electrode results can be smoothed
-#' using a moving average applied across the indicated number of values.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
+electrode_results <- function(rwalk_df, electrode_pos) {
         results <- as.data.frame(
                 cbind(time_sec = rwalk_df[-1, "time_sec"],
                       electrode = rwalk_df[-1, "electrode"]
                       )
                 )
-
-        #Vector of lower indexes for means.
-        seq_low <- 1:nrow(results)
-        # Set up high sequence. The top boundary doesn't overflow.
-        seq_high <- smoothing_count:(nrow(results) + smoothing_count - 1)
-        seq_high <- pmin.int(seq_high, nrow(results)) # End of sequence doesn't exceed max indes.
-        
-        #Compute rolling average
-        results_smoothed <- rowMeans(cbind(results[seq_low, "electrode"], results[seq_high, "electrode"]))
-        
-        results[ , 2] <- results_smoothed
         
         results
+        
 }
 
 #' Title
@@ -263,7 +266,6 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
 #' @param electrode_distance 
 #' @param dead_space_distance 
 #' @param diffusion_coefficient 
-#' @param smoothing_count 
 #' @param convert_current 
 #' @param calibration_current 
 #' @param calibration_concentration 
@@ -274,24 +276,31 @@ electrode_results <- function(rwalk_df, electrode_pos, smoothing_count = 4) {
 #' @examples
 compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
-                          diffusion_coefficient, smoothing_count,
+                          diffusion_coefficient,
                           convert_current, calibration_current = NULL,
-                          calibration_concentration = NULL) {
-        
+                          calibration_concentration = NULL,
+                          fit_region = NULL, base_tolerance = NULL, plot_duration_sec = NULL) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
         
         mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
                                   bin_size, electrode_distance, dead_space_distance,
-                                  diffusion_coefficient, smoothing_count,
+                                  diffusion_coefficient,
                                   convert_current, calibration_current,
                                   calibration_concentration)
-        r2 <- calc_fit(mg)
+        
+        r2 <- calc_fit(mg, fit_region, base_tolerance)
+        
+        if (!is.null(plot_duration_sec)) {
+                max_plot_time <- min(mg$time_sec[mg$src == "simulation"] + plot_duration_sec)
+                mg <- mg[mg$time_sec <= max_plot_time, ]
+        }
         
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
-                           calibration_concentration = calibration_concentration)
+                           calibration_concentration = calibration_concentration,
+                           fit_range = get_fit_boundaries(mg, fit_region, base_tolerance))
                 
 }
 
@@ -470,7 +479,8 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
 #'
 #' @examples
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
-                           calibration_current = NULL, calibration_concentration = NULL) {
+                           calibration_current = NULL, calibration_concentration = NULL,
+                           fit_range = NULL) {
         # dat_w_src
         # Tall data frame with column indicating source (experiment, simulation,
         #   interpolation, etc). Each source plots its own curve.
@@ -479,7 +489,8 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
                          "r2=", if (!is.null(r2)) {round(r2, 6)}, sep = "")
-        ggplot2::ggplot(data = dat_w_src) +
+        
+        g <- ggplot2::ggplot(data = dat_w_src) +
                 ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
                 ggplot2::labs(title = "Cyclic Voltammetry Simulation",
                      subtitle = paste("Input Data File: ", fil),
@@ -487,6 +498,13 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                      y = expression(paste("Concentration [", mu, "M]")),
                      colour = "source") +
                 ggplot2::annotate("text", x = Inf, y = Inf, label = caption, vjust = 1, hjust = 1)
+        
+        if (!is.null(fit_range)) {
+                g <- g +
+                ggplot2::geom_vline(xintercept = fit_range[1], color = "grey54") +
+                        ggplot2::geom_vline(xintercept = fit_range[2], color = "grey54")
+        }
+        print(g)
 }
 
 get_stim_start <- function(dat_part) {
@@ -508,8 +526,8 @@ get_stim_start <- function(dat_part) {
         # Largest change in slope is assumed beginning of stimulus.
         max_delta_slope_smooth <- max(dat_part$delta_slope_smooth, na.rm = TRUE)
         
-        # Return the prior index.
-        idx_max_delta_slope_smooth <- which(dat_part$delta_slope_smooth == max_delta_slope_smooth) - 1
+        # Return the prior index. (I think you have to step back as many steps as you smooth.)
+        idx_max_delta_slope_smooth <- which(dat_part$delta_slope_smooth == max_delta_slope_smooth) - 5
         
         idx_max_delta_slope_smooth
         
@@ -522,14 +540,12 @@ mavg <- function(x, n=3) {
 rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
                  pulse_freq, bin_size, electrode_distance,
                  dead_space_distance, diffusion_coefficient,
-                 duration, smoothing_count) {
+                 duration) {
         
-        # Don't pass smoothing_count. Not needed for rwalk matrix.
         rw <- rwalk_cv_pulse(vmax, km, release, pulses, pulse_freq, bin_size, electrode_distance,
                              dead_space_distance, diffusion_coefficient, duration)
         
-        # Pass smoothing_count for the results from the electrode.
-        rw_electrode <- electrode_results(rw, electrode_pos(rw), smoothing_count)
+        rw_electrode <- electrode_results(rw, electrode_pos(rw))
         
         rw_electrode$src <- "simulation"
         
@@ -544,7 +560,7 @@ rwalk_cv_pulse_run <- function(vmax, km, release, pulses,
 
 merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
                           bin_size, electrode_distance, dead_space_distance,
-                          diffusion_coefficient, smoothing_count,
+                          diffusion_coefficient,
                           convert_current, calibration_current = NULL,
                           calibration_concentration = NULL) {
         
@@ -573,6 +589,10 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
         
         # Get the index where the stimulus starts.
         idx_stim_start <- get_stim_start(dat[1:idx_max_obs, ])
+        
+        # Zero the electrode at the start of the stimulus.
+        y_shift <- -(dat[idx_stim_start, "electrode"])
+        dat$electrode <- dat$electrode + y_shift
         
         # Get the minimum observation in the 1st partition. Find the index.
         # REPLACED BY IDX_STIM_START
@@ -607,14 +627,13 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
         print("Building random walk...")
         rw <- rwalk_cv_pulse_run(vmax = vmax, km = km, pulses, pulse_freq, release = release, bin_size = bin_size,
                                  electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
-                                 diffusion_coefficient = diffusion_coefficient, duration = dur,
-                                 smoothing_count = smoothing_count)
+                                 diffusion_coefficient = diffusion_coefficient, duration = dur)
         
         # rwalk_cv_pulse_run returns electrode results and source.
         
         print("Formatting results...")
         # Pick off the results at the simulated electrode.
-        # sim <- electrode_results(rw, electrode_pos = electrode_pos(rw), smoothing_count = 4)
+        # sim <- electrode_results(rw, electrode_pos = electrode_pos(rw))
         
         # Shift the time of the results.
         # sim$time_sec <- sim$time_sec + min_time
@@ -635,7 +654,7 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
 
 }
         
-calc_fit <- function(sim_w_dat) {
+calc_fit <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
@@ -668,8 +687,16 @@ calc_fit <- function(sim_w_dat) {
         
         sim_w_datup <- rbind(rw_w_src, dat_up[ , c(1, 4, 5)])
         
+        # Set the range for fitting based on times in random walk.
+        if (!is.null(fit_region)) {
+                fit_range <- get_fit_boundaries(sim_w_dat, fit_region, base_tolerance)
+        } else {
+                fit_range <- c(min(sim_w_dat$time_sec), max(sim_w_dat$time_sec))
+        }
+        
         # Correlate simulation and up sampled data
-        r2 <- rsq(rw_w_src[, 2], dat_up[ , 4])
+        r2 <- rsq(rw_w_src[rw_w_src$time_sec >= fit_range[1] & rw_w_src$time_sec <= fit_range[2], 2],
+                  dat_up[dat_up$time_sec >= fit_range[1] & dat_up$time_sec <= fit_range[2] , 4])
         
         # Return fit
         r2
@@ -682,7 +709,7 @@ create_arg_df <- function(
                    pulses, pulse_freq,
                    release_min, release_max, release_by,
                    bin_size, electrode_distance,
-                  dead_space_distance, diffusion_coefficient, smoothing_count,
+                  dead_space_distance, diffusion_coefficient,
                   convert_current, calibration_current, calibration_concentration){
         
         vmax <- seq(vmax_min, vmax_max, vmax_by)
@@ -696,12 +723,12 @@ create_arg_df <- function(
                     release = release,
                     bin_size = bin_size, electrode_distance = electrode_distance,
                     dead_space_distance = dead_space_distance,
-                    diffusion_coefficient = diffusion_coefficient, smoothing_count = smoothing_count,
+                    diffusion_coefficient = diffusion_coefficient,
                     convert_current = convert_current, calibration_current = calibration_current,
                     calibration_concentration = calibration_concentration, stringsAsFactors = FALSE)
         
         df <- df[c("vmax", "km", "pulses", "pulse_freq", "release", "bin_size", "electrode_distance",
-                 "dead_space_distance", "diffusion_coefficient", "smoothing_count",
+                 "dead_space_distance", "diffusion_coefficient",
                  "convert_current", "calibration_current", "calibration_concentration")]
 
         df
@@ -729,28 +756,7 @@ calc_fit_multi <- function(dat, arg_df) {
         
 }
 
-find_stim_peaks <- function(df) {
-        # Parameters
-        #   df: Data frame
-        #       $ time_sec
-        #       $ electrode
-        #
-        # Returns
-        #   Vector of time_sec values
-        
-        # Spline needs a smoothing parameter, spar, to reduce noise in stimulus.
-        electrode <- stats::smooth.spline(df$electrode, spar = .5)
-        # Get the derivative.
-        smoothed.dx <- stats::predict(electrode, deriv = 1)$y
-        # Where the derivative goes from negative to positive (crosses 0) is a peak.
-        peaks <- which(c(smoothed.dx,NA) < 0 & c(NA, smoothed.dx) > 0) 
-        
-        # Return times of peaks.
-        df[peaks, "time_sec"]
-        
-}
-
-split_stims <- function(df) {
+split_stims <- function(df, lead_time_sec, win_length_sec) {
         # Parameters
         #   df: Data frame. From a file containing multiple stimulus events.
         #       $ time_sec
@@ -758,27 +764,26 @@ split_stims <- function(df) {
         #
         # Returns
         #   df_list: List of data frames. Each list item is one stimulus event.
-        
-        peaks_time_sec <- find_stim_peaks(df)
-        lead_time_sec <- peaks_time_sec[1] - df$time_sec[1]
-        
-        stim_start <- peaks_time_sec - lead_time_sec
-        # Stimulus ends at the beginning of the next one, up to last one,
-        # which is the last in the data frame.
-        stim_end <- c(stim_start[-1], max(df$time_sec))
-        end_points <- cbind(stim_start, stim_end)
-        
-        df_list <- list()
-        for (row in 1:nrow(end_points)) {
-                stim_start <- end_points[row, "stim_start"]
-                stim_end <- end_points[row, "stim_end"]
-                
-                stim <- df[df$time_sec >= stim_start & df$time_sec < stim_end, ]
-                df_list <- c(df_list, list(stim))
-        }
-        
-        df_list
+        win_start <- seq(from = lead_time_sec, to = max(df$time_sec), by = win_length_sec)
 
+        df_list <- list()
+        for (i in win_start) {
+                if (length(df_list) == 0) {
+                        last_nrow <- 0
+                } else {
+                        last_nrow <- nrow(df_list[[length(df_list)]])
+                }
+                
+                stim <- df[df$time_sec >= i & df$time_sec < (i + win_length_sec),]
+
+                if (nrow(stim) < last_nrow) {
+                        df_list[[length(df_list)]] <- rbind(df_list[[length(df_list)]], stim)
+                } else {
+                        df_list <- c(df_list, list(stim))
+                }
+        }
+
+        df_list
 }
 
 position_releases <- function(pulses, pulse_freq, time_sec) {
@@ -810,7 +815,7 @@ position_releases <- function(pulses, pulse_freq, time_sec) {
 #'
 #' @examples
 get_best_args <- function(arg_df) {
-        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -14]
+        result <- plyr::arrange(arg_df, plyr::desc(r2))[1 , -13]
         result
 }
 
@@ -834,4 +839,37 @@ get_best_args <- function(arg_df) {
 #' @examples
 compare_pulse_args_df <- function(dat, fil, args_df) {
         do.call(compare_pulse, c(list(dat), fil, args_df))
+}
+
+get_fit_boundaries <- function(sim_w_dat, fit_region = NULL, base_tolerance = NULL) {
+        if (is.null(fit_region)) {result <- NULL}
+        if (is.null(base_tolerance)) {base_tolerance <- 0}
+        
+        if (!is.null(fit_region)) {
+                if (fit_region%in% c("r", "rise")) {
+                        # Start time of the simulation
+                        start_time <- min(sim_w_dat$time_sec[sim_w_dat$src == "simulation"])
+                        
+                        # Times for the peaks. Take min of each in case the peak is reached more than once.
+                        peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                        peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                        
+                        result <- c(start_time, max(c(peak_time_sim, peak_time_exp)))
+                        
+                } else if (fit_region %in% c("f", "fall")) {
+                        # Times for the peaks. Take min of each in case the peak is reached more than once.
+                        peak_time_sim <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "simulation"])])
+                        peak_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$electrode == max(sim_w_dat$electrode[sim_w_dat$src == "experiment"])])
+                        peak_time_min <- min(peak_time_sim, peak_time_exp)
+                        
+                        # Time for simulation arrival at baseline plus base_tolerance.
+                        #base_time_sim <- max(sim_w_dat$time_sec[sim_w_dat$electrode >= base_tolerance & sim_w_dat$src == "simulation"])
+                        base_time_exp <- min(sim_w_dat$time_sec[sim_w_dat$src == "experiment" & sim_w_dat$time_sec > peak_time_min & sim_w_dat$electrode <= base_tolerance])
+                        result <- c(min(c(peak_time_sim, peak_time_exp)), base_time_exp) # c(11.84074, 25.15926) 
+                        #result <- c(11.84074, 25.15926) 
+                } else {
+                        result <- NULL
+                }
+        }
+        result
 }
