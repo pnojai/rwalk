@@ -9,24 +9,12 @@ fil <- "./input/180430_DA_saline_1.csv"
 sample_rate <- 100
 dat <- read_experiment_csv(fil, sr = sample_rate)
 
-lead_time_sec <- 10
-win_length_sec <- 120
+lead_time_sec <- 9
+win_length_sec <- 119.5
 
-# Verify segmentation of file.
-# Note segment count.
-wins <- seq(from = lead_time_sec, to = max(dat$time_sec), by = win_length_sec)
-plot(dat$time_sec, dat$electrode, type = "l")
-for (i in wins) {
-        abline(v = i)
-}
+verify_segments(dat, lead_time_sec, win_length_sec)
 
-for (i in wins) {
-        plot(dat$time_sec[dat$time_sec >= i & dat$time_sec < i + lead_time_sec],
-             dat$electrode[dat$time_sec >= i & dat$time_sec < i + lead_time_sec], type = "l",
-             main = i)
-}
-
-# Perform confirmed segmentation.
+# Perform verified segmentation.
 dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
 
 # Model parameters
