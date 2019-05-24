@@ -873,3 +873,41 @@ get_fit_boundaries <- function(sim_w_dat, fit_region = NULL, base_tolerance = NU
         }
         result
 }
+
+verify_segments_baseplot <- function(dat, lead_time_sec, win_length_sec) {
+        # Verify segmentation of file.
+        # Note segment count.
+        wins <- seq(from = lead_time_sec, to = max(dat$time_sec), by = win_length_sec)
+        plot(dat$time_sec, dat$electrode, type = "l")
+        for (i in wins) {
+                abline(v = i)
+        }
+        
+        for (i in wins) {
+                plot(dat$time_sec[dat$time_sec >= i & dat$time_sec < (i + win_length_sec)],
+                     dat$electrode[dat$time_sec >= i & dat$time_sec < i + win_length_sec], type = "l",
+                     main = i)
+        }
+        
+        wins
+}
+
+verify_segments_gg <- function(dat, fil, lead_time_sec, win_length_sec) {
+        wins <- seq(from = lead_time_sec, to = max(dat$time_sec), by = win_length_sec)
+        
+        g <- ggplot2::ggplot(data = dat) +
+                ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode)) +
+                ggplot2::labs(title = "Cyclic Voltammetry Simulation",
+                              subtitle = paste("Input Data File: ", fil),
+                              x = "time [s]",
+                              y = expression(paste("Current [pA]")))
+        
+        for (i in wins) {
+                # abline(v = i)
+                g <- g +
+                        ggplot2::geom_vline(xintercept = i, color = "grey54")
+        }
+        
+        print(g)
+        
+}
