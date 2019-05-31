@@ -12,7 +12,7 @@ dat <- read_experiment_csv(fil, sr = sample_rate)
 lead_time_sec <- 9
 win_length_sec <- 119.5
 
-verify_segments(dat, lead_time_sec, win_length_sec)
+verify_segments_baseplot(dat, lead_time_sec, win_length_sec)
 
 # Perform verified segmentation.
 dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
@@ -35,7 +35,7 @@ base_tolerance <- 0.05
 plot_duration_sec = 10
 
 # Plot
-compare_pulse(dat_list[[5]], fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
+compare_pulse(dat_list[[1]], fil = fil, vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
               release = release, bin_size = bin_size,
               electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
               diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,

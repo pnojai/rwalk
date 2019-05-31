@@ -24,7 +24,7 @@ for (i in 1:(length(fils) - 0)) {
         }
 }
 
-# Manualy move them to input directory
+# Manually move them to input directory
 # Now plot the fronts
 # Plot the front and scrub, trimming the lead time.
 library(ggplot2)
@@ -39,10 +39,10 @@ for (i in 1:(length(fils) - 0)) {
 # Parameters
 # Set model parameters
 vmax <- 4.8
-km <- 1.7
+km <- 2.1
 pulses <- 30
 pulse_freq <- 50
-release <- 3.35
+release <- 2.4
 bin_size <- 2
 electrode_distance <- 1000
 dead_space_distance <- 4
@@ -67,3 +67,12 @@ for (i in 1:(length(fils) - 0)) {
                       fit_region = fit_region, base_tolerance = base_tolerance, plot_duration_sec = plot_duration_sec)
         
 }
+
+dat <- read.csv(paste(input_dir, fils[1], sep = "/"))
+
+compare_pulse(dat = dat, fil = fils[1], vmax = vmax, km = km, pulses = pulses, pulse_freq = pulse_freq,
+              release = release, bin_size = bin_size,
+              electrode_distance = electrode_distance, dead_space_distance = dead_space_distance,
+              diffusion_coefficient = diffusion_coefficient, convert_current = convert_current,
+              calibration_current = calibration_current, calibration_concentration = calibration_concentration,
+              fit_region = fit_region, base_tolerance = base_tolerance, plot_duration_sec = plot_duration_sec)
