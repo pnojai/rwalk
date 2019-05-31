@@ -1,8 +1,8 @@
 sample_rate <- 100
 input_dir <- "./input"
 output_dir <- "./output"
-lead_time_sec <- 9
-win_length_sec <- 119.5
+lead_time_sec <- 9.9
+win_length_sec <- 120
 
 # Build file list from input directory
 fils <- list.files(path = input_dir, pattern = "*.csv", full.names = FALSE)
@@ -28,10 +28,11 @@ for (i in 1:(length(fils) - 0)) {
 # Now plot the fronts
 # Plot the front and scrub, trimming the lead time.
 library(ggplot2)
-fils <- list.files(path = input_dir, pattern = "*.csv", full.names = FALSE)
+fils <- list.files(path = output_dir, pattern = "csv$", full.names = FALSE)
 for (i in 1:(length(fils) - 0)) {
-        dat <- read.csv(paste(input_dir, fils[i], sep = "/"))
-        #dat <- dat[1:50, ]
+        dat <- read.csv(paste(output_dir, fils[i], sep = "/"))
+        #start_ix <- 80
+        #dat <- dat[start_ix:(start_ix + 90), ]
         p <- qplot(dat$time_sec, dat$electrode, geom = "line", main = fils[i])
         print(p)
 }
