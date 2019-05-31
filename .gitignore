@@ -3,6 +3,8 @@
 .RData
 *~
 input/
+output/
+exp/
 .Rproj.user
 
 Docs/PresentationNotes\.html
