@@ -3,10 +3,11 @@ library(openxlsx)
 
 input_dir <- "./input"           # Input directory, on GitHub 
 exp_dir <- "./exp/csv"           # Experiment data, not on GitHub
+par_dir <- "./scripts"           # File params need a trackable directory
 sample_rate <- 100               # milliseconds
 
 # File parameters, on GitHub
-fil_params_all <- read.xlsx(paste(input_dir, "file_params.xlsx", sep = "/"))
+fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
 
 fils <- unique(fil_params_all$filename)
 
@@ -21,7 +22,7 @@ dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rat
 qplot(dat$time_sec, dat$electrode, geom = "line")
 
 # Get to work. Repeat this block
-fil_params_all <- read.xlsx(paste(input_dir, "file_params.xlsx", sep = "/"))
+fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
 fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i] , c("stimulus", "start")]
 dat_list <- list()
 max_stim <- max(fil_params_cur$stimulus)
