@@ -16,7 +16,7 @@ if (fil_not_exists) {stop("Input file not found")}
 
 # Pick a file to work on.
 print(fils)
-i <- 2
+i <- 4
 dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rate)
 # Plot the sweep. Manually save it and view.
 qplot(dat$time_sec, dat$electrode, geom = "line")
