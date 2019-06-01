@@ -5,6 +5,7 @@
 input/
 output/
 exp/
+!exp/file_params.xlsx
 .Rproj.user
 
 Docs/PresentationNotes\.html
