@@ -757,7 +757,7 @@ calc_fit_multi <- function(dat, arg_df) {
         
 }
 
-split_stims <- function(df, lead_time_sec, win_length_sec) {
+split_stims <- function(df, lead_time_sec, win_length_sec, sr) {
         # Parameters
         #   df: Data frame. From a file containing multiple stimulus events.
         #       $ time_sec
@@ -765,23 +765,38 @@ split_stims <- function(df, lead_time_sec, win_length_sec) {
         #
         # Returns
         #   df_list: List of data frames. Each list item is one stimulus event.
-        win_start <- seq(from = lead_time_sec, to = max(df$time_sec), by = win_length_sec)
-
+        
+        lead_rows <- (lead_time_sec / (sr * 10^-3))
+        win_rows <- (win_length_sec / (sr * 10^-3))
+        
         df_list <- list()
-        for (i in win_start) {
+ 
+        df_nrow <- nrow(df)
+        row_ptr <- lead_rows + 1
+        i <- 1
+        
+        while (row_ptr < df_nrow) {
+                print(paste0("Loop: ", i))
+                print(paste0("row_ptr: ", row_ptr))
+                
                 if (length(df_list) == 0) {
                         last_nrow <- 0
                 } else {
                         last_nrow <- nrow(df_list[[length(df_list)]])
                 }
                 
-                stim <- df[df$time_sec >= i & df$time_sec < (i + win_length_sec),]
-
+                max_row_to_bind <- min(c((row_ptr + win_rows), df_nrow))
+                
+                stim <- df[row_ptr:max_row_to_bind, ]
+                
                 if (nrow(stim) < last_nrow) {
                         df_list[[length(df_list)]] <- rbind(df_list[[length(df_list)]], stim)
                 } else {
                         df_list <- c(df_list, list(stim))
                 }
+                
+                i <- i + 1
+                row_ptr <- row_ptr + win_rows
         }
 
         df_list
