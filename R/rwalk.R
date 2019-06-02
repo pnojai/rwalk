@@ -512,6 +512,9 @@ get_stim_start <- function(dat_part) {
         # Assume the stimulus begins at the maximum change in slope. Return the index just prior to
         # initiation of stimulus.
         
+        skip = TRUE
+        
+        if (!skip) {
         # Row count.
         n <- nrow(dat_part)
         # Slopes of segments.
@@ -529,9 +532,11 @@ get_stim_start <- function(dat_part) {
         # Return the prior index. (I think you have to step back as many steps as you smooth.)
         idx_max_delta_slope_smooth <- which(dat_part$delta_slope_smooth == max_delta_slope_smooth) - 5
         
-        #idx_max_delta_slope_smooth
+        idx_max_delta_slope_smooth
+        } else {
         # Manually trimmed the lead time. Return 1 instead
         1
+        }
 }
 
 mavg <- function(x, n=3) {
