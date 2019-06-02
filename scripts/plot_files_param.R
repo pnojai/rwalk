@@ -14,7 +14,7 @@ if (fil_not_exists) {stop("Input file not found")}
 
 # Pick a file to work on.
 print(fils)
-i <- 6
+i <- 8
 
 fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
 sample_rate <- head(fil_params_cur$sample_rate, 1) # milliseconds
