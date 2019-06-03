@@ -1,26 +1,26 @@
-library(ggplot2)
-library(openxlsx)
-
-input_dir <- "./input"           # Input directory, on GitHub 
-par_dir <- "./scripts"           # File params need a trackable directory
-
-# File parameters, on GitHub
-fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
-
-fils <- unique(fil_params_all$filename)
-
-fil_not_exists <- sum(!file.exists(paste(input_dir, fils, sep = "/")))
-if (fil_not_exists) {stop("Input file not found")}
-
-# Pick a file to work on.
-print(fils)
-i <- 11
-
-fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
-sample_rate <- head(fil_params_cur$sample_rate, 1) # milliseconds
-dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rate)
-# Plot the sweep. Manually save it and view.
-qplot(dat$time_sec, dat$electrode, geom = "line")
+# library(ggplot2)
+# library(openxlsx)
+# 
+# input_dir <- "./input"           # Input directory, on GitHub
+# par_dir <- "./scripts"           # File params need a trackable directory
+# 
+# # File parameters, on GitHub
+# fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
+# 
+# fils <- unique(fil_params_all$filename)
+# 
+# fil_not_exists <- sum(!file.exists(paste(input_dir, fils, sep = "/")))
+# if (fil_not_exists) {stop("Input file not found")}
+# 
+# # Pick a file to work on.
+# print(fils)
+# i <- 3
+# 
+# fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
+# sample_rate <- head(fil_params_cur$sample_rate, 1) # milliseconds
+# dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rate)
+# # Plot the sweep. Manually save it and view.
+# qplot(dat$time_sec, dat$electrode, geom = "line")
 
 # Get to work. Repeat this block
 fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
@@ -37,10 +37,9 @@ for (stim in fil_params_cur$stimulus) {
         
         dat_list[[stim]] <- dat[start_idx:top_row_idx, ]
 }
-for (j in 1:(length(dat_list) - 0)) {
+for (j in 15:(length(dat_list) - 0)) {
         compare_pulse(dat = dat_list[[j]], fil = paste0(fils[i], "_", fil_params_cur[j, "stimulus"]),
-                      vmax = fil_params_cur[j, "vmax"],
-                      km = fil_params_cur[j, "km"],
+                      vmax = fil_params_cur[j, "vmax"], km = fil_params_cur[j, "km"],
                       pulses = fil_params_cur[j, "pulses"],
                       pulse_freq = fil_params_cur[j, "pulse_freq"],
                       release = fil_params_cur[j, "release"],
