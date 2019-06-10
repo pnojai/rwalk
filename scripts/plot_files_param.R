@@ -14,7 +14,7 @@
 # 
 # # Pick a file to work on.
 # print(fils)
-# i <- 4
+# i <- 8
 # 
 # fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
 # sample_rate <- head(fil_params_cur$sample_rate, 1) # milliseconds
@@ -37,7 +37,7 @@ for (stim in fil_params_cur$stimulus) {
         
         dat_list[[stim]] <- dat[start_idx:top_row_idx, ]
 }
-for (j in 12:(length(dat_list) - 3)) {
+for (j in 15:(length(dat_list) - 0)) {
         compare_pulse(dat = dat_list[[j]], fil = paste0(fils[i], "_", fil_params_cur[j, "stimulus"]),
                       vmax = fil_params_cur[j, "vmax"], km = fil_params_cur[j, "km"],
                       pulses = fil_params_cur[j, "pulses"],
