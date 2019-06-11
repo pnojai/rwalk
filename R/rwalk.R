@@ -1,7 +1,7 @@
 #' Michaelis-Menten
 #' 
 #' Correct for uptake according to the Michaelis-Menten equation.
-#'
+#' SMALL CHANGE
 #' @param x Concentration in micromoles
 #' @param vmax Micromoles
 #' @param km Micromoles
