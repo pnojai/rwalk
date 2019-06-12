@@ -1,7 +1,7 @@
 sample_rate <- 100
 input_dir <- "./input"
 output_dir <- "./output"
-lead_time_sec <- 9.9
+lead_time_sec <- 10
 win_length_sec <- 120
 
 # Build file list from input directory
@@ -16,7 +16,7 @@ for (i in 1:(length(fils) - 0)) {
 # Split all files
 for (i in 1:(length(fils) - 0)) {
         dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rate)
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec, sr = sample_rate)
         
         for (j in 1:length(dat_list)) {
                 fn <- paste0(strsplit(fils[i], "\\.csv"), "_", j, ".csv")
