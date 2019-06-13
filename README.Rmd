@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 This package is under development.
 
-This is a minimal build with incomplete documentation.
+This is, as of yet, a minimal build with incomplete documentation.
 
 The package rwalk consists of tools for random walks and Schmitz/Sulzer modified random walks for simulations of electrochemical detection of neurotransmitter release and reuptake. Developed with the Sulzer Lab at Columbia University.
 
