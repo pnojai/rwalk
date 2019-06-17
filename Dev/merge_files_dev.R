@@ -16,7 +16,7 @@ fil_not_exists <- sum(!file.exists(paste(input_dir, fils$filename, sep = "/")))
 if (fil_not_exists) {stop("Input file not found")}
 
 # Pick a file to work on.
-print(fils)
+print(fils$filename)
 # i <- 1
 # head(fil_params_all)
 
