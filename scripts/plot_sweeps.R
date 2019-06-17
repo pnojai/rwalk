@@ -6,7 +6,7 @@ input_dir <- "./input"           # Input directory, on GitHub
 fils <- dir(input_dir)
 
 sample_rate <- 100 # milliseconds
-for (i in 21:29) {
+for (i in 1:length(fils)) {
         print(paste(input_dir, fils[i], sep = "/"))
         dat <- read_experiment_csv(paste(input_dir, fils[i], sep = "/"), sr = sample_rate)
         # Plot the sweep. Manually save it and view.
