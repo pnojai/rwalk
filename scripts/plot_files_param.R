@@ -14,7 +14,7 @@ if (fil_not_exists) {stop("Input file not found")}
 
 # Pick a file to work on.
 print(fils)
-i <- 20
+i <- 33
 
 fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
 sample_rate <- head(fil_params_cur$sample_rate, 1) # milliseconds
@@ -27,15 +27,19 @@ fil_params_all <- read.xlsx(paste(par_dir, "file_params.xlsx", sep = "/"))
 fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i], ]
 dat_list <- list()
 max_stim <- max(fil_params_cur$stimulus)
-for (stim in fil_params_cur$stimulus) {
-        start_idx <- fil_params_cur[stim, "start"]
-        if (stim == max_stim) {
+
+for (i in seq_along(fil_params_cur$stimulus)) {
+
+        start_idx <- fil_params_cur$start[i] #with(fil_params_cur, start[stimulus == stim])
+        if (start_idx > nrow(dat)) {
+                stop("Stimulus start overflows data")
+        } else if (fil_params_cur$stimulus[i] == max_stim) {
                 top_row_idx <- nrow(dat)
         } else {
-                top_row_idx <- fil_params_cur[(stim + 1), "start"] - 1
+                top_row_idx <- fil_params_cur$start[(i + 1)] -1 # , "start"] - 1 # with(fil_params_cur, start[stimulus == stim + 1]) # fil_params_cur[(stim + 1), "start"] - 1
         }
         
-        dat_list[[stim]] <- dat[start_idx:top_row_idx, ]
+        dat_list[[i]] <- dat[start_idx:top_row_idx, ]
 }
 for (j in 1:(length(dat_list) - 0)) {
         compare_pulse(dat = dat_list[[j]], fil = paste0(fils[i], "_", fil_params_cur[j, "stimulus"]),

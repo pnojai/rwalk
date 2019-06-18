@@ -1,5 +1,6 @@
 library(ggplot2)
 library(openxlsx)
+library(dplyr)
 
 input_dir <- "./input"           # Input directory, on GitHub
 par_dir <- "./scripts"           # File params need a trackable directory
@@ -15,11 +16,10 @@ fils <- unique(fil_params_all[ , c("filename", "sample_rate", "animal", "genotyp
 fil_not_exists <- sum(!file.exists(paste(input_dir, fils$filename, sep = "/")))
 if (fil_not_exists) {stop("Input file not found")}
 
-# Pick a file to work on.
+# Files for merging.
 print(fils$filename)
-# i <- 1
-# head(fil_params_all)
 
+# Initialize data frame for merge.
 stim_df <- data.frame(animal = character(),
                       stimulus = integer(),
                       stim_time_sec = double(),
@@ -28,6 +28,7 @@ stim_df <- data.frame(animal = character(),
                       time_sec = double(),
                       electrode = integer())
 
+# Read data
 for (i in 1:(nrow(fils) - 0)) {
         print(fils[i, "filename"])
         
@@ -46,7 +47,8 @@ for (i in 1:(nrow(fils) - 0)) {
         for (j in seq_along(fil_params_cur$stimulus)) {
                 start_idx <- fil_params_cur$start[j] # start_idx <- fil_params_cur[fil_params_cur$stimulus == stim, "start"]
                 if (start_idx > nrow(dat)) {
-                        stop("Stimulus start overflows data")
+                        stop(paste0("Stimulus start overflows data: ", fil_params_cur$filename[j],
+                                    " #", fil_params_cur$stimulus[j]))
                         
                 } else if (fil_params_cur$stimulus[j] == max_stim) {
                         top_row_idx <- nrow(dat)
@@ -69,37 +71,6 @@ for (i in 1:(nrow(fils) - 0)) {
                 stim_df <- rbind(stim_df, one_stim_df)
         }
 }
-
-#         
-#         fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i, "filename"], ]
-#        # dat_list <- list()
-#         max_stim <- max(fil_params_cur$stimulus)
-#         
-#         for (stim in fil_params_cur$stimulus) {
-#                 start_idx <- fil_params_cur[fil_params_cur$stimulus == stim, "start"]
-#                 if (stim == max_stim) {
-#                         top_row_idx <- nrow(dat)
-#                 } else {
-#                         top_row_idx <- fil_params_cur[fil_params_cur$stimulus == (stim + 1), "start"] - 1
-#                 }
-#                 
-#                 #dat_list[[stim]] <- dat[start_idx:top_row_idx, ] # Don't really need the list
-#                 
-#                 sr_s <- fil_params_cur$sample_rate * 10^-3
-#                 
-#                 stim_time_sec <- seq(from = 0, by = sr_s,
-#                                 length.out = nrow(dat[start_idx:top_row_idx, ]))
-#                 
-#                 one_stim_df <- cbind(animal = fils[i, "animal"], stimulus = stim,
-#                                      stim_time_sec = stim_time_sec, genotype = fils[i, "genotype"],
-#                                      include = fil_params_cur[fil_params_cur$stimulus == stim, "include"],
-#                                     dat[start_idx:top_row_idx, ])
-#                
-#                 stim_df <- rbind(stim_df, one_stim_df)
-#         }
-# }
-
-library(dplyr)
 
 dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
         filter(genotype == "wt" & stimulus >= 16 & stimulus <= 20 & include == TRUE) %>%

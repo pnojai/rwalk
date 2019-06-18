@@ -13,4 +13,4 @@ for (i in 1:length(fils)) {
         p <- qplot(dat$time_sec, dat$electrode, geom = "line", main = fils[i])
         print(p)
 }
-
+        
