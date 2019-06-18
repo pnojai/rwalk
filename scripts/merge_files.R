@@ -73,7 +73,7 @@ for (i in 1:(nrow(fils) - 0)) {
 }
 
 dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
-        filter(genotype == "wt" & stimulus >= 1 & stimulus <= 3 & include == TRUE) %>%
+        filter(genotype == "wt" & stimulus >= 16 & stimulus <= 20 & include == TRUE) %>%
         group_by(stim_time_sec) %>%
         summarize(mean(electrode))
 
