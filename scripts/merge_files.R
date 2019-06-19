@@ -72,15 +72,36 @@ for (i in 1:(nrow(fils) - 0)) {
         }
 }
 
-dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
-        filter(genotype == "wt" & stimulus >= 16 & stimulus <= 20 & include == TRUE) %>%
-        group_by(stim_time_sec) %>%
-        summarize(mean(electrode))
-
 # dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
-#         filter(genotype == "wt" ) %>%
+#         filter(genotype == "wt" & stimulus >= 16 & stimulus <= 20 & include == TRUE) %>%
 #         group_by(stim_time_sec) %>%
 #         summarize(mean(electrode))
+
+animals <- unique(stim_df$animal)
+animal_stim_df <- split(stim_df, stim_df$animal)
+
+str(animal_stim_df)
+animal_stim_mean_df <- lapply(
+        animal_stim_df, function(x) {
+                result <- select(x, stim_time_sec, electrode, genotype, stimulus, include) %>%
+                        #filter(genotype == "wt" ) %>%
+                        group_by(stim_time_sec) %>%
+                        summarize(mean(electrode))
+                result <- rename(result, time_sec = stim_time_sec, "electrode" = "mean(electrode)")
+                result
+        }
+)
+
+for (i in 1:length(animal_stim_mean_df)) {
+        p <- qplot(data = animal_stim_mean_df[[i]], x = time_sec, y = electrode, geom = "line",
+              main = paste("Animal", names(animal_stim_mean_df)[i]))
+        print(p)
+}
+
+dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
+        filter(genotype == "wt" ) %>%
+        group_by(stim_time_sec) %>%
+        summarize(mean(electrode))
 
 dat_merge <- rename(dat_merge, time_sec = stim_time_sec, "electrode" = "mean(electrode)")
 qplot(dat_merge$time_sec, dat_merge$electrode, geom = "line")
