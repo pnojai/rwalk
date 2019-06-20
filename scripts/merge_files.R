@@ -72,10 +72,13 @@ for (i in 1:(nrow(fils) - 0)) {
         }
 }
 
-# dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
-#         filter(genotype == "wt" & stimulus >= 16 & stimulus <= 20 & include == TRUE) %>%
-#         group_by(stim_time_sec) %>%
-#         summarize(mean(electrode))
+dat_merge <- select(stim_df, animal, stim_time_sec, electrode, genotype, stimulus, include) %>%
+        filter(genotype == "ko" & animal == 1905301 & (include == TRUE | include == TRUE)) %>%
+        group_by(stim_time_sec) %>%
+        summarize(mean(electrode))
+
+dat_merge <- rename(dat_merge, time_sec = stim_time_sec, "electrode" = "mean(electrode)")
+qplot(dat_merge$time_sec, dat_merge$electrode, geom = "line")
 
 animals <- unique(stim_df$animal)
 animal_stim_df <- split(stim_df, stim_df$animal)
@@ -98,8 +101,9 @@ for (i in 1:length(animal_stim_mean_df)) {
         print(p)
 }
 
-dat_merge <- select(stim_df, stim_time_sec, electrode, genotype, stimulus, include) %>%
-        filter(genotype == "wt" ) %>%
+dat_merge <- select(stim_df,
+                    stim_time_sec, animal,electrode, genotype, stimulus, include) %>%
+        filter(animal == 1904092, include == TRUE) %>%
         group_by(stim_time_sec) %>%
         summarize(mean(electrode))
 
@@ -134,7 +138,7 @@ compare_pulse(dat = dat_merge, fil = "figure out a title",
               base_tolerance = base_tolerance,
               plot_duration_sec = plot_duration_sec)
 
-# Analysis of NA and multiple peaks
+# Analysis of NA
 ok <- complete.cases(stim_df)
 sum(!ok)
 head(stim_df[!ok,])
