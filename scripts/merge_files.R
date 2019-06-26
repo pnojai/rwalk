@@ -247,9 +247,9 @@ compare_pulse(dat = dat_merge_wt_amph_1620, fil = "Wild Type - Post-AMPH 16-20",
 # Variables
 genotype <- "KO"
 amphetamine <- "PRE"
-release <- 1.5
+release <- 1.55
 vmax <- 4.8
-km <- 6
+km <- 5
 base_tolerance <- 0.05
 plot_duration_sec = 10
 
@@ -279,9 +279,9 @@ compare_pulse(dat = dat_merge_ko_pre, fil = "Knockout - Pre-AMPH",
 # Variables
 genotype <- "KO"
 amphetamine <- "POST_06-10"
-release <- 3.9
+release <- 3.8
 vmax <- 4.8
-km <- 18
+km <- 24
 base_tolerance <- 0.05
 plot_duration_sec = 30
 
@@ -311,9 +311,9 @@ compare_pulse(dat = dat_merge_ko_amph_0610, fil = "Knockout - Post-AMPH 06-10",
 # Variables
 genotype <- "KO"
 amphetamine <- "POST_16-20"
-release <- 4.2
+release <- 4.22
 vmax <- 4.8
-km <- 27
+km <- 24
 base_tolerance <- 0.05
 plot_duration_sec = 50
 
