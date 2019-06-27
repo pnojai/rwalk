@@ -134,7 +134,7 @@ results <- data.frame(genotype = character(),
 
 # Constants
 pulses <- 30
-pulse_freq <- 50
+pulse_freq <- 25
 bin_size <- 2.0
 electrode_distance <- 1000
 dead_space_distance <- 4
@@ -147,7 +147,7 @@ fit_region = "fall"
 # Variables
 genotype <- "WT"
 amphetamine <- "PRE"
-release <- 2.0
+release <- 2.25
 vmax <- 4.8
 km <- 5
 base_tolerance <- 0.05
@@ -211,7 +211,7 @@ compare_pulse(dat = dat_merge_wt_amph_0610, fil = "Wild Type - Post-AMPH 06-10",
 # Variables
 genotype <- "WT"
 amphetamine <- "POST_16-20"
-release <- 4.25
+release <- 4.3
 vmax <- 4.8
 km <- 24
 base_tolerance <- 0.05
@@ -247,7 +247,7 @@ compare_pulse(dat = dat_merge_wt_amph_1620, fil = "Wild Type - Post-AMPH 16-20",
 # Variables
 genotype <- "KO"
 amphetamine <- "PRE"
-release <- 1.55
+release <- 1.77
 vmax <- 4.8
 km <- 5
 base_tolerance <- 0.05
@@ -311,7 +311,7 @@ compare_pulse(dat = dat_merge_ko_amph_0610, fil = "Knockout - Post-AMPH 06-10",
 # Variables
 genotype <- "KO"
 amphetamine <- "POST_16-20"
-release <- 4.22
+release <- 4.3
 vmax <- 4.8
 km <- 24
 base_tolerance <- 0.05
