@@ -134,7 +134,7 @@ results <- data.frame(genotype = character(),
 
 # Constants
 pulses <- 30
-pulse_freq <- 25
+pulse_freq <- 50
 bin_size <- 2.0
 electrode_distance <- 1000
 dead_space_distance <- 4
