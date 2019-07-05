@@ -7,7 +7,8 @@ test_that("Data file splits stimuli", {
         win_length_sec <- 119
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec,
+                                sr = sample_rate)
         
         expect_equal(length(dat_list), 15)
 })
