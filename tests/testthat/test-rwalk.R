@@ -7,11 +7,11 @@ test_that("rwalk_cv_pulse_run does not raise error", {
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
         
-        vmax <- 0
-        km <- .4
+        vmax <- 4.8
+        km <- 2.4
         pulses <- 30
         pulse_freq <- 50
-        release <- 3.05
+        release <- 5.05
         bin_size <- 2.0
         electrode_distance <- 50
         dead_space_distance <- 4
@@ -65,7 +65,7 @@ test_that("get_best_fit_args is correct", {
         win_length_sec <- 119
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec, sr=sample_rate)
         
         vmax_min <- 0.9
         vmax_max <- 1.0
@@ -112,7 +112,7 @@ test_that("compare_pulse_arg_df works", {
         win_length_sec <- 119
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec, sr=sample_rate)
         
         vmax_min <- 1.0
         vmax_max <- 1.0
@@ -120,8 +120,8 @@ test_that("compare_pulse_arg_df works", {
         km_min <- 6.5
         km_max <- 6.5
         km_by <- 0
-        release_min <- 3.2
-        release_max <- 3.2
+        release_min <- 3.40
+        release_max <- 3.40
         release_by <- 0
         
         pulses <- 30
@@ -173,16 +173,13 @@ test_that("merge_sim_dat() baselines stim start", {
         dat <- read_experiment_csv(fil, sr = sample_rate)
         lead_time_sec <- 10
         win_length_sec <- 119
-        
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec, sr=sample_rate)
         dat <- dat_list[[1]]
-        
         mg <- merge_sim_dat(dat, vmax, km, pulses, pulse_freq, release,
                             bin_size, electrode_distance, dead_space_distance,
                             diffusion_coefficient,
                             convert_current, calibration_current,
                             calibration_concentration)
-        
-        exp_start <- mg[mg$src == "experiment" & mg$time_sec == 0, "electrode"]
-        expect_equal(exp_start, 0.20291696)
+        exp_start <- mg[mg$src == "experiment" & mg$time_sec == 10.0, "electrode"]
+        expect_equal(exp_start, 0)
 })

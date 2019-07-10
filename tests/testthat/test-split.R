@@ -8,7 +8,7 @@ test_that("split_stims() returns list of correct length", {
         
         dat <- read_experiment_csv(fil, sr = sample_rate)
         
-        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec)
+        dat_list <- split_stims(dat, lead_time_sec = lead_time_sec, win_length_sec = win_length_sec, sr = sample_rate)
         
         expect_is(dat_list, "list")
         expect_equal(length(dat_list), 5)
