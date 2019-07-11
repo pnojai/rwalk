@@ -597,16 +597,16 @@ merge_sim_dat <- function(dat, vmax, km, pulses, pulse_freq, release,
         idx_stim_start <- get_stim_start(dat[1:idx_max_obs, ])
         
         # Zero the electrode at the start of the stimulus.
-        y_shift <- -(dat[idx_stim_start, "electrode"])
+        y_shift <- as.numeric(-(dat[idx_stim_start, "electrode"]))
         dat$electrode <- dat$electrode + y_shift
         
         # Get the minimum observation in the 1st partition. Find the index.
-        # REPLACED BY IDX_STIM_START
+        # REPLACED  IDX_STIM_START
         # idx_min_obs <- which(dat$electrode == min(dat[1:idx_max_obs, 2]))
         # idx_min_obs <- idx_min_obs[idx_min_obs < idx_max_obs] # Min obs earlier than peak.
         
         # min_time <- dat[idx_min_obs, "time_sec"]
-        min_time <- dat[idx_stim_start, "time_sec"]
+        min_time <- as.numeric(dat[idx_stim_start, "time_sec"])
         max_time <- max(dat$time_sec)
         
         # Range

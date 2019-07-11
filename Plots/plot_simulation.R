@@ -3,9 +3,9 @@
 
 library(tidyverse)
 
-vmax <- 4.57
-km <- 0.78
-release <- 2.75
+vmax <- 10
+km <- 2.0
+release <- 1.8
 
 pulses <- 1
 pulse_freq <- 1
