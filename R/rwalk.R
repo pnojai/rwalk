@@ -781,8 +781,8 @@ split_stims <- function(df, lead_time_sec, win_length_sec, sr) {
         i <- 1
         
         while (row_ptr < df_nrow) {
-                print(paste0("Loop: ", i))
-                print(paste0("row_ptr: ", row_ptr))
+                # print(paste0("Loop: ", i))
+                # print(paste0("row_ptr: ", row_ptr))
                 
                 if (length(df_list) == 0) {
                         last_nrow <- 0
