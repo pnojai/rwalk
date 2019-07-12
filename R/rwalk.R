@@ -320,7 +320,7 @@ read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # Convert sampling rate to seconds.
         sr_s <- sr * 10^-3
         
-        dat <- utils::read.csv(fil, header = header)
+        dat <- data.table::fread(fil, header = header)
         
         time_sec <- seq(from = 0, by = sr_s, length.out = nrow(dat))
         
