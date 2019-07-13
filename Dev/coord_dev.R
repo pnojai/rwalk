@@ -44,72 +44,64 @@ sample_rate <- 100
 convert_current <- TRUE
 
 # Read data
-animal_id_last <- 0
-stim_idx <- 0
+animal_id_last_file <- 0
+max_stim_last_file <- 0
 
-for_loop <- function() {
 for (i in 1:(length(coord_fils) - 0)) {
         print(paste0(coord_fils[i], " : ", dat_fils[i]))
         dat <- read_experiment_csv(paste(input_dir, dat_fils[i], sep = "/"),
                                    sr = sample_rate)
         coord <- fread(paste(input_dir, coord_fils[i], sep = "/"))
+        coord$T_Bkg1 <- coord$T_Bkg1 * 10 # Convert Igor start times.
         
         # Routine to pick off metadata from filename
         calibration_current <- 10400
         calibration_concentration <- 5
-        animal_id_current <- 1902052
-        
+        animal_id <- 1902052
+        genotype <- "ko"
+
         # If new animal, reset stim counting, otherwise continue series. 
-        if (animal_id_current != animal_id_last) {
-                stim_idx_last <- 0
-        } else {
-                stim_idx_last <- stim_idx
+        if (animal_id != animal_id_last_file) {
+                max_stim_last_file <- 0
         }
-        stim_idx <- stim_idx_last # Move the pointer
-        max_stim <- stim_idx_last + nrow(coord)
+        max_stim <- nrow(coord) + max_stim_last_file
         
         if (convert_current == TRUE) {
                 dat <- current_to_concentration(dat, calibration_current = calibration_current,
                                                 calibration_concentration = calibration_concentration)
         }
 
-        # fil_params_cur <- fil_params_all[fil_params_all$filename == fils[i, "filename"], ]
-        
         dat_list <- list()
         
         # j points to the coordinate row
-        # j + stim_id_last equals the current stimulus
+        # j + max_stim_last_file equals the current stimulus
         for (j in 1:nrow(coord)) {
-                stim_idx <- stim_idx + j
+                stim <- max_stim_last_file + j
                 start_idx <- coord$T_Bkg1[j]
                 if (start_idx > nrow(dat)) {
                         stop(paste0("Stimulus start overflows data: ", dat_fils[j],
-                                    " #", stim_idx))
-                } else if (stim_idx == max_stim) {
+                                    " #", stim))
+                } else if (stim == max_stim) {
                         top_row_idx <- nrow(dat)
                 } else {
                         top_row_idx <- coord$T_Bkg1[(j + 1)] - 1
                 }
-
-                #dat_list[[stim]] <- dat[start_idx:top_row_idx, ] # Don't really need the list
-
-                # sr_s <- fil_params_cur$sample_rate * 10^-3
-                # 
-                # stim_time_sec <- seq(from = 0, by = sr_s,
-                #                      length.out = nrow(dat[start_idx:top_row_idx, ]))
-                # 
-                # one_stim_df <- cbind(animal = fils[i, "animal"], stimulus = fil_params_cur$stimulus[j],
-                #                      stim_time_sec = stim_time_sec, genotype = fils[i, "genotype"],
-                #                      include = fil_params_cur$include[j], #fil_params_cur[fil_params_cur$stimulus == stim, "include"],
-                #                      dat[start_idx:top_row_idx, ])
-                # 
-                # stim_df <- rbind(stim_df, one_stim_df)
-
-        # Before leaving loop, remember which animal we just processed.
-        animal_id_last <- animal_id_current
+                
+                sr_s <- sample_rate * 10^-3
+                
+                stim_time_sec <- seq(from = 0, by = sr_s,
+                                     length.out = nrow(dat[start_idx:top_row_idx, ]))
+                
+                one_stim_df <- cbind(animal = animal_id, stimulus = stim,
+                                     stim_time_sec = stim_time_sec, genotype = genotype,
+                                     include = coord$include[j],
+                                     dat[start_idx:top_row_idx, ])
+                
+                stim_df <- rbind(stim_df, one_stim_df)
         }
-        
-}
+        # Before leaving file loop, remember which animal we just processed.
+        animal_id_last_file <- animal_id
+        max_stim_last_file <- max_stim
 }
 
 # 
