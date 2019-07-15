@@ -932,3 +932,76 @@ verify_segments_gg <- function(dat, fil, lead_time_sec, win_length_sec) {
         print(g)
         
 }
+
+parse_file_name <- function(file_name) {
+        # list(1902051, "a-synKO", 4, 10400, 5, 2, TRUE)
+        
+        #Tags
+        amphetamine_tag <- "AMPH"
+        current_tag <- "CURR"
+        concentration_tag <- "CONC"
+        file_seq_tag <- "FILE"
+        coordinate_tag <- "peakdetection"
+
+        # Drop the extension
+        file_name_part <- strsplit(file_name, "\\.")[[1]][1]
+        
+        file_tags <- strsplit(file_name_part, "_")
+        file_tags <- as.list(file_tags[[1]])
+        
+        # #Animal ID
+        file_tags[[1]] <- as.integer(file_tags[[1]])
+        
+        # #Genotype
+        file_tags[[2]] <- as.character(file_tags[[2]])
+        
+        # All of these tag validations need to use regular expressions to get to the
+        # position before the first digit. Can't use the logic in there now because
+        # AMPHS would pass validation.
+        
+        # Amphetamine position
+        # print(substr(file_tags[[3]], 1, nchar(amphetamine_tag)))
+        if (substr(file_tags[[3]], 1, nchar(amphetamine_tag)) != amphetamine_tag) {
+                stop(paste0("Incorrect tag for amphetamine position, ", amphetamine_tag, " expected)"))
+        } else {
+                file_tags[[3]] <- as.integer(substr(file_tags[[3]], (nchar(amphetamine_tag) + 1),
+                                                    nchar(file_tags[[3]])))
+        }
+   
+        # Calibration current
+        # print(substr(file_tags[[4]], 1, nchar(current_tag)))
+        if (substr(file_tags[[4]], 1, nchar(current_tag)) != current_tag) {
+                stop(paste0("Incorrect tag for calibration current, ", current_tag, " expected)"))
+        } else {
+                file_tags[[4]] <- as.integer(substr(file_tags[[4]], (nchar(current_tag) + 1),
+                                                    nchar(file_tags[[4]])))
+        }
+
+        # Calibration concentration
+        # print(substr(file_tags[[5]], 1, nchar(concentration_tag)))
+        if (substr(file_tags[[5]], 1, nchar(concentration_tag)) != concentration_tag) {
+                stop(paste0("Incorrect tag for calibration concentration, ", concentration_tag, " expected)"))
+        } else {
+                file_tags[[5]] <- as.integer(substr(file_tags[[5]], (nchar(concentration_tag) + 1),
+                                                    nchar(file_tags[[5]])))
+        }
+
+        # File sequence
+        # print(substr(file_tags[[6]], 1, nchar(file_seq_tag)))
+        if (substr(file_tags[[6]], 1, nchar(file_seq_tag)) != file_seq_tag) {
+                stop(paste0("Incorrect tag for file sequence, ", file_seq_tag, " expected)"))
+        } else {
+                file_tags[[6]] <- as.integer(substr(file_tags[[6]], (nchar(file_seq_tag) + 1),
+                                                    nchar(file_tags[[6]])))
+        }
+
+        # Coordinate file
+        # print(substr(file_tags[[7]], 1, nchar(coordinate_tag)))
+        if (length(file_tags == 7) && substr(file_tags[[7]], 1, nchar(coordinate_tag)) != coordinate_tag) {
+                stop(paste0("Incorrect tag for coordinate file, ", coordinate_tag, " expected)"))
+        } else {
+                file_tags[[7]] <- TRUE
+        }
+        
+        file_tags
+}
