@@ -944,10 +944,12 @@ parse_file_name <- function(file_name) {
         coordinate_tag <- "peakdetection"
 
         # Drop the extension
-        file_name_part <- strsplit(file_name, "\\.")[[1]][1]
+        file_name_part <- unlist(strsplit(file_name, "\\."))[1]
         
         file_tags <- strsplit(file_name_part, "_")
         file_tags <- as.list(file_tags[[1]])
+        
+        # print(file_tags)
         
         # #Animal ID
         file_tags[[1]] <- as.integer(file_tags[[1]])
@@ -955,52 +957,52 @@ parse_file_name <- function(file_name) {
         # #Genotype
         file_tags[[2]] <- as.character(file_tags[[2]])
         
-        # All of these tag validations need to use regular expressions to get to the
-        # position before the first digit. Can't use the logic in there now because
-        # AMPHS would pass validation.
-        
         # Amphetamine position
-        # print(substr(file_tags[[3]], 1, nchar(amphetamine_tag)))
-        if (substr(file_tags[[3]], 1, nchar(amphetamine_tag)) != amphetamine_tag) {
+        # Split tag, make uppercase for comparison.
+        # This RegEx uses perl's look-back and look-ahead matching.
+        #   cf. https://stackoverflow.com/questions/9756360/split-character-data-into-numbers-and-letters
+        #   Answer by: Tim Biegeleisen
+        vals <- toupper(unlist(strsplit(file_tags[[3]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != amphetamine_tag) {
                 stop(paste0("Incorrect tag for amphetamine position, ", amphetamine_tag, " expected)"))
         } else {
-                file_tags[[3]] <- as.integer(substr(file_tags[[3]], (nchar(amphetamine_tag) + 1),
-                                                    nchar(file_tags[[3]])))
+                file_tags[[3]] <- as.integer(vals[2])
         }
    
         # Calibration current
-        # print(substr(file_tags[[4]], 1, nchar(current_tag)))
-        if (substr(file_tags[[4]], 1, nchar(current_tag)) != current_tag) {
+        vals <- toupper(unlist(strsplit(file_tags[[4]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != current_tag) {
                 stop(paste0("Incorrect tag for calibration current, ", current_tag, " expected)"))
         } else {
-                file_tags[[4]] <- as.integer(substr(file_tags[[4]], (nchar(current_tag) + 1),
-                                                    nchar(file_tags[[4]])))
+                file_tags[[4]] <- as.integer(vals[2])
         }
 
         # Calibration concentration
-        # print(substr(file_tags[[5]], 1, nchar(concentration_tag)))
-        if (substr(file_tags[[5]], 1, nchar(concentration_tag)) != concentration_tag) {
+        vals <- toupper(unlist(strsplit(file_tags[[5]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != concentration_tag) {
                 stop(paste0("Incorrect tag for calibration concentration, ", concentration_tag, " expected)"))
         } else {
-                file_tags[[5]] <- as.integer(substr(file_tags[[5]], (nchar(concentration_tag) + 1),
-                                                    nchar(file_tags[[5]])))
+                file_tags[[5]] <- as.integer(vals[2])
         }
 
         # File sequence
-        # print(substr(file_tags[[6]], 1, nchar(file_seq_tag)))
-        if (substr(file_tags[[6]], 1, nchar(file_seq_tag)) != file_seq_tag) {
+        vals <- toupper(unlist(strsplit(file_tags[[6]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != file_seq_tag) {
                 stop(paste0("Incorrect tag for file sequence, ", file_seq_tag, " expected)"))
         } else {
-                file_tags[[6]] <- as.integer(substr(file_tags[[6]], (nchar(file_seq_tag) + 1),
-                                                    nchar(file_tags[[6]])))
+                file_tags[[6]] <- as.integer(vals[2])
         }
 
         # Coordinate file
-        # print(substr(file_tags[[7]], 1, nchar(coordinate_tag)))
-        if (length(file_tags == 7) && substr(file_tags[[7]], 1, nchar(coordinate_tag)) != coordinate_tag) {
+        # The coordinate file tag is optional. Test if present.
+        if (length(file_tags) == 7 && toupper(file_tags[[7]]) != toupper(coordinate_tag)) {
                 stop(paste0("Incorrect tag for coordinate file, ", coordinate_tag, " expected)"))
         } else {
-                file_tags[[7]] <- TRUE
+                if (length(file_tags) == 7 && toupper(file_tags[[7]]) == toupper(coordinate_tag)) {
+                        file_tags[[7]] <- "COORD"
+                } else {
+                        file_tags[[7]] <- "DATA"
+                }
         }
         
         file_tags
