@@ -83,5 +83,4 @@ select(stim_df, animal, stim_time_sec, time_sec, electrode, stimulus) %>%
         summarise(max(electrode))
 
 # dat_merge_wt_pre <- rename(dat_merge_wt_pre, time_sec = stim_time_sec, "electrode" = "mean(electrode)")
-
 # qplot(dat_merge_wt_pre$time_sec, dat_merge_wt_pre$electrode, geom = "line")

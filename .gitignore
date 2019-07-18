@@ -54,3 +54,5 @@ tests/testdata/RW_CV_simulation_as_read\.csv
 scripts/~\$file_params\.xlsx
 
 scripts/\.~lock\.file_params\.xlsx#
+
+tests/testdata/
