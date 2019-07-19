@@ -201,17 +201,3 @@ test_that("filename parses, data file", {
         
         expect_equal(x, expected_results)
 })
-
-test_that("calculate_time_correction() works", {
-        # Assume coordinate file has been read. Will pass it in.
-        # Will need to read the data file. Pass the sample rate.
-        # Pass stimulus period.
-        
-        coord_fn <- "./../testdata/1902052_a-synKO_AMPH4_CURR10400_CONC5_FILE1_peakdetection.csv"
-        coord <- data.table::fread(coord_fn)
-        dat_fn <- "./../testdata/1902052_a-synKO_AMPH4_CURR10400_CONC5_FILE1.csv"
-        sample_rate <- 100
-        stim_period <- 120 # seconds
-        
-        expect_equal(0, calculate_time_correction(coord, dat_fn, sample_rate, stim_period))
-})
