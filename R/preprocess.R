@@ -49,3 +49,38 @@ preprocess_coord_file <- function(coord_fn, dat_fn, input_dir, output_dir, sampl
         1
         
 }
+
+preprocess_rename_files <- function(mapdoc, input_dir, output_dir) {
+        # print(mapdoc)
+        # print(input_dir)
+        # print(output_dir)
+
+        
+        1
+        
+}
+
+validate_input_in_mapdoc <- function(mapdoc, input_dir, output_dir) {
+        scrub_log <- data.table::fread(mapdoc)
+        input_queue <- dir(input_dir)
+        
+        # REMEMBER!
+        # Data frames are lists of vectors.
+        # If you want the %in% operator to work, the table of values scanned must
+        # be a vector, and for a column in a data frame to be a vector, you must
+        # reference it with list addressing, i.e. double brackets.
+        input_queue_not_in_log <- sum(!(input_queue %in% scrub_log[[1]]))
+        
+        if (input_queue_not_in_log) {
+                print("Error: input file not in map")
+                print(paste0("Map: ", mapdoc))
+        }
+        
+        if (input_queue_not_in_log) {
+                result <- FALSE
+        } else {
+                result <- TRUE
+        }
+        
+        result
+}
