@@ -183,21 +183,3 @@ test_that("merge_sim_dat() baselines stim start", {
         exp_start <- mg[mg$src == "experiment" & mg$time_sec == 10.0, "electrode"]
         expect_equal(exp_start, 0)
 })
-
-test_that("filename parses, coordinate file", {
-        fn <- "1902051_a-synKO_AMPH4_CURR10400_CONC5_FILE2_peakdetection.csv"
-        expected_results <- list(1902051, "a-synKO", 4, 10400, 5, 2, "COORD")
-        
-        x <- parse_file_name(fn)
-        
-        expect_equal(x, expected_results)
-})
-
-test_that("filename parses, data file", {
-        fn <- "1902051_a-synKO_AMPH4_CURR10400_CONC5_FILE2.csv"
-        expected_results <- list(1902051, "a-synKO", 4, 10400, 5, 2, "DATA")
-        
-        x <- parse_file_name(fn)
-        
-        expect_equal(x, expected_results)
-})

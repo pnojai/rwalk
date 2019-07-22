@@ -10,11 +10,12 @@ calculate_time_correction <- function(coord, dat_fn, sample_rate, stim_period) {
         dat_stim_1 <- dat[dat$time_sec <= time_cutoff_stim_1, ]
         
         electrode_max <- max(dat_stim_1[dat_stim_1$time_sec <= time_cutoff_stim_1, "electrode"])
-        actual_time_max_stim_1 <- dat_stim_1[dat_stim_1$electrode == electrode_max, "time_sec"]
+        # Take the minimum time for electrode_max. It might have lasted for multiple measurements.
+        actual_time_max_stim_1 <- min(dat_stim_1[dat_stim_1$electrode == electrode_max, "time_sec"])
         
         time_correction <- actual_time_max_stim_1 - igor_time_max_stim_1
         
-        if (time_correction < tolerance) {
+        if (abs(time_correction) < tolerance) {
                 result <- 0
         } else {
                 result <- time_correction
@@ -60,9 +61,11 @@ preprocess_rename_files <- function(mapdoc, input_dir, output_dir) {
         
 }
 
-validate_input_in_mapdoc <- function(mapdoc, input_dir, output_dir) {
+validate_input_in_mapdoc <- function(mapdoc, input_dir) {
         scrub_log <- data.table::fread(mapdoc)
         input_queue <- dir(input_dir)
+        # print(scrub_log[[1]])
+        # print(input_queue)
         
         # REMEMBER!
         # Data frames are lists of vectors.
