@@ -1,5 +1,6 @@
 library(openxlsx)
 library(data.table)
+library(ggplot2)
 
 # Preprocessing environment
 pipeline_dir <- "./pipeline"
@@ -149,7 +150,7 @@ for (i in 1:length(input_queue)) {
 }
 
 # Plot data files and review stimuli.
-for (i in 13:length(input_queue)) {
+for (i in 1:length(input_queue)) {
         coord_fil <- input_queue[i]
         coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
         
@@ -171,7 +172,7 @@ for (i in 13:length(input_queue)) {
 
 # Review one
 input_queue
-j <- 13
+j <- 15
 for (i in j:j) {
         coord_fil <- input_queue[i]
         coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
@@ -185,7 +186,7 @@ for (i in j:j) {
         
         
         dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
-        dat_subset <- dat[(dat$time_sec >= 0 & dat$time_sec < 120), ]
+        dat_subset <- dat[(dat$time_sec >= 0 & dat$time_sec > 300 & dat$time_sec < 400), ]
         
         p <- ggplot(data = dat_subset) +
                 geom_line(aes(x = time_sec, y = electrode)) +
