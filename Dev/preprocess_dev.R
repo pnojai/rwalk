@@ -4,11 +4,15 @@ library(ggplot2)
 
 # Preprocessing environment
 pipeline_dir <- "./pipeline"
+submissions_dir <- paste(pipeline_dir, "Peak timestamps", "WT_Peak detection", sep = "/")
+newsubs_dir <- paste(pipeline_dir, "01g_NewSubmissions", sep = "/")
 input_queue_dir <- paste(pipeline_dir, "02_InputQueue", sep = "/")
 scrubbed_filenames_dir <- paste(pipeline_dir, "03_FileNamesScrubbed", sep = "/")
 converted_files_dir <- paste(pipeline_dir, "04_FilesConverted", sep = "/")
 coordinate_review_dir <- paste(pipeline_dir, "05_CoordinateReview", sep = "/")
 library_dir <- paste(pipeline_dir, "06_Library", sep = "/")
+
+# Flatten new submissions into one directory.
 
 # File name mapping document
 mapdoc_filename <- paste(pipeline_dir, "ScrubbingLog.csv", sep = "/")
