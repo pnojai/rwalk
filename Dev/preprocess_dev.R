@@ -154,7 +154,7 @@ for (i in 1:length(input_queue)) {
 }
 
 # Plot data files and review stimuli.
-for (i in 1:length(input_queue)) {
+for (i in 27:27) { #1:(length(input_queue) - 0)) {
         coord_fil <- input_queue[i]
         coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
         
@@ -169,33 +169,32 @@ for (i in 1:length(input_queue)) {
         
         p <- ggplot(data = dat) +
                 geom_line(aes(x = time_sec, y = electrode)) +
-                geom_vline(xintercept = coord$T_Bkg1, color = "grey54") +
+                geom_vline(xintercept = coord$T_Bkg1, color = "red1") +
                 labs(title = input_queue[i])
         print(p)
 }
 
 # Review one
 input_queue
-j <- 15
-for (i in j:j) {
-        coord_fil <- input_queue[i]
-        coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
-        
-        # Derive data file name.
-        dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
+j <- 27
+coord_fil <- input_queue[j]
+coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
+
+# Derive data file name.
+dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
                        replacement = paste0(data_file_tag, "\\.", tgt_extension),
                        x = coord_fil,
                        ignore.case = TRUE)
-        dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
-        
-        
-        dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
-        dat_subset <- dat[(dat$time_sec >= 0 & dat$time_sec > 300 & dat$time_sec < 400), ]
-        
+dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
+dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
+for (k in 1:nrow(coord)) {
+        dat_subset <- dat[(dat$time_sec >= coord$T_Bkg1[k] & dat$time_sec < (coord$T_Bkg1[k] + 120)), ]
+
         p <- ggplot(data = dat_subset) +
                 geom_line(aes(x = time_sec, y = electrode)) +
                 #geom_vline(xintercept = coord$T_Bkg1) +
-                labs(title = input_queue[i])
+                labs(title = input_queue[j],subtitle = paste0("Stim: ", k))
+
         print(p)
 }
 
