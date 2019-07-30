@@ -176,7 +176,7 @@ for (i in 27:27) { #1:(length(input_queue) - 0)) {
 
 # Review one
 input_queue
-j <- 27
+j <- 22
 coord_fil <- input_queue[j]
 coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
 
