@@ -19,4 +19,5 @@ Imports:
     stats,
     utils,
     ggplot2,
-    plyr
+    plyr,
+    data.table
