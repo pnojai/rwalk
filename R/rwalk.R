@@ -320,7 +320,7 @@ read_experiment_csv <- function(fil, sr = 100, header = TRUE) {
         # Convert sampling rate to seconds.
         sr_s <- sr * 10^-3
         
-        dat <- utils::read.csv(fil, header = header)
+        dat <- data.table::fread(fil, header = header)
         
         time_sec <- seq(from = 0, by = sr_s, length.out = nrow(dat))
         
@@ -931,4 +931,93 @@ verify_segments_gg <- function(dat, fil, lead_time_sec, win_length_sec) {
         
         print(g)
         
+}
+
+parse_file_name <- function(file_name) {
+        # list(1902051, "a-synKO", 4, 10400, 5, 2, TRUE)
+        
+        #Tags
+        genotype_tag <- "G"
+        drug_concentration_tag <- "DC" # Multiple DC/DN pairs not yet supported!
+        drug_name_tag <- "DNAMPH"
+        current_tag <- "CUR"
+        concentration_tag <- "CON"
+        file_seq_tag <- "F"
+        coordinate_file_tag <- "PD"
+        data_file_tag <- "DAT"
+
+        # Drop the extension
+        file_name_part <- unlist(strsplit(file_name, "\\."))[1]
+        
+        file_tags <- strsplit(file_name_part, "_")
+        file_tags <- as.list(file_tags[[1]])
+        
+        # print(file_tags)
+        
+        # 1. Animal ID
+        file_tags[[1]] <- as.integer(file_tags[[1]])
+        
+        # 2. File sequence
+        vals <- toupper(unlist(strsplit(file_tags[[2]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != file_seq_tag) {
+                stop(paste0("Incorrect tag for file sequence, ", file_seq_tag, " expected)"))
+        } else {
+                file_tags[[2]] <- as.integer(vals[2])
+        }
+        
+        # 3. Genotype
+        if(substr(file_tags[[3]], 1, nchar(genotype_tag)) != genotype_tag) {
+                stop(paste0("Incorrect tag for genotype, ", genotype_tag, " expected)"))
+        }
+                file_tags[[3]] <- substr(file_tags[[3]], (nchar(genotype_tag) + 1), nchar(file_tags[[3]]))
+        
+        # 4. Drug concentration
+        vals <- toupper(unlist(strsplit(file_tags[[4]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != drug_concentration_tag) {
+                stop(paste0("Incorrect tag for drug concentration, ", drug_concentration_tag, " expected)"))
+        } else {
+                file_tags[[4]] <- as.integer(vals[2])
+        }
+
+        # 5. Amphetamine position
+        # Split tag, make uppercase for comparison.
+        # This RegEx uses perl's look-back and look-ahead matching.
+        #   cf. https://stackoverflow.com/questions/9756360/split-character-data-into-numbers-and-letters
+        #   Answer by: Tim Biegeleisen
+        vals <- toupper(unlist(strsplit(file_tags[[5]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != drug_name_tag) {
+                stop(paste0("Incorrect tag for drug name, ", drug_name_tag, " expected)"))
+        } else {
+                file_tags[[5]] <- as.integer(vals[2])
+        }
+   
+        # 6. Calibration current
+        vals <- toupper(unlist(strsplit(file_tags[[6]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != current_tag) {
+                stop(paste0("Incorrect tag for calibration current, ", current_tag, " expected)"))
+        } else {
+                file_tags[[6]] <- as.integer(vals[2])
+        }
+
+        # 7. Calibration concentration
+        vals <- toupper(unlist(strsplit(file_tags[[7]], "(?=[0-9])(?<=[A-Za-z])", perl = TRUE)))
+        if (vals[1] != concentration_tag) {
+                stop(paste0("Incorrect tag for calibration concentration, ", concentration_tag, " expected)"))
+        } else {
+                file_tags[[7]] <- as.integer(vals[2])
+        }
+
+        # 8. Coordinate file
+        if (file_tags[[8]] == data_file_tag) {
+                file_tags[[8]] <- "DATA"
+        } else {
+                if (file_tags[[8]] == coordinate_file_tag) {
+                        file_tags[[8]] <- "COORD"
+                } else {
+                        stop(paste0("Incorrect tag for file type, ",
+                                    data_file_tag, " or ", coordinate_file_tag, " expected)"))
+                }
+        }
+        
+        file_tags
 }

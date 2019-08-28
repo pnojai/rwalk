@@ -6,7 +6,10 @@ input/
 output/
 exp/
 exp2/
+Peak\ timestamps/
+Synuclein\ Triple\ Knockout/
 pipeline/
+
 .Rproj.user
 
 Docs/PresentationNotes\.html
@@ -43,12 +46,17 @@ Simulations/RW_CV_test\.csv
 
 Simulations/~\$RW_CV\.xlsx
 
-tests/testdata/~\$RW_CV_corrected2\.xlsx
-
-tests/testdata/RW_CV_rwalk_computed\.csv
-
-tests/testdata/RW_CV_simulation_as_read\.csv
-
 scripts/~\$file_params\.xlsx
 
 scripts/\.~lock\.file_params\.xlsx#
+
+tests/testdata/
+
+<<<<<<<
+scripts/~\$file_params\.xlsx
+
+scripts/\.~lock\.file_params\.xlsx#
+
+=======
+
+>>>>>>>
