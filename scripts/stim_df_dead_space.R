@@ -3,7 +3,7 @@ library(dplyr)
 library(data.table)
 
 # Global variables
-pipeline_dir <- "./pipeline"
+pipeline_dir <- "/media/sf_OneDrive_-_cumc.columbia.edu/rwalk/pipeline"
 input_dir <- paste(pipeline_dir, "06_Library", sep = "/")# WT - Pre-AMPH
 
 # Constants
@@ -35,6 +35,8 @@ plot_params <- cbind(plot_params,
 animals <- unique(plot_params$animal)
 animals
 
+# Starter with NA for params.
+# write.csv(plot_params, paste(input_dir, "dead_space_params.csv", sep = "/"))
 
 # Pick off one animal.
 an_animal <- animals[1]
@@ -43,15 +45,13 @@ dat <- stim_df %>%
 qplot(dat$time_sec, dat$electrode_concentration, geom = "line")
 
 # Fit one stim.
-a_stim <- head(plot_params$stimulus[plot_params$stimulus > a_stim], n = 1)
-
+a_stim <- 1
 dat_fit <- select(dat, stimulus, stim_time_sec, electrode_concentration) %>%
         filter(stimulus == a_stim)
 dat_fit <- rename(dat_fit, time_sec = stim_time_sec, "electrode" = electrode_concentration)
 dat_fit <- dat_fit[ , -1]
 
 # Variables
-an_animal <- 
 release <- 3.9
 vmax <- 4.8
 km <- 3
@@ -71,22 +71,6 @@ compare_pulse(dat = dat_fit, fil = paste(an_animal, a_stim),
               fit_region = fit_region,
               base_tolerance = base_tolerance,
               plot_duration_sec = plot_duration_sec)
-
-# plot_params <- within(plot_params,
-#                       {
-#                               release[animal == an_animal & stimulus == a_stim] <- release_val
-#                               vmax[animal == an_animal & stimulus == a_stim] <- vmax_val
-#                       }
-# )
-
-plot_params <- plot_params %>%
-        mutate(release = release,
-               vmax = vmax,
-               km = km,
-               dead_space_distance = dead_space_distance,
-               base_tolerance = base_tolerance
-               ) %>%
-        filter(animal == an_animal & stimulus == a_stim)
 
 # Fit one stim.
 a_stim <- 2 # Bad baseline.
