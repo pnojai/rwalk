@@ -51,12 +51,3 @@ scripts/~\$file_params\.xlsx
 scripts/\.~lock\.file_params\.xlsx#
 
 tests/testdata/
-
-<<<<<<<
-scripts/~\$file_params\.xlsx
-
-scripts/\.~lock\.file_params\.xlsx#
-
-=======
-
->>>>>>>
