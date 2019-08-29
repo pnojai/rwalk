@@ -1,5 +1,5 @@
-# library(ggplot2)
 # library(dplyr)
+# library(ggplot2)
 # library(data.table)
 # 
 # # Global variables
@@ -21,14 +21,14 @@
 # dat_fil <- "stim_df.csv"
 # params_fil <- "dead_space_params.csv"
 # stim_df <- fread(paste(input_dir, dat_fil, sep = "/"))
- 
+
 params <- fread(paste(input_dir, params_fil, sep = "/"))
 # Pick off the complete parameters for plotting.
 complete_params <- complete.cases(params)
 plot_params <- params[complete_params, ]
 
 # for (i in 1:nrow(plot_params)) {
-for (i in 38:38) {
+for (i in 1:29) {
         # Variables
         an_animal <- plot_params$animal[i]
         a_stim <- plot_params$stimulus[i]
