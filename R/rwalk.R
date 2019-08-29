@@ -279,7 +279,8 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
                           diffusion_coefficient,
                           convert_current, calibration_current = NULL,
                           calibration_concentration = NULL,
-                          fit_region = NULL, base_tolerance = NULL, plot_duration_sec = NULL) {
+                          fit_region = NULL, base_tolerance = NULL, plot_duration_sec = NULL,
+                          dead_space = dead_space) {
         # One function should merge the data. merge_sim_dat
         # One function should compute the fit in r-squared, given the merged data. calc_fit
         # One function should plot the comparison given the merged data and the r-squared.
@@ -300,7 +301,8 @@ compare_pulse <- function(dat, fil, vmax, km, pulses, pulse_freq, release,
         plot_rwalk_compare(mg, fil, release, vmax, km, r2,
                            calibration_current = calibration_current,
                            calibration_concentration = calibration_concentration,
-                           fit_range = get_fit_boundaries(mg, fit_region, base_tolerance))
+                           fit_range = get_fit_boundaries(mg, fit_region, base_tolerance),
+                           dead_space = dead_space)
                 
 }
 
@@ -480,7 +482,7 @@ plot_rwalk_sim <- function(dat_w_src, release, vmax, km) {
 #' @examples
 plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
                            calibration_current = NULL, calibration_concentration = NULL,
-                           fit_range = NULL) {
+                           fit_range = NULL, dead_space = NULL) {
         # dat_w_src
         # Tall data frame with column indicating source (experiment, simulation,
         #   interpolation, etc). Each source plots its own curve.
@@ -488,7 +490,8 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
-                         "r2=", if (!is.null(r2)) {round(r2, 6)}, sep = "")
+                         "r2=", if (!is.null(r2)) {round(r2, 6)}, "\n",
+                         "dead_space=", dead_space, sep = "")
         
         g <- ggplot2::ggplot(data = dat_w_src) +
                 ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +

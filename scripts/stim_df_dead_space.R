@@ -70,7 +70,8 @@ compare_pulse(dat = dat_fit, fil = paste(an_animal, a_stim),
               convert_current = convert_current,
               fit_region = fit_region,
               base_tolerance = base_tolerance,
-              plot_duration_sec = plot_duration_sec)
+              plot_duration_sec = plot_duration_sec,
+              dead_space = dead_space_distance)
 
 # Fit one stim.
 a_stim <- 2 # Bad baseline.
@@ -245,6 +246,36 @@ compare_pulse(dat = dat_fit, fil = paste(an_animal, a_stim),
               fit_region = fit_region,
               base_tolerance = base_tolerance,
               plot_duration_sec = plot_duration_sec)
+
+# Fit one stim.
+a_stim <- 8
+dat_fit <- select(dat, stimulus, stim_time_sec, electrode_concentration) %>%
+        filter(stimulus == a_stim)
+dat_fit <- rename(dat_fit, time_sec = stim_time_sec, "electrode" = electrode_concentration)
+dat_fit <- dat_fit[ , -1]
+
+# Variables
+release <- 10.7
+vmax <- 4.8
+km <- 22
+dead_space_distance <- 14
+base_tolerance <- 0.17
+plot_duration_sec = 40
+
+compare_pulse(dat = dat_fit, fil = paste(an_animal, a_stim),
+              vmax = vmax, km = km,
+              pulses = pulses,
+              pulse_freq = pulse_freq,
+              release = release,
+              bin_size = bin_size,
+              electrode_distance = electrode_distance,
+              dead_space_distance = dead_space_distance,
+              diffusion_coefficient = diffusion_coefficient,
+              convert_current = convert_current,
+              fit_region = fit_region,
+              base_tolerance = base_tolerance,
+              plot_duration_sec = plot_duration_sec,
+              dead_space = dead_space_distance)
 
 # Fit one stim.
 a_stim <- 9
