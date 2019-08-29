@@ -20,10 +20,10 @@ dat_fil <- "stim_df.csv"
 stim_df <- fread(paste(input_dir, dat_fil, sep = "/"))
 
 plot_params <- stim_df %>%
-                distinct(animal, stimulus, include) %>%
+                distinct(animal, genotype, stimulus, include) %>%
                 filter(include == TRUE) %>%
                 arrange(animal, stimulus)
-plot_params <- plot_params[ , -3]
+plot_params <- plot_params[ , -4]
 plot_params <- cbind(plot_params,
                      "release" = as.double(NA),
                      "vmax" = as.double(NA),
@@ -36,7 +36,7 @@ animals <- unique(plot_params$animal)
 animals
 
 # Starter with NA for params.
-# write.csv(plot_params, paste(input_dir, "dead_space_params.csv", sep = "/"))
+# write.csv(plot_params, paste(input_dir, "dead_space_params_genotype.csv", sep = "/"))
 
 # Pick off one animal.
 an_animal <- animals[1]

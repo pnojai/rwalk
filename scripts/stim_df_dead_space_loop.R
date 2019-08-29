@@ -21,14 +21,14 @@
 # dat_fil <- "stim_df.csv"
 # params_fil <- "dead_space_params.csv"
 # stim_df <- fread(paste(input_dir, dat_fil, sep = "/"))
-
+ 
 params <- fread(paste(input_dir, params_fil, sep = "/"))
 # Pick off the complete parameters for plotting.
 complete_params <- complete.cases(params)
 plot_params <- params[complete_params, ]
 
 # for (i in 1:nrow(plot_params)) {
-for (i in 1:28) {
+for (i in 38:38) {
         # Variables
         an_animal <- plot_params$animal[i]
         a_stim <- plot_params$stimulus[i]
@@ -44,7 +44,8 @@ for (i in 1:28) {
         dat_fit <- rename(dat_fit, time_sec = stim_time_sec, "electrode" = electrode_concentration)
         dat_fit <- dat_fit[ , -c(1, 2)]
 
-        compare_pulse(dat = dat_fit, fil = paste(an_animal, a_stim),
+        compare_pulse(dat = dat_fit, fil = paste(an_animal, plot_params$genotype[i],
+                                                  "Stim =", a_stim),
                       vmax = vmax, km = km,
                       pulses = pulses,
                       pulse_freq = pulse_freq,
@@ -60,7 +61,7 @@ for (i in 1:28) {
                       dead_space = dead_space_distance)
         
         # Copy the plot from the screen device to the file device.
-        fil_name <- paste0(output_dir, "/", an_animal, "_", a_stim, ".jpg")
+        fil_name <- paste0(output_dir, "/", an_animal, "_", plot_params$genotype[i], "_", a_stim, ".jpg")
         # dev.copy(jpeg, file = fil_name)
         # dev.off() # Don't forget!        
 }
