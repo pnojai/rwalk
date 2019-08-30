@@ -3,7 +3,7 @@ library(data.table)
 library(ggplot2)
 
 # Preprocessing environment
-pipeline_dir <- "./pipeline"
+pipeline_dir <- "/media/sf_OneDrive_-_cumc.columbia.edu/rwalk/pipeline"
 submissions_dir <- paste(pipeline_dir, "Peak timestamps", "WT_Peak detection", sep = "/")
 newsubs_dir <- paste(pipeline_dir, "01g_NewSubmissions", sep = "/")
 input_queue_dir <- paste(pipeline_dir, "02_InputQueue", sep = "/")
@@ -154,49 +154,49 @@ for (i in 1:length(input_queue)) {
 }
 
 # Plot data files and review stimuli.
-for (i in 27:27) { #1:(length(input_queue) - 0)) {
-        coord_fil <- input_queue[i]
-        coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
-        
-        # Derive data file name.
-        dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
-                       replacement = paste0(data_file_tag, "\\.", tgt_extension),
-                       x = coord_fil,
-                       ignore.case = TRUE)
-        dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
-        
-        dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
-        
-        p <- ggplot(data = dat) +
-                geom_line(aes(x = time_sec, y = electrode)) +
-                geom_vline(xintercept = coord$T_Bkg1, color = "red1") +
-                labs(title = input_queue[i])
-        print(p)
-}
+# for (i in 27:27) { #1:(length(input_queue) - 0)) {
+#         coord_fil <- input_queue[i]
+#         coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
+#         
+#         # Derive data file name.
+#         dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
+#                        replacement = paste0(data_file_tag, "\\.", tgt_extension),
+#                        x = coord_fil,
+#                        ignore.case = TRUE)
+#         dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
+#         
+#         dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
+#         
+#         p <- ggplot(data = dat) +
+#                 geom_line(aes(x = time_sec, y = electrode)) +
+#                 geom_vline(xintercept = coord$T_Bkg1, color = "red1") +
+#                 labs(title = input_queue[i])
+#         print(p)
+# }
 
-# Review one
-input_queue
-j <- 22
-coord_fil <- input_queue[j]
-coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
-
-# Derive data file name.
-dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
-                       replacement = paste0(data_file_tag, "\\.", tgt_extension),
-                       x = coord_fil,
-                       ignore.case = TRUE)
-dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
-dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
-for (k in 1:nrow(coord)) {
-        dat_subset <- dat[(dat$time_sec >= coord$T_Bkg1[k] & dat$time_sec < (coord$T_Bkg1[k] + 120)), ]
-
-        p <- ggplot(data = dat_subset) +
-                geom_line(aes(x = time_sec, y = electrode)) +
-                #geom_vline(xintercept = coord$T_Bkg1) +
-                labs(title = input_queue[j],subtitle = paste0("Stim: ", k))
-
-        print(p)
-}
+# # Review one
+# input_queue
+# j <- 22
+# coord_fil <- input_queue[j]
+# coord <- fread(paste(coordinate_review_dir, coord_fil, sep = "/"))
+# 
+# # Derive data file name.
+# dat_fil <- sub(pattern = paste0(coordinate_file_tag, "\\.", tgt_extension, "$"),
+#                        replacement = paste0(data_file_tag, "\\.", tgt_extension),
+#                        x = coord_fil,
+#                        ignore.case = TRUE)
+# dat_fil_path <- paste(converted_files_dir, dat_fil, sep = "/")
+# dat <- read_experiment_csv(dat_fil_path, sr = sample_rate)
+# for (k in 1:nrow(coord)) {
+#         dat_subset <- dat[(dat$time_sec >= coord$T_Bkg1[k] & dat$time_sec < (coord$T_Bkg1[k] + 120)), ]
+# 
+#         p <- ggplot(data = dat_subset) +
+#                 geom_line(aes(x = time_sec, y = electrode)) +
+#                 #geom_vline(xintercept = coord$T_Bkg1) +
+#                 labs(title = input_queue[j],subtitle = paste0("Stim: ", k))
+# 
+#         print(p)
+# }
 
 # Promote to library
 for (i in 1:length(input_queue)) {
