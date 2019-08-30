@@ -4,7 +4,7 @@ library(dplyr)
 library(data.table)
 
 # Global variables
-pipeline_dir <- "./pipeline"
+pipeline_dir <- "/media/sf_OneDrive_-_cumc.columbia.edu/rwalk/pipeline"
 input_dir <- paste(pipeline_dir, "06_Library", sep = "/")
 coordinate_file_tag <- "PD"
 data_file_tag <- "DAT"
