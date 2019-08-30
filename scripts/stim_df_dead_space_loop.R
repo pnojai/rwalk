@@ -1,26 +1,26 @@
-# library(dplyr)
-# library(ggplot2)
-# library(data.table)
-# 
-# # Global variables
-# pipeline_dir <- "/media/sf_OneDrive_-_cumc.columbia.edu/rwalk/pipeline"
-# input_dir <- paste(pipeline_dir, "06_Library", sep = "/")# WT - Pre-AMPH
-# output_dir <- paste(pipeline_dir, "output", "plots", sep = "/")
-# 
-# # Constants
-# pulses <- 30
-# pulse_freq <- 50
-# bin_size <- 2.0
-# electrode_distance <- 1000
-# diffusion_coefficient <- 2.7 * 10^-6
-# convert_current <- FALSE
-# fit_region = "fall"
-# # plot_duration_sec = 40
-# 
-# # Read data and plot parameters
-# dat_fil <- "stim_df.csv"
-# params_fil <- "dead_space_params.csv"
-# stim_df <- fread(paste(input_dir, dat_fil, sep = "/"))
+library(dplyr)
+library(ggplot2)
+library(data.table)
+
+# Global variables
+pipeline_dir <- "/media/sf_OneDrive_-_cumc.columbia.edu/rwalk/pipeline"
+input_dir <- paste(pipeline_dir, "06_Library", sep = "/")# WT - Pre-AMPH
+output_dir <- paste(pipeline_dir, "output", "plots", sep = "/")
+
+# Constants
+pulses <- 30
+pulse_freq <- 50
+bin_size <- 2.0
+electrode_distance <- 1000
+diffusion_coefficient <- 2.7 * 10^-6
+convert_current <- FALSE
+fit_region = "fall"
+# plot_duration_sec = 40
+
+# Read data and plot parameters
+dat_fil <- "stim_df.csv"
+params_fil <- "dead_space_params.csv"
+stim_df <- fread(paste(input_dir, dat_fil, sep = "/"))
 
 params <- fread(paste(input_dir, params_fil, sep = "/"))
 # Pick off the complete parameters for plotting.
