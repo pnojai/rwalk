@@ -160,13 +160,13 @@ fwrite(x = stim_df, file = paste(input_dir, "stim_df.csv", sep = "/"))
 # qplot(dat_merge_wt_amph_1620$time_sec, dat_merge_wt_amph_1620$electrode, geom = "line")
 # 
 # # KO - Pre-AMPH
-dat_merge_ko_pre <- select(stim_df, animal, stim_time_sec, electrode_concentration, genotype, stimulus, include) %>%
-        filter(genotype == "ko" & stimulus >= 1 & stimulus <= 3 & include == TRUE & stim_time_sec <= 120) %>%
-        group_by(stim_time_sec) %>%
-        summarize(mean(electrode_concentration))
-dat_merge_ko_pre <- rename(dat_merge_ko_pre, time_sec = stim_time_sec, "electrode_concentration" = "mean(electrode_concentration)")
-qplot(dat_merge_ko_pre$time_sec, dat_merge_ko_pre$electrode_concentration, geom = "line")
-
+# dat_merge_ko_pre <- select(stim_df, animal, stim_time_sec, electrode_concentration, genotype, stimulus, include) %>%
+#         filter(genotype == "ko" & stimulus >= 1 & stimulus <= 3 & include == TRUE & stim_time_sec <= 120) %>%
+#         group_by(stim_time_sec) %>%
+#         summarize(mean(electrode_concentration))
+# dat_merge_ko_pre <- rename(dat_merge_ko_pre, time_sec = stim_time_sec, "electrode_concentration" = "mean(electrode_concentration)")
+# qplot(dat_merge_ko_pre$time_sec, dat_merge_ko_pre$electrode_concentration, geom = "line")
+# 
 # dat_merge_ko_pre <- select(stim_df, animal, stim_time_sec, electrode, genotype, stimulus, include) %>%
 #         filter(genotype == "ko" & stimulus >= 1 & stimulus <= 3 & include == TRUE & stim_time_sec <= 120) %>%
 #         group_by(stim_time_sec) %>%
@@ -407,10 +407,10 @@ qplot(dat_merge_ko_pre$time_sec, dat_merge_ko_pre$electrode_concentration, geom 
 # results
 # 
 
-dat <- select(stim_df, animal, stim_time_sec, time_sec, electrode_concentration, electrode_current, genotype, stimulus, include) %>%
-        filter(animal == 1902051)
-        # group_by(stim_time_sec) %>%
-        # summarize(mean(electrode_concentration))
-dat_merge_ko_pre <- rename(dat_merge_ko_pre, time_sec = stim_time_sec, "electrode_concentration" = "mean(electrode_concentration)")
-qplot(dat_merge_ko_pre$time_sec, dat_merge_ko_pre$electrode_concentration, geom = "line")
-
+# dat <- select(stim_df, animal, stim_time_sec, time_sec, electrode_concentration, electrode_current, genotype, stimulus, include) %>%
+#         filter(animal == 1902051)
+#         # group_by(stim_time_sec) %>%
+#         # summarize(mean(electrode_concentration))
+# dat_merge_ko_pre <- rename(dat_merge_ko_pre, time_sec = stim_time_sec, "electrode_concentration" = "mean(electrode_concentration)")
+# qplot(dat_merge_ko_pre$time_sec, dat_merge_ko_pre$electrode_concentration, geom = "line")
+# 
