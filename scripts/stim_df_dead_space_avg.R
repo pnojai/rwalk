@@ -45,7 +45,7 @@ complete_params <- complete.cases(params)
 plot_params <- params[complete_params, ]
 
 #for (i in 1:nrow(plot_params)) {
-for (i in 6:6) {
+for (i in 13:13) {
         # Variables
         an_animal <- plot_params$animal[i]
         stim_low <- plot_params$stim_low[i]
@@ -92,6 +92,6 @@ for (i in 6:6) {
 # dat_review <- stim_df %>%
 #         filter(animal == animal_review & stimulus >= 1 & stimulus <= 15 & include == TRUE)
 # qplot(data = dat_review, x = time_sec, y = electrode_concentration, geom = "line")
-# stim_review <- 3
+# stim_review <- 2
 # dat_review_stim <- dat_review[dat_review$stimulus == stim_review & dat_review$stim_time_sec < 30, ]
 # qplot(data = dat_review_stim, x = stim_time_sec, y = electrode_concentration, geom = "line")
