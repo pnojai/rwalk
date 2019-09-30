@@ -28,8 +28,8 @@ dead_space <- fread(paste(input_dir, dead_space_fil, sep ="/"))
 complete_params <- complete.cases(params) & params$include == "TRUE"
 plot_params <- params[complete_params, ]
 
-#for (i in 1:nrow(plot_params)) {
-for (i in 20:20) {
+for (i in 1:nrow(plot_params)) {
+#for (i in 20:20) {
         # Variables
         an_animal <- plot_params$animal[i]
         stim_low <- plot_params$stim_low[i]
