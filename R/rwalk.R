@@ -487,11 +487,18 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
         # Tall data frame with column indicating source (experiment, simulation,
         #   interpolation, etc). Each source plots its own curve.
         
+        # caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
+        #                  "calib_curr=", calibration_current, "\n",
+        #                  "calib_conc=", calibration_concentration, "\n",
+        #                  "r2=", if (!is.null(r2)) {round(r2, 6)}, "\n",
+        #                  "dead_space=", dead_space, sep = "")
+        
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
                          "calib_curr=", calibration_current, "\n",
                          "calib_conc=", calibration_concentration, "\n",
                          "r2=", if (!is.null(r2)) {round(r2, 6)}, "\n",
-                         "dead_space=", dead_space, sep = "")
+                         "dead_space=", dead_space,
+                         sep = "")
         
         g <- ggplot2::ggplot(data = dat_w_src) +
                 ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
