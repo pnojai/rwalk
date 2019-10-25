@@ -20,7 +20,7 @@ dat <- stim_df %>%
         filter(between(stimulus, 1, 3),
                between(stim_time_sec, 0, 5),
                # animal %in% c(1904041),
-               animal %in% c(1905211),
+               # animal %in% c(1905211),
                include == TRUE,
                genotype == "ko")
 dat$animal <- factor(dat$animal)
