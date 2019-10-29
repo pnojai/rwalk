@@ -15,16 +15,18 @@ is_not_match <- sum(str_sub(dat_fils, start = 1, end = 10) != str_sub(coord_fils
 
 if (is_not_match) {stop("Files out of order.")}
 
-for (i in 1:length(dat_fils)) {
+# for (i in 1:length(dat_fils)) {
+for (i in 36:36) {
         dat <- read_experiment_csv(file.path(input_dir, dat_fils[i]), sr = sample_rate)
         coord <- fread(file.path(input_dir, coord_fils[i]))
         
-        ggplot() +
+        p <- ggplot() +
                 geom_line(data = dat, mapping = aes(x = time_sec, y = electrode), size = .1) +
                 geom_vline(data = coord, xintercept = coord$T_Bkg1, color = "red", size = .1) +
                 labs(title = str_sub(dat_fils[i], 1, 10))
         
-        ggsave(filename = str_c(output_dir, "/", str_sub(dat_fils[i], 1, 10), ".pdf"))
+        #ggsave(filename = str_c(output_dir, "/", str_sub(dat_fils[i], 1, 10), ".pdf"))
+        print(p)
 }
 
 for (j in 1:nrow(coord)) {

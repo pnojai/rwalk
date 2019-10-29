@@ -254,7 +254,7 @@ release <- 4.3
 vmax <- 4.8
 km <- 24
 base_tolerance <- 0.05
-plot_duration_sec = 10
+plot_duration_sec = 50
 
 if (nrow(results[results$genotype == genotype & results$amphetamine == amphetamine, ]) == 0) {
         results[(nrow(results)+1), ] <- c(genotype, amphetamine, release, vmax, km)
