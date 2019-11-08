@@ -493,12 +493,13 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
         #                  "r2=", if (!is.null(r2)) {round(r2, 6)}, "\n",
         #                  "dead_space=", dead_space, sep = "")
         
-        caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
+        caption <- paste0("release = ", release, intToUtf8(956), "M\n",
+                          "vmax = ", vmax, intToUtf8(956), "M/s\n",
+                          "km = ", km, intToUtf8(956), "M\n",
                          # "calib_curr=", calibration_current, "\n",
                          # "calib_conc=", calibration_concentration, "\n",
-                         "r=", if (!is.null(r2)) {round(r2, 6)}, "\n",
-                         "dead_space=", dead_space,
-                         sep = "")
+                         "r2 = ", if (!is.null(r2)) {round(r2, 6)}, "\n",
+                         "dead_space = ", dead_space, intToUtf8(956), "m")
         
         g <- ggplot2::ggplot(data = dat_w_src) +
                 ggplot2::geom_line(mapping = ggplot2::aes(x = time_sec, y = electrode, colour = src)) +
