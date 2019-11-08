@@ -494,9 +494,9 @@ plot_rwalk_compare <- function(dat_w_src, fil, release, vmax, km, r2,
         #                  "dead_space=", dead_space, sep = "")
         
         caption <- paste("release=", release, "\n", "vmax=", vmax, "\n", "km=", km, "\n",
-                         "calib_curr=", calibration_current, "\n",
-                         "calib_conc=", calibration_concentration, "\n",
-                         "r2=", if (!is.null(r2)) {round(r2, 6)}, "\n",
+                         # "calib_curr=", calibration_current, "\n",
+                         # "calib_conc=", calibration_concentration, "\n",
+                         "r=", if (!is.null(r2)) {round(r2, 6)}, "\n",
                          "dead_space=", dead_space,
                          sep = "")
         
